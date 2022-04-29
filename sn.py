@@ -15,8 +15,7 @@ xmls = [
     "N/N16/N16n0006.xml",
     "N/N17/N17n0006.xml",
 
-    "N/N18/N18n0006.xml",
-    "N/N19/N19n0006.xml"
+    "N/N18/N18n0006.xml"
 ]
 
 
@@ -29,6 +28,7 @@ for one in xmls:
 
     text = tei.find_kids("text")[0]
     body = text.find_kids("body")[0]
-    cb_div1 = body.find_kids("cb:div")[0]
-    p = cb_div1.find_kids("p")[0]
-    print(p.kids)
+    print(one)
+    for cb_div in body.find_kids("cb:div"):
+        cb_mulu = cb_div.find_kids("cb:mulu")[0]
+        print(cb_mulu.kids)
