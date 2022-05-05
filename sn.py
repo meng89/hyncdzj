@@ -88,8 +88,11 @@ for one in xmls:
         m = re.match(r"^(.+篇).* \(\d+-\d+\)$", _pian_title)
         assert m
 
-        pian = Pian(m.group(1))
-        snikaya.pians.append(pian)
+        if snikaya.pians and snikaya.pians[-1].title != m.group(1):
+            pian = snikaya.pians[-1]
+        else:
+            pian = Pian(m.group(1))
+            snikaya.pians.append(pian)
 
         for cb_div2 in cb_div.find_kids("cb:div"):
             assert len(cb_div2.find_kids("cb:mulu")) == 1
@@ -122,9 +125,35 @@ for one in xmls:
                         pass
 
 
-def do_pin(snikaya, pian, xiangying, cb_div):
+def do_pin_(snikaya, pian, xiangying, cb_div):
     if snikaya.pians.index(pian) == x and pian.xiangyings.index(xiangying) == y:
         for sub_cb_div in cb_div2.find_kids("cb:div"):
-            do_pin2(snikaya, pian, xiangying, sub_cb_div)
+            do_pins(snikaya, pian, xiangying, sub_cb_div)
 
-def do_pin2(snikaya, pian, xiangying, cb_div):
+
+def do_pins(snikaya, pian, xiangying, _cbdiv):
+    for pin_cbdiv in _cbdiv.find_kids("cb:div"):
+        title = pin_title(pin_cbdiv.find_kids("cb:mulu")[0])
+        pin = Pin(title)
+        xiangying.pins.append(pin)
+
+        do_suttas(snikaya, pian, xiangying, pin, pin_cbdiv)
+
+
+def do_suttas(snikaya, pian, xiangying, pin, pin_cbdiv):
+    for sutta_cbdiv in pin_cbdiv.find_kids("cb:div"):
+        mulu = sutta_cbdiv.find_kids("cb:mulu")[0]
+        title = sutta_title(mulu)
+
+
+
+def sutta_title(text):
+    pass
+
+
+def pin_title(text):
+    m = re.match(r"^第[一二三四五六七八九十]\s+(\S+品.*)$", text)
+    if m:
+        return m.group(1)
+    else:
+        input(text)
