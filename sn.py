@@ -146,9 +146,18 @@ def do_suttas(snikaya, pian, xiangying, pin, pin_cbdiv):
         title = sutta_title(mulu)
 
 
-
 def sutta_title(text):
-    pass
+    # 相应部每篇经文，应该有 经号开始，经号结束，经名
+    m = re.match(r"^〔([一二三四五六七八九〇]+)〕(?:第[一二三四五六七八九十]+\s)?(\S+)$", text)
+    if m:
+        return m.group(1), m.group(1), m.group(2)
+
+    # 〔七二～八〇〕第二～第十　不知（之一）
+    m = re.match(r"^〔([一二三四五六七八九〇]+)～([一二三四五六七八九〇]+)〕(?:第[一二三四五六七八九十]+～第[一二三四五六七八九十]+)?\s(\S+)$", text)
+    if m:
+        return m.group(1), m.group(2), m.group(3)
+
+    input(text)
 
 
 def pin_title(text):
