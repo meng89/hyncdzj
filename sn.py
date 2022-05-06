@@ -43,7 +43,7 @@ class SN(object):
 
 
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
-xmlp5_dir = os.path.join(PROJECT_ROOT, "xml-p5")
+xmlp5_dir = os.path.join(PROJECT_ROOT, "xml-p5a")
 
 
 xmls = [
@@ -67,67 +67,50 @@ def is_pin(cbdiv3s):
     return False
 
 
-for one in xmls:
-    xmlstr = open(os.path.join(xmlp5_dir, one), "r").read()
-
-    xml = xl.parse(xmlstr, do_strip=True)
-
-    tei = xml.root
-
-    text = tei.find_kids("text")[0]
-    body = text.find_kids("body")[0]
-    print(one)
-
+def main():
     snikaya = SN()
+    for one in xmls:
+        xmlstr = open(os.path.join(xmlp5_dir, one), "r").read()
 
-    for cb_div in body.find_kids("cb:div"):
-        assert len(cb_div.find_kids("cb:mulu")) == 1
-        cb_mulu = cb_div.find_kids("cb:mulu")[0]
-        _pian_title = cb_mulu.kids[0]  # 篇
+        xml = xl.parse(xmlstr, do_strip=True)
 
-        m = re.match(r"^(.+篇).* \(\d+-\d+\)$", _pian_title)
-        assert m
+        tei = xml.root
 
-        if snikaya.pians and snikaya.pians[-1].title != m.group(1):
-            pian = snikaya.pians[-1]
-        else:
-            pian = Pian(m.group(1))
-            snikaya.pians.append(pian)
+        text = tei.find_kids("text")[0]
+        body = text.find_kids("body")[0]
+        print(one)
 
-        for cb_div2 in cb_div.find_kids("cb:div"):
-            assert len(cb_div2.find_kids("cb:mulu")) == 1
-            cb_mulu2 = cb_div2.find_kids("cb:mulu")[0]
-            print(" 2", cb_mulu2.kids[0])  # 相应
+        for cb_div in body.find_kids("cb:div"):
+            assert len(cb_div.find_kids("cb:mulu")) == 1
+            cb_mulu = cb_div.find_kids("cb:mulu")[0]
+            _pian_title = cb_mulu.kids[0]  # 篇
 
-            _xy_title = cb_mulu2.kids[0]
-            m2 = re.match(r"^.*(\S相應)$", _xy_title)
-            assert m2
-            xy = Xiangying(m2.group(1))
-            pian.xiangyings.append(xy)
+            m = re.match(r"^(.+篇).* \(\d+-\d+\)$", _pian_title)
+            assert m
 
-            for cb_div3 in cb_div2.find_kids("cb:div"):
-                x = "品" if is_pin(cb_div2.find_kids("cb:div")) else "经"
-                assert len(cb_div3.find_kids("cb:mulu")) == 1
-                cb_mulu3 = cb_div3.find_kids("cb:mulu")[0]
-                print("  3[{}]".format(x), cb_mulu3.kids[0])  # 品/经
+            if snikaya.pians and snikaya.pians[-1].title != m.group(1):
+                pian = snikaya.pians[-1]
+            else:
+                pian = Pian(m.group(1))
+                snikaya.pians.append(pian)
 
+            for cb_div2 in cb_div.find_kids("cb:div"):
+                assert len(cb_div2.find_kids("cb:mulu")) == 1
+                cb_mulu2 = cb_div2.find_kids("cb:mulu")[0]
+                print(" 2", cb_mulu2.kids[0])  # 相应
 
-                for cb_div4 in cb_div3.find_kids("cb:div"):
-                    if len(cb_div4.find_kids("cb:mulu")) != 1:
-                        input(cb_div4.find_kids("cb:mulu"))
-                    cb_mulu4 = cb_div4.find_kids("cb:mulu")[0]
-                    #print("   4", cb_mulu4.kids[0])  # 品/经/节
+                _xy_title = cb_mulu2.kids[0]
+                m2 = re.match(r"^.*(\S相應)$", _xy_title)
+                assert m2
+                xy = Xiangying(m2.group(1))
+                pian.xiangyings.append(xy)
 
-                    for cb_div5 in cb_div4.find_kids("cb:div"):
-                        assert len(cb_div5.find_kids("cb:mulu")) == 1
-                        cb_mulu5 = cb_div5.find_kids("cb:mulu")[0]
-                        # print("    5", cb_mulu5.kids[0])  # 经/节
-                        pass
+                do_pins_(snikaya, pian, xy, cb_div2)
 
 
-def do_pin_(snikaya, pian, xiangying, cb_div):
+def do_pins_(snikaya, pian, xiangying, xy_cbdiv):
     if snikaya.pians.index(pian) == x and pian.xiangyings.index(xiangying) == y:
-        for sub_cb_div in cb_div2.find_kids("cb:div"):
+        for sub_cb_div in xy_cbdiv.find_kids("cb:div"):
             do_pins(snikaya, pian, xiangying, sub_cb_div)
 
 
@@ -144,6 +127,7 @@ def do_suttas(snikaya, pian, xiangying, pin, pin_cbdiv):
     for sutta_cbdiv in pin_cbdiv.find_kids("cb:div"):
         mulu = sutta_cbdiv.find_kids("cb:mulu")[0]
         title = sutta_title(mulu)
+        print(title)
 
 
 def sutta_title(text):
