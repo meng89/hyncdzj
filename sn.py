@@ -109,14 +109,18 @@ def main():
 
 
 def do_pins_(snikaya, pian, xiangying, xy_cbdiv):
-    if snikaya.pians.index(pian) == x and pian.xiangyings.index(xiangying) == y:
+    # 大篇 六处相应
+    if snikaya.pians.index(pian) == 3 and pian.xiangyings.index(xiangying) == 0:
         for sub_cb_div in xy_cbdiv.find_kids("cb:div"):
             do_pins(snikaya, pian, xiangying, sub_cb_div)
+    else:
+        do_pins(snikaya, pian, xiangying, xy_cbdiv)
 
 
 def do_pins(snikaya, pian, xiangying, _cbdiv):
     for pin_cbdiv in _cbdiv.find_kids("cb:div"):
-        title = pin_title(pin_cbdiv.find_kids("cb:mulu")[0])
+        mulu = pin_cbdiv.find_kids("cb:mulu")[0]
+        title = pin_title(mulu.kids[0])
         pin = Pin(title)
         xiangying.pins.append(pin)
 
@@ -126,8 +130,8 @@ def do_pins(snikaya, pian, xiangying, _cbdiv):
 def do_suttas(snikaya, pian, xiangying, pin, pin_cbdiv):
     for sutta_cbdiv in pin_cbdiv.find_kids("cb:div"):
         mulu = sutta_cbdiv.find_kids("cb:mulu")[0]
-        title = sutta_title(mulu)
-        print(title)
+        title = sutta_title(mulu.kids[0])
+        #todo
 
 
 def sutta_title(text):
@@ -141,12 +145,16 @@ def sutta_title(text):
     if m:
         return m.group(1), m.group(2), m.group(3)
 
-    input(text)
+    input(("不能解析sutta_title", repr(text)))
 
 
 def pin_title(text):
     m = re.match(r"^第[一二三四五六七八九十]\s+(\S+品.*)$", text)
     if m:
         return m.group(1)
-    else:
-        input(text)
+
+    input(("不能解析pin_title", repr(text)))
+
+
+if __name__ == "__main__":
+    main()
