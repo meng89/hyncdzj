@@ -58,12 +58,16 @@ xmls = [
 ]
 
 
-def is_pin(cbdiv3s):
-    for div in cbdiv3s:
-        for mulu in div.find_kids("cb:mulu"):
-            m = re.match("^第[一二三四五六七八九十]+.+品.*$", mulu.kids[0])
-            if m:
-                return True
+def is_pin_sub(xy_cbdiv):
+    pin_count = 0
+    for div in xy_cbdiv.find_kids("cb:div"):
+        mulu = div.find_kids("cb:mulu")[0]
+        mulu_text = mulu.kids[0]
+        m = re.match("^第[一二三四五六七八九十]+.+品.*$", mulu_text)
+        if m:
+            pin_count += 1
+        if pin_count == 2:
+            return True
     return False
 
 
@@ -113,7 +117,7 @@ def do_pins_(snikaya, pian, xiangying, xy_cbdiv):
     if snikaya.pians.index(pian) == 3 and pian.xiangyings.index(xiangying) == 0:
         for sub_cb_div in xy_cbdiv.find_kids("cb:div"):
             do_pins(snikaya, pian, xiangying, sub_cb_div)
-    else:
+    elif is_pin(xy_cbdiv):
         do_pins(snikaya, pian, xiangying, xy_cbdiv)
 
 
