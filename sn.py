@@ -27,7 +27,7 @@ class Xiangying(Node):
 
 
 class Pin(Node):
-    def __init__(self, title):
+    def __init__(self, title=None):
         super().__init__(title)
         self.suttas = self.subs
 
@@ -66,8 +66,11 @@ def is_pin_sub(xy_cbdiv):
         m = re.match("^第[一二三四五六七八九十]+.+品.*$", mulu_text)
         if m:
             pin_count += 1
-        if pin_count == 2:
-            return True
+
+    if pin_count == 1 and len(xy_cbdiv.find_kids("cb:div")) == 1:
+        return True
+    if pin_count > 1:
+        return True
     return False
 
 
@@ -117,18 +120,22 @@ def do_pins_(snikaya, pian, xiangying, xy_cbdiv):
     if snikaya.pians.index(pian) == 3 and pian.xiangyings.index(xiangying) == 0:
         for sub_cb_div in xy_cbdiv.find_kids("cb:div"):
             do_pins(snikaya, pian, xiangying, sub_cb_div)
-    elif is_pin(xy_cbdiv):
+    else:
         do_pins(snikaya, pian, xiangying, xy_cbdiv)
 
 
-def do_pins(snikaya, pian, xiangying, _cbdiv):
-    for pin_cbdiv in _cbdiv.find_kids("cb:div"):
-        mulu = pin_cbdiv.find_kids("cb:mulu")[0]
-        title = pin_title(mulu.kids[0])
-        pin = Pin(title)
+def do_pins(snikaya, pian, xiangying, xy_cbdiv):
+    if is_pin_sub(xy_cbdiv):
+        for pin_cbdiv in xy_cbdiv.find_kids("cb:div"):
+            mulu = pin_cbdiv.find_kids("cb:mulu")[0]
+            title = pin_title(mulu.kids[0])
+            pin = Pin(title)
+            xiangying.pins.append(pin)
+            do_suttas(snikaya, pian, xiangying, pin, pin_cbdiv)
+    else:
+        pin = Pin()
         xiangying.pins.append(pin)
-
-        do_suttas(snikaya, pian, xiangying, pin, pin_cbdiv)
+        do_suttas(snikaya, pian, xiangying, pin, xy_cbdiv)
 
 
 def do_suttas(snikaya, pian, xiangying, pin, pin_cbdiv):
@@ -140,14 +147,19 @@ def do_suttas(snikaya, pian, xiangying, pin, pin_cbdiv):
 
 def sutta_title(text):
     # 相应部每篇经文，应该有 经号开始，经号结束，经名
-    m = re.match(r"^〔([一二三四五六七八九〇]+)〕(?:第[一二三四五六七八九十]+\s)?(\S+)$", text)
+
+    m = re.match(r"^〔([〇一二三四五六七八九十]+)〕(?:第[〇一二三四五六七八九十]+\s)?(\S+)$", text)
     if m:
         return m.group(1), m.group(1), m.group(2)
 
     # 〔七二～八〇〕第二～第十　不知（之一）
-    m = re.match(r"^〔([一二三四五六七八九〇]+)～([一二三四五六七八九〇]+)〕(?:第[一二三四五六七八九十]+～第[一二三四五六七八九十]+)?\s(\S+)$", text)
+    m = re.match(r"^〔([〇一二三四五六七八九十]+)～([〇一二三四五六七八九十]+)〕(?:第[〇一二三四五六七八九十]+～第[〇一二三四五六七八九十]+)?\s(\S+)$", text)
     if m:
         return m.group(1), m.group(2), m.group(3)
+
+    m = re.match(r"^第([〇一二三四五六七八九十]+)\s(\S+)$", text)
+    if m:
+        return m.group(1), m.group(1), m.group(2)
 
     input(("不能解析sutta_title", repr(text)))
 
