@@ -63,7 +63,7 @@ def is_pin_sub(xy_cbdiv):
     for div in xy_cbdiv.find_kids("cb:div"):
         mulu = div.find_kids("cb:mulu")[0]
         mulu_text = mulu.kids[0]
-        m = re.match("^第[一二三四五六七八九十]+.+品.*$", mulu_text)
+        m = re.match("^第[一二三四五六七八九十]+.*品.*$", mulu_text)
         if m:
             pin_count += 1
 
@@ -95,10 +95,11 @@ def main():
             m = re.match(r"^(.+篇).* \(\d+-\d+\)$", _pian_title)
             assert m
 
-            if snikaya.pians and snikaya.pians[-1].title != m.group(1):
+            if snikaya.pians and snikaya.pians[-1].title == m.group(1):
                 pian = snikaya.pians[-1]
             else:
                 pian = Pian(m.group(1))
+                print(pian.title)
                 snikaya.pians.append(pian)
 
             for cb_div2 in cb_div.find_kids("cb:div"):
@@ -161,27 +162,74 @@ def do_suttas(snikaya, pian, xiangying, pin, pin_cbdiv):
 def sutta_title(text):
     # 相应部每篇经文，应该有 经号开始，经号结束，经名
 
+    # 有偈篇, 諸天相應
+    # 〔一〕瀑流
     m = re.match(r"^〔([〇一二三四五六七八九十]+)〕(?:第[〇一二三四五六七八九十]+\s)?(\S+)$", text)
     if m:
         return m.group(1), m.group(1), m.group(2)
 
+    # 因緣篇, 因緣相應
     # 〔七二～八〇〕第二～第十　不知（之一）
     m = re.match(r"^〔([〇一二三四五六七八九十]+)～([〇一二三四五六七八九十]+)〕(?:第[〇一二三四五六七八九十]+～第?[〇一二三四五六七八九十]+)?\s(\S+)$", text)
     if m:
         return m.group(1), m.group(2), m.group(3)
 
-    m = re.match(r"^第([〇一二三四五六七八九十]+)\s(\S+)$", text)
+    # 因緣篇, 迦葉相應
+    # 第一\u3000滿足
+    m = re.match(r"^第([〇一二三四五六七八九十]+)\s(.+)$", text)
     if m:
         return m.group(1), m.group(1), m.group(2)
 
     if text == "〔三八～四三〕第八　父、第九　兄弟、第十　姊妹、第十一　子、第十二　女、第十三　妻":
         return "三八", "四三", "父、兄弟、姊妹、子、女與妻"
 
-    # 因缘 罗睺罗 界韵
-    # 〔一二～二〇〕第二～第十
-    m = re.match(r"^〔([〇一二三四五六七八九十]+)～([〇一二三四五六七八九十]+)〕(第[〇一二三四五六七八九十]+～第[〇一二三四五六七八九十]+)$", text)
+    # 1. 因緣篇，羅睺羅相應，界韵品
+    # 1. 〔一二～二〇〕第二～第十
+    # 2. 犍度篇, 見相應, 重說品
+    # 2. 〔二〇～三五〕第二～十七
+    m = re.match(r"^〔([〇一二三四五六七八九十]+)～([〇一二三四五六七八九十]+)〕(第[〇一二三四五六七八九十]+～第?[〇一二三四五六七八九十]+)$", text)
     if m:
         return m.group(1), m.group(2), None  # todo
+
+    # 犍度篇, 龍相應
+    # 〔一一～二〇〕第十一　布施利益（一）
+    m = re.match(r"^〔([〇一二三四五六七八九十]+)～([〇一二三四五六七八九十]+)〕第[〇一二三四五六七八九十]+\s(\S+)$", text)
+    if m:
+        return m.group(1), m.group(2), m.group(3)
+
+    # 犍度篇, 婆蹉種相應
+    # 〔一〕第一～五　無知（一～五）
+    m = re.match(r"^〔[〇一二三四五六七八九十]+〕第([〇一二三四五六七八九十])+～([〇一二三四五六七八九十])+\s(\S+)$", text)
+    if m:
+        return m.group(1), m.group(2), m.group(3)
+
+    # 犍度篇, 婆蹉種相應
+    # 第五十二～五十四　不現見（二～四）
+    m = re.match(r"^第([〇一二三四五六七八九十]+)～([〇一二三四五六七八九十]+)\s(\S+)$", text)
+    if m:
+        return m.group(1), m.group(2), m.group(3)
+
+    # 犍度篇, 禪定相應
+    if text == "第五十一～五十二〔引發〕":
+        return "五十一", "五十二", "〔引發〕"
+
+    # 六處篇, 六處相應
+    # 〔五六、五七〕第四、第五　諸漏（一～二）
+    m = re.match(r"^〔([〇一二三四五六七八九十]+)、([〇一二三四五六七八九十]+)〕第[〇一二三四五六七八九十]+、第[〇一二三四五六七八九十]+\s(\S+)$", text)
+    if m:
+        return m.group(1), m.group(2), m.group(3)
+
+    # 六處篇, 六處相應
+    # 〔一六八〕第四、五、六　欲念（四、五、六）
+    m = re.match(r"^〔([〇一二三四五六七八九十]+)〕第\S+\s(\S+)$", text)
+    if m:
+        return m.group(1), m.group(1), m.group(2)
+
+    # 六處篇, 沙門出家相應
+    if text == "第二～第十五（與閻浮車相應之二～一五全部相同）":
+        return "二", "十五", "（與閻浮車相應之二～一五全部相同）"
+
+
 
     input(("不能解析sutta_title", repr(text)))
 
@@ -190,6 +238,9 @@ def pin_title(text):
     m = re.match(r"^第[一二三四五六七八九十]\s+(\S+品.*)$", text)
     if m:
         return m.group(1)
+    m = re.match(r"^第[一二三四五六七八九十]品$", text)
+    if m:
+        return text
 
     input(("不能解析pin_title", repr(text)))
 
