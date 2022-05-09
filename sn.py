@@ -116,7 +116,7 @@ def main():
 
 
 def do_pins_(snikaya, pian, xiangying, xy_cbdiv):
-    # 大篇 六处相应
+    # 六处篇 六处相应
     if snikaya.pians.index(pian) == 3 and pian.xiangyings.index(xiangying) == 0:
         for sub_cb_div in xy_cbdiv.find_kids("cb:div"):
             do_pins(snikaya, pian, xiangying, sub_cb_div)
@@ -131,11 +131,24 @@ def do_pins(snikaya, pian, xiangying, xy_cbdiv):
             title = pin_title(mulu.kids[0])
             pin = Pin(title)
             xiangying.pins.append(pin)
-            do_suttas(snikaya, pian, xiangying, pin, pin_cbdiv)
+            do_suttas_(snikaya, pian, xiangying, pin, pin_cbdiv)
     else:
         pin = Pin()
         xiangying.pins.append(pin)
-        do_suttas(snikaya, pian, xiangying, pin, xy_cbdiv)
+        do_suttas_(snikaya, pian, xiangying, pin, xy_cbdiv)
+
+
+def do_suttas_(snikaya, pian, xiangying, pin, pin_cbdiv):
+    # 犍度篇 见相应 重新说品: 第一章，第二章...
+    print(snikaya.pians.index(pian),
+          pian.xiangyings.index(xiangying),
+          xiangying.pins.index(pin))
+    if snikaya.pians.index(pian) == 2 and pian.xiangyings.index(xiangying) == 2 and xiangying.pins.index(pin) == 1:
+        for zhang_cbdiv in pin_cbdiv.find_kids("cb:div"):
+            do_suttas(snikaya, pian, xiangying, pin, zhang_cbdiv)
+
+    else:
+        do_suttas(snikaya, pian, xiangying, pin, pin_cbdiv)
 
 
 def do_suttas(snikaya, pian, xiangying, pin, pin_cbdiv):
@@ -153,13 +166,22 @@ def sutta_title(text):
         return m.group(1), m.group(1), m.group(2)
 
     # 〔七二～八〇〕第二～第十　不知（之一）
-    m = re.match(r"^〔([〇一二三四五六七八九十]+)～([〇一二三四五六七八九十]+)〕(?:第[〇一二三四五六七八九十]+～第[〇一二三四五六七八九十]+)?\s(\S+)$", text)
+    m = re.match(r"^〔([〇一二三四五六七八九十]+)～([〇一二三四五六七八九十]+)〕(?:第[〇一二三四五六七八九十]+～第?[〇一二三四五六七八九十]+)?\s(\S+)$", text)
     if m:
         return m.group(1), m.group(2), m.group(3)
 
     m = re.match(r"^第([〇一二三四五六七八九十]+)\s(\S+)$", text)
     if m:
         return m.group(1), m.group(1), m.group(2)
+
+    if text == "〔三八～四三〕第八　父、第九　兄弟、第十　姊妹、第十一　子、第十二　女、第十三　妻":
+        return "三八", "四三", "父、兄弟、姊妹、子、女與妻"
+
+    # 因缘 罗睺罗 界韵
+    # 〔一二～二〇〕第二～第十
+    m = re.match(r"^〔([〇一二三四五六七八九十]+)～([〇一二三四五六七八九十]+)〕(第[〇一二三四五六七八九十]+～第[〇一二三四五六七八九十]+)$", text)
+    if m:
+        return m.group(1), m.group(2), None  # todo
 
     input(("不能解析sutta_title", repr(text)))
 
