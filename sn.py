@@ -7,6 +7,13 @@ import os
 import xl
 
 
+class Container(object):
+    def __init__(self, title):
+        self.title = title
+        self.subs = []
+        self.lines = []
+
+
 class Node(object):
     def __init__(self, title):
         self.title = title
