@@ -8,10 +8,10 @@ import xl
 
 
 class Container(object):
-    def __init__(self, title):
-        self.title = title
+    def __init__(self, head=None):
+        self.head = head or []
         self.subs = []
-        self.lines = []
+        self.body = []
 
 
 class Node(object):
@@ -81,6 +81,42 @@ def is_pin_sub(xy_cbdiv):
     return False
 
 
+class Lg(object):
+    def __init__(self, lg_element):
+        self.body = []
+        temp_body = []
+        for l in lg_element.find_kids("l"):
+            for _lkid in l.kids:
+                if isinstance(_lkid, str):
+                    temp_body.append(_lkid)
+
+
+def make_tree(container, cbdiv):
+    heads = cbdiv.find_kids("head")
+    assert len(heads) == 1
+    container.head = heads[1]
+
+    for kid in cbdiv.kids:
+        assert isinstance(kid, xl.Element)
+        if kid.tag == "p":
+            container.body.append(kid.kids)
+
+        elif kid.tag == "lg":
+
+
+
+
+    for sub_cbdiv in cbdiv.find_kids("cb:div"):
+        sub_container = Container()
+        make_tree(sub_container, sub_cbdiv)
+        container.subs.append(sub_container)
+
+
+
+    
+
+
+
 def main():
     snikaya = SN()
     for one in xmls:
@@ -102,12 +138,14 @@ def main():
             m = re.match(r"^(.+篇).* \(\d+-\d+\)$", _pian_title)
             assert m
 
-            if snikaya.pians and snikaya.pians[-1].title == m.group(1):
+            if snikaya.pians and snikaya.pians[-1].head == m.group(1):
                 pian = snikaya.pians[-1]
             else:
                 pian = Pian(m.group(1))
                 print(pian.title)
                 snikaya.pians.append(pian)
+
+            make_tree(pian, cb_div)
 
             for cb_div2 in cb_div.find_kids("cb:div"):
                 assert len(cb_div2.find_kids("cb:mulu")) == 1
