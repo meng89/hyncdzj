@@ -89,6 +89,11 @@ class Lg(object):
             for _lkid in l.kids:
                 if isinstance(_lkid, str):
                     temp_body.append(_lkid)
+                elif isinstance(_lkid, xl.Element):
+                    if _lkid.tag == "caesura":
+                        continue
+                    elif _lkid.tag == "note":
+                        
 
 
 def make_tree(container, cbdiv):
