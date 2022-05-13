@@ -129,5 +129,7 @@ dmypy.json
 .pyre/
 
 xml-p5a/
+cbeta_gaiji/
+gaiji-CB/
 
 .idea/
