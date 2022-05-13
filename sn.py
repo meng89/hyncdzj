@@ -87,17 +87,31 @@ class Note(object):
 
 class Lg(object):
     def __init__(self, lg_element):
+        self.speaker = None
         self.body = []
-        temp_body = []
+
+        line = []
+
         for l in lg_element.find_kids("l"):
             for _lkid in l.kids:
                 if isinstance(_lkid, str):
-                    temp_body.append(_lkid)
+                    m = re.match(r"^(〔.+〕)(.+)$", _lkid)
+                    if m:
+                        assert self.speaker is None
+                        self.speaker = m.group(1)
+                        line.append(m.group(2))
+                    else:
+                        line.append(_lkid)
+
                 elif isinstance(_lkid, xl.Element):
                     if _lkid.tag == "caesura":
-                        continue
+                        self.body.append(line)
+                        line = []
                     elif _lkid.tag == "note":
-                        
+                        line.append(_lkid)
+        if line:
+            self.body.append(line)
+
 
 
 def make_tree(container, cbdiv):
