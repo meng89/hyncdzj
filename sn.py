@@ -81,6 +81,10 @@ def is_pin_sub(xy_cbdiv):
     return False
 
 
+class Note(object):
+    def __init__(self, note_element):
+        # tod
+
 class Lg(object):
     def __init__(self, lg_element):
         self.body = []
