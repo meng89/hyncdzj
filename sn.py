@@ -81,35 +81,43 @@ def is_pin_sub(xy_cbdiv):
     return False
 
 
+def app2text(app_element: xl.Element):
+
+
+
 class Note(object):
     def __init__(self, note_element):
-        # tod
+        # todo
+
+
+
 
 class Lg(object):
     def __init__(self, lg_element):
         self.speaker = None
         self.body = []
 
-        line = []
-
         for l in lg_element.find_kids("l"):
+            line = []
+            sentence = []
             for _lkid in l.kids:
                 if isinstance(_lkid, str):
                     m = re.match(r"^(〔.+〕)(.+)$", _lkid)
                     if m:
                         assert self.speaker is None
                         self.speaker = m.group(1)
-                        line.append(m.group(2))
+                        sentence.append(m.group(2))
                     else:
-                        line.append(_lkid)
+                        sentence.append(_lkid)
 
                 elif isinstance(_lkid, xl.Element):
                     if _lkid.tag == "caesura":
-                        self.body.append(line)
-                        line = []
+                        line.append(sentence)
+                        sentence = []
                     elif _lkid.tag == "note":
-                        line.append(_lkid)
-        if line:
+                        sentence.append(Note(_lkid))
+            if sentence:
+                line.append(sentence)
             self.body.append(line)
 
 
