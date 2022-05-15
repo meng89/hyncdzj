@@ -81,15 +81,25 @@ def is_pin_sub(xy_cbdiv):
     return False
 
 
-def app2text(app_element: xl.Element):
+def eapp2text(app_element: xl.Element):
+    lem = app_element.kids[0]
+    if isinstance(lem.kids[0], str):
+        return lem.kids[0]
+    elif isinstance(lem.kids[0], xl.Element) and lem.kids[0].tag == "space":
+        return None
 
+
+def enote2note(note_element: xl.Element):
+    match note_element.attrs["type"]:
+        case "add":
+            return None
+        case _type:
+            return Note(note_element.kid)
 
 
 class Note(object):
-    def __init__(self, note_element):
-        # todo
-
-
+    def __init__(self, text):
+        self.text = text
 
 
 class Lg(object):
@@ -115,9 +125,13 @@ class Lg(object):
                         line.append(sentence)
                         sentence = []
                     elif _lkid.tag == "note":
-                        sentence.append(Note(_lkid))
-            if sentence:
-                line.append(sentence)
+                        sentence.append(enote2note(_lkid))
+                    elif _lkid.tag == "app":
+                        x = eapp2text(_lkid)
+                        sentence.append(x) if x else None
+
+            assert sentence
+            line.append(sentence)
             self.body.append(line)
 
 
