@@ -94,12 +94,38 @@ def enote2note(note_element: xl.Element):
         case "add":
             return None
         case _type:
-            return Note(note_element.kid)
+            return Note(note_element.kids[0])
+
+
+def ep2p(p_element: xl.Element):
+    if len(p_element.kids) == 1:
+        kid = p_element.kids[0]
+        m = re.match(r"^[〇一二三四五六七八九十]+$", kid)
+        if m:
+            return None
+    x = []
+    for kid in p_element.kids[0]:
+        if isinstance(kid, str):
+            x.append(kid)
+        elif kid.tag in ("lb", "pb"):
+            continue
+        elif kid.tag == "note":
+            _x = enote2note(kid)
+            if _x:
+                x.append(x)
+        else:
+            raise Exception
+
+
 
 
 class Note(object):
     def __init__(self, text):
         self.text = text
+
+
+class P(object):
+    def __init__(self):
 
 
 class Lg(object):
