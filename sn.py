@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 import re
-
-
 import os
+
 
 import xl
 
@@ -89,12 +88,7 @@ def eapp2text(app_element: xl.Element):
         return None
 
 
-def enote2note(note_element: xl.Element):
-    match note_element.attrs["type"]:
-        case "add":
-            return None
-        case _type:
-            return Note(note_element.kids[0])
+
 
 
 def ep2p(p_element: xl.Element):
@@ -103,20 +97,8 @@ def ep2p(p_element: xl.Element):
         m = re.match(r"^[〇一二三四五六七八九十]+$", kid)
         if m:
             return None
-    x = []
-    for kid in p_element.kids[0]:
-        if isinstance(kid, str):
-            x.append(kid)
-        elif kid.tag in ("lb", "pb"):
-            continue
-        elif kid.tag == "note":
-            _x = enote2note(kid)
-            if _x:
-                x.append(x)
-        else:
-            raise Exception
 
-
+    x = do_it(p_element.kids, funs=[do_str, do_ignore, do_note, do_g])
 
 
 class Note(object):
@@ -126,6 +108,12 @@ class Note(object):
 
 class P(object):
     def __init__(self):
+        self.body = []
+
+
+class G(object):
+    def __init__(self, ref):
+        self.ref = ref
 
 
 class Lg(object):
@@ -161,6 +149,59 @@ class Lg(object):
             self.body.append(line)
 
 
+def do_str(e, **kwargs):
+    if isinstance(e, str):
+        return True, e
+    else:
+        return False, e
+
+
+def do_note(e, **kwargs):
+    if isinstance(e, xl.Element) and e.tag == "note":
+        if e.attrs["type"] == "add":
+            return True, []
+        elif e.attrs["type"] == "orig":
+            return True, [Note(e.kids[0])]
+    else:
+        return False, e
+
+
+def do_g(e, **kwargs):
+    if isinstance(e, xl.Element) and e.tag == "g":
+        return True, [G(e.attrs["ref"])]
+    else:
+        return False, e
+
+
+def do_ignore(e, **kwargs):
+    if isinstance(e, xl.Element) and e.tag in ("lb", "pb"):
+        return True, []
+    else:
+        return False, e
+
+
+def do_it(atoms, funs, **kwargs):
+    line = []
+    for atom in atoms:
+        try:
+            line.extend(_do_atom(atom, funs, **kwargs))
+        except TypeError:
+            raise Exception((type(atom), atom))
+    return line
+
+
+def _do_atom(e, funs, **kwargs):
+    for fun in funs:
+        answer, x = fun(e=e, **kwargs)
+        if answer:
+            return x
+
+    raise ElementError((type(e), e))
+
+
+class ElementError(Exception):
+    pass
+
 
 def make_tree(container, cbdiv):
     heads = cbdiv.find_kids("head")
@@ -173,6 +214,8 @@ def make_tree(container, cbdiv):
             container.body.append(kid.kids)
 
         elif kid.tag == "lg":
+
+
 
 
 
