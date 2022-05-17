@@ -151,7 +151,7 @@ class Lg(object):
 
 def do_str(e, **kwargs):
     if isinstance(e, str):
-        return True, e
+        return True, [e]
     else:
         return False, e
 
@@ -173,30 +173,40 @@ def do_g(e, **kwargs):
         return False, e
 
 
-def do_ignore(e, **kwargs):
-    if isinstance(e, xl.Element) and e.tag in ("lb", "pb"):
+def ignore_lb(e, **kwargs):
+    if isinstance(e, xl.Element) and e.tag == "lb":
         return True, []
     else:
         return False, e
 
 
-def do_it(atoms, funs, **kwargs):
-    line = []
-    for atom in atoms:
-        try:
-            line.extend(_do_atom(atom, funs, **kwargs))
-        except TypeError:
-            raise Exception((type(atom), atom))
-    return line
+def ignore_pb(e, **kwargs):
+    if isinstance(e, xl.Element) and e.tag == "pb":
+        return True, []
+    else:
+        return False, e
+
+
+
+def do_atoms(atoms, funs, **kwargs):
+    new_atoms = []
+    for i in range(len(atoms)):
+        answer, value = _do_atom(atoms[i], funs, **kwargs)
+        if answer is True:
+            new_atoms.append(value)
+        else:
+            return new_atoms, atoms[i:]
+
+    return new_atoms, []
 
 
 def _do_atom(e, funs, **kwargs):
     for fun in funs:
         answer, x = fun(e=e, **kwargs)
-        if answer:
-            return x
+        if answer is True:
+            return True, x
 
-    raise ElementError((type(e), e))
+    return False, None
 
 
 class ElementError(Exception):
@@ -211,13 +221,16 @@ def make_tree(container, cbdiv):
     for kid in cbdiv.kids:
         assert isinstance(kid, xl.Element)
         if kid.tag == "p":
-            container.body.append(kid.kids)
+            if len(kid.kids) == 1 and re.match(r"^[〇一二三四五六七八九十]+$", kid.kids[0]):
+                continue
+            else:
+                do_atoms(kid.kids)
+
+
+
+        container.body.append(kid.kids)
 
         elif kid.tag == "lg":
-
-
-
-
 
 
     for sub_cbdiv in cbdiv.find_kids("cb:div"):
