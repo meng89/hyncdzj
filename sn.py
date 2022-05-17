@@ -107,13 +107,18 @@ class Note(object):
 
 
 class P(object):
-    def __init__(self):
-        self.body = []
+    def __init__(self, atoms=None):
+        self.atoms = atoms or []
 
 
 class G(object):
     def __init__(self, ref):
         self.ref = ref
+
+
+class Ref(object):
+    def __init__(self, cref):
+        self.cref = cref
 
 
 class Lg(object):
@@ -138,6 +143,9 @@ class Lg(object):
                     if _lkid.tag == "caesura":
                         line.append(sentence)
                         sentence = []
+                        continue
+
+                    atom = do_atom(e=_lkid, funs=[])
                     elif _lkid.tag == "note":
                         sentence.append(enote2note(_lkid))
                     elif _lkid.tag == "app":
@@ -173,6 +181,13 @@ def do_g(e, **kwargs):
         return False, e
 
 
+def do_ref(e, **kwargs):
+    if isinstance(e, xl.Element) and e.tag == "ref":
+        return True, [Ref(e.attrs["cRef"])]
+    else:
+        return False, e
+
+
 def ignore_lb(e, **kwargs):
     if isinstance(e, xl.Element) and e.tag == "lb":
         return True, []
@@ -191,7 +206,7 @@ def ignore_pb(e, **kwargs):
 def do_atoms(atoms, funs, **kwargs):
     new_atoms = []
     for i in range(len(atoms)):
-        answer, value = _do_atom(atoms[i], funs, **kwargs)
+        answer, value = do_atom(atoms[i], funs, **kwargs)
         if answer is True:
             new_atoms.append(value)
         else:
@@ -200,7 +215,7 @@ def do_atoms(atoms, funs, **kwargs):
     return new_atoms, []
 
 
-def _do_atom(e, funs, **kwargs):
+def do_atom(e, funs, **kwargs):
     for fun in funs:
         answer, x = fun(e=e, **kwargs)
         if answer is True:
@@ -222,15 +237,16 @@ def make_tree(container, cbdiv):
         assert isinstance(kid, xl.Element)
         if kid.tag == "p":
             if len(kid.kids) == 1 and re.match(r"^[〇一二三四五六七八九十]+$", kid.kids[0]):
-                continue
+                pass
             else:
-                do_atoms(kid.kids)
-
-
-
-        container.body.append(kid.kids)
+                atoms, left = do_atoms(kid.kids, funs=[ignore_pb, ignore_lb, do_str, do_note, do_g, do_ref])
+                assert left == []
+                container.body.append(P(atoms))
 
         elif kid.tag == "lg":
+
+        elif kid.tag == "lb":
+            pass
 
 
     for sub_cbdiv in cbdiv.find_kids("cb:div"):
