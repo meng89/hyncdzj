@@ -6,13 +6,6 @@ import os
 import xl
 
 
-class Container(object):
-    def __init__(self, head=None):
-        self.head = head or []
-        self.subs = []
-        self.body = []
-
-
 class Node(object):
     def __init__(self, title):
         self.title = title
@@ -26,21 +19,11 @@ class Pian(Node):
         self.xiangyings = self.subs
 
 
-class Xiangying(Node):
-    def __init__(self, title):
-        super().__init__(title)
-        self.pins = self.subs
-
-
-class Pin(Node):
-    def __init__(self, title=None):
-        super().__init__(title)
-        self.suttas = self.subs
-
-
-class Sutta(object):
-    def __init__(self, title):
-        self.ps = []
+class Container(object):
+    def __init__(self, head=None):
+        self.head = head or []
+        self.subs = []
+        self.body = []
 
 
 class SN(object):
@@ -80,27 +63,6 @@ def is_pin_sub(xy_cbdiv):
     return False
 
 
-def eapp2text(app_element: xl.Element):
-    lem = app_element.kids[0]
-    if isinstance(lem.kids[0], str):
-        return lem.kids[0]
-    elif isinstance(lem.kids[0], xl.Element) and lem.kids[0].tag == "space":
-        return None
-
-
-
-
-
-def ep2p(p_element: xl.Element):
-    if len(p_element.kids) == 1:
-        kid = p_element.kids[0]
-        m = re.match(r"^[〇一二三四五六七八九十]+$", kid)
-        if m:
-            return None
-
-    x = do_it(p_element.kids, funs=[do_str, do_ignore, do_note, do_g])
-
-
 class Note(object):
     def __init__(self, text):
         self.text = text
@@ -126,10 +88,10 @@ class Lg(object):
         self.speaker = None
         self.body = []
 
-        for l in lg_element.find_kids("l"):
+        for le in lg_element.find_kids("l"):
             line = []
             sentence = []
-            for _lkid in l.kids:
+            for _lkid in le.kids:
                 if isinstance(_lkid, str):
                     m = re.match(r"^(〔.+〕)(.+)$", _lkid)
                     if m:
@@ -145,26 +107,25 @@ class Lg(object):
                         sentence = []
                         continue
 
-                    atom = do_atom(e=_lkid, funs=[])
-                    elif _lkid.tag == "note":
-                        sentence.append(enote2note(_lkid))
-                    elif _lkid.tag == "app":
-                        x = eapp2text(_lkid)
-                        sentence.append(x) if x else None
+                    match do_atom(e=_lkid, funs=[do_note, do_g, do_ref, do_app]):
+                        case True, atom:
+                            sentence.append(atom)
+                        case False, _:
+                            raise Exception(_lkid)
 
             assert sentence
             line.append(sentence)
             self.body.append(line)
 
 
-def do_str(e, **kwargs):
+def do_str(e):
     if isinstance(e, str):
         return True, [e]
     else:
         return False, e
 
 
-def do_note(e, **kwargs):
+def do_note(e):
     if isinstance(e, xl.Element) and e.tag == "note":
         if e.attrs["type"] == "add":
             return True, []
@@ -174,39 +135,49 @@ def do_note(e, **kwargs):
         return False, e
 
 
-def do_g(e, **kwargs):
+def do_g(e):
     if isinstance(e, xl.Element) and e.tag == "g":
         return True, [G(e.attrs["ref"])]
     else:
         return False, e
 
 
-def do_ref(e, **kwargs):
+def do_ref(e):
     if isinstance(e, xl.Element) and e.tag == "ref":
         return True, [Ref(e.attrs["cRef"])]
     else:
         return False, e
 
 
-def ignore_lb(e, **kwargs):
+def do_app(e):
+    if isinstance(e, xl.Element) and e.tag == "app":
+        lem = e.kids[0]
+        if isinstance(lem.kids[0], str):
+            return True, [lem.kids[0]]
+        elif isinstance(lem.kids[0], xl.Element) and lem.kids[0].tag == "space":
+            return True, []
+    else:
+        return False, e
+
+
+def ignore_lb(e):
     if isinstance(e, xl.Element) and e.tag == "lb":
         return True, []
     else:
         return False, e
 
 
-def ignore_pb(e, **kwargs):
+def ignore_pb(e):
     if isinstance(e, xl.Element) and e.tag == "pb":
         return True, []
     else:
         return False, e
 
 
-
-def do_atoms(atoms, funs, **kwargs):
+def do_atoms(atoms, funs):
     new_atoms = []
     for i in range(len(atoms)):
-        answer, value = do_atom(atoms[i], funs, **kwargs)
+        answer, value = do_atom(atoms[i], funs)
         if answer is True:
             new_atoms.append(value)
         else:
@@ -215,9 +186,9 @@ def do_atoms(atoms, funs, **kwargs):
     return new_atoms, []
 
 
-def do_atom(e, funs, **kwargs):
+def do_atom(e, funs):
     for fun in funs:
-        answer, x = fun(e=e, **kwargs)
+        answer, x = fun(e)
         if answer is True:
             return True, x
 
@@ -244,20 +215,16 @@ def make_tree(container, cbdiv):
                 container.body.append(P(atoms))
 
         elif kid.tag == "lg":
+            lg = Lg(kid)
+            container.body.append(lg)
 
         elif kid.tag == "lb":
             pass
-
 
     for sub_cbdiv in cbdiv.find_kids("cb:div"):
         sub_container = Container()
         make_tree(sub_container, sub_cbdiv)
         container.subs.append(sub_container)
-
-
-
-    
-
 
 
 def main():
@@ -289,62 +256,6 @@ def main():
                 snikaya.pians.append(pian)
 
             make_tree(pian, cb_div)
-
-            for cb_div2 in cb_div.find_kids("cb:div"):
-                assert len(cb_div2.find_kids("cb:mulu")) == 1
-                cb_mulu2 = cb_div2.find_kids("cb:mulu")[0]
-                print(" 2", cb_mulu2.kids[0])  # 相应
-
-                _xy_title = cb_mulu2.kids[0]
-                m2 = re.match(r"^.*(\S相應)$", _xy_title)
-                assert m2
-                xy = Xiangying(m2.group(1))
-                pian.xiangyings.append(xy)
-
-                do_pins_(snikaya, pian, xy, cb_div2)
-
-
-def do_pins_(snikaya, pian, xiangying, xy_cbdiv):
-    # 六处篇 六处相应
-    if snikaya.pians.index(pian) == 3 and pian.xiangyings.index(xiangying) == 0:
-        for sub_cb_div in xy_cbdiv.find_kids("cb:div"):
-            do_pins(snikaya, pian, xiangying, sub_cb_div)
-    else:
-        do_pins(snikaya, pian, xiangying, xy_cbdiv)
-
-
-def do_pins(snikaya, pian, xiangying, xy_cbdiv):
-    if is_pin_sub(xy_cbdiv):
-        for pin_cbdiv in xy_cbdiv.find_kids("cb:div"):
-            mulu = pin_cbdiv.find_kids("cb:mulu")[0]
-            title = pin_title(mulu.kids[0])
-            pin = Pin(title)
-            xiangying.pins.append(pin)
-            do_suttas_(snikaya, pian, xiangying, pin, pin_cbdiv)
-    else:
-        pin = Pin()
-        xiangying.pins.append(pin)
-        do_suttas_(snikaya, pian, xiangying, pin, xy_cbdiv)
-
-
-def do_suttas_(snikaya, pian, xiangying, pin, pin_cbdiv):
-    # 犍度篇 见相应 重新说品: 第一章，第二章...
-    print(snikaya.pians.index(pian),
-          pian.xiangyings.index(xiangying),
-          xiangying.pins.index(pin))
-    if snikaya.pians.index(pian) == 2 and pian.xiangyings.index(xiangying) == 2 and xiangying.pins.index(pin) == 1:
-        for zhang_cbdiv in pin_cbdiv.find_kids("cb:div"):
-            do_suttas(snikaya, pian, xiangying, pin, zhang_cbdiv)
-
-    else:
-        do_suttas(snikaya, pian, xiangying, pin, pin_cbdiv)
-
-
-def do_suttas(snikaya, pian, xiangying, pin, pin_cbdiv):
-    for sutta_cbdiv in pin_cbdiv.find_kids("cb:div"):
-        mulu = sutta_cbdiv.find_kids("cb:mulu")[0]
-        title = sutta_title(mulu.kids[0])
-        #todo
 
 
 def sutta_title(text):
@@ -416,8 +327,6 @@ def sutta_title(text):
     # 六處篇, 沙門出家相應
     if text == "第二～第十五（與閻浮車相應之二～一五全部相同）":
         return "二", "十五", "（與閻浮車相應之二～一五全部相同）"
-
-
 
     input(("不能解析sutta_title", repr(text)))
 
