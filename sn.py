@@ -6,24 +6,16 @@ import os
 import xl
 
 
-class Node(object):
-    def __init__(self, title):
-        self.title = title
-        self.subs = []
-        self.ps = []
-
-
-class Pian(Node):
-    def __init__(self, title):
-        super().__init__(title)
-        self.xiangyings = self.subs
-
-
 class Container(object):
     def __init__(self, head=None):
         self.head = head or []
         self.subs = []
         self.body = []
+
+
+class Pian(Container):
+    def __init__(self, head):
+        super().__init__(head)
 
 
 class SN(object):
@@ -202,7 +194,7 @@ class ElementError(Exception):
 def make_tree(container, cbdiv):
     heads = cbdiv.find_kids("head")
     assert len(heads) == 1
-    container.head = heads[1]
+    container.head = heads[0]
 
     for kid in cbdiv.kids:
         assert isinstance(kid, xl.Element)
@@ -252,7 +244,7 @@ def main():
                 pian = snikaya.pians[-1]
             else:
                 pian = Pian(m.group(1))
-                print(pian.title)
+                print(pian.head)
                 snikaya.pians.append(pian)
 
             make_tree(pian, cb_div)
