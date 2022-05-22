@@ -123,6 +123,10 @@ def do_note(e):
             return True, []
         elif e.attrs["type"] == "orig":
             return True, [Note(e.kids[0])]
+        elif e.attrs["mod"] == "mod":
+            return True, [Note(e.kids[0])]
+        else:
+            raise Exception(e.attrs)
     else:
         return False, e
 
@@ -180,9 +184,14 @@ def do_atoms(atoms, funs):
 
 def do_atom(e, funs):
     for fun in funs:
-        answer, x = fun(e)
-        if answer is True:
-            return True, x
+        try:
+            answer, x = fun(e)
+            if answer is True:
+                return True, x
+        except TypeError:
+            print((fun, e))
+            exit()
+
 
     return False, None
 
