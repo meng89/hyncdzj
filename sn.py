@@ -192,12 +192,17 @@ def do_atom(e, funs):
             print((fun, e))
             exit()
 
-
     return False, None
 
 
 class ElementError(Exception):
     pass
+
+
+def note_filter(objs: list):
+    for i in range(len(objs)):
+
+
 
 
 def make_tree(container, cbdiv):
@@ -212,7 +217,7 @@ def make_tree(container, cbdiv):
                 pass
             else:
                 atoms, left = do_atoms(kid.kids, funs=[ignore_pb, ignore_lb, do_str, do_note, do_g, do_ref])
-                assert left == []
+                assert left != []
                 container.body.append(P(atoms))
 
         elif kid.tag == "lg":
