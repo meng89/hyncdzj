@@ -56,8 +56,8 @@ def is_pin_sub(xy_cbdiv):
 
 
 class Note(object):
-    def __init__(self, text):
-        self.text = text
+    def __init__(self, enote):
+        self.text = enote.text
 
 
 class P(object):
@@ -200,9 +200,21 @@ class ElementError(Exception):
 
 
 def note_filter(objs: list):
+    new_objs = []
     for i in range(len(objs)):
+        obj = objs[i]
+        if isinstance(obj, Note):
+            if exist_same_note_n(obj.n, objs[i+1]):
+                continue
+        new_objs.append(obj)
 
 
+
+def exist_same_note_n(n, objs):
+    for obj in objs:
+        if isinstance(obj, Note) and obj.n == n:
+            return True
+    return False
 
 
 def make_tree(container, cbdiv):
