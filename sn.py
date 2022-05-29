@@ -58,6 +58,7 @@ def is_pin_sub(xy_cbdiv):
 class Note(object):
     def __init__(self, enote):
         self.text = enote.text
+        self.n = enote.attrs["n"]
 
 
 class P(object):
@@ -207,7 +208,6 @@ def note_filter(objs: list):
             if exist_same_note_n(obj.n, objs[i+1]):
                 continue
         new_objs.append(obj)
-
 
 
 def exist_same_note_n(n, objs):
