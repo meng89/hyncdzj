@@ -56,8 +56,8 @@ def is_pin_sub(xy_cbdiv):
 
 
 class Note(object):
-    def __init__(self, enote):
-        self.text = enote.text
+    def __init__(self, enote: xl.Element):
+        self.contents = enote.kids
         self.n = enote.attrs["n"]
 
 
@@ -120,14 +120,7 @@ def do_str(e):
 
 def do_note(e):
     if isinstance(e, xl.Element) and e.tag == "note":
-        if e.attrs["type"] == "add":
-            return True, []
-        elif e.attrs["type"] == "orig":
-            return True, [Note(e.kids[0])]
-        elif e.attrs["mod"] == "mod":
-            return True, [Note(e.kids[0])]
-        else:
-            raise Exception(e.attrs)
+        return True, Note(e)
     else:
         return False, e
 
