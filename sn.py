@@ -13,11 +13,6 @@ class Container(object):
         self.body = []
 
 
-class Pian(Container):
-    def __init__(self, head):
-        super().__init__(head)
-
-
 class SN(object):
     def __init__(self):
         self.pians = []
