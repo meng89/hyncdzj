@@ -6,18 +6,6 @@ import os
 import xl
 
 
-class Container(object):
-    def __init__(self, head=None):
-        self.head = head or []
-        self.subs = []
-        self.body = []
-
-
-class SN(object):
-    def __init__(self):
-        self.pians = []
-
-
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 xmlp5_dir = os.path.join(PROJECT_ROOT, "xml-p5a")
 
@@ -32,6 +20,18 @@ xmls = [
 
     "N/N18/N18n0006.xml"
 ]
+
+
+class SN(object):
+    def __init__(self):
+        self.pians = []
+
+
+class Container(object):
+    def __init__(self, head=None):
+        self.head = head or []
+        self.subs = []
+        self.body = []
 
 
 def is_pin_sub(xy_cbdiv):
@@ -257,7 +257,7 @@ def main():
             if snikaya.pians and snikaya.pians[-1].head == m.group(1):
                 pian = snikaya.pians[-1]
             else:
-                pian = Pian(m.group(1))
+                pian = Container(m.group(1))
                 print(pian.head)
                 snikaya.pians.append(pian)
 
