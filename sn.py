@@ -28,8 +28,8 @@ class SN(object):
 
 
 class Container(object):
-    def __init__(self, head=None):
-        self.head = head or []
+    def __init__(self, title=None):
+        self.title = title
         self.subs = []
         self.body = []
 
@@ -48,6 +48,9 @@ def is_pin_sub(xy_cbdiv):
     if pin_count > 1:
         return True
     return False
+
+
+########################################################################################################################
 
 
 class Note(object):
@@ -104,6 +107,9 @@ class Lg(object):
             assert sentence
             line.append(sentence)
             self.body.append(line)
+
+
+########################################################################################################################
 
 
 def do_str(e):
@@ -184,6 +190,9 @@ def do_atom(e, funs):
     return False, None
 
 
+########################################################################################################################
+
+
 class ElementError(Exception):
     pass
 
@@ -206,18 +215,35 @@ def exist_same_note_n(n, objs):
 
 
 def make_tree(container, cbdiv):
+    # cb:mulu 出现在目录中，而 title 出现在正文的标题中。title 有时会有 note 。冗余数据，也许该在上游精简。
+    # 少数 cbdiv 标签中无 title。
+
+    title = None
+
     heads = cbdiv.find_kids("head")
-    assert len(heads) == 1
-    container.head = heads[0]
+    # assert len(heads) == 1
+    if len(heads) == 1:
+        title = heads[0]
+    if len(heads) == 0:
+        cbmulus = cbdiv.find_kids("cb:mulu")
+        assert cbmulus
+        title = cbmulus[0]
+
+    assert len(heads) <= 1
+
+    container.title = title
+    print(title.kids)
 
     for kid in cbdiv.kids:
         assert isinstance(kid, xl.Element)
         if kid.tag == "p":
+            # 略过只有数字的行
             if len(kid.kids) == 1 and re.match(r"^[〇一二三四五六七八九十]+$", kid.kids[0]):
                 pass
             else:
-                atoms, left = do_atoms(kid.kids, funs=[ignore_pb, ignore_lb, do_str, do_note, do_g, do_ref])
-                assert left != []
+                atoms, left = do_atoms(kid.kids, funs=[ignore_pb, ignore_lb, do_str, do_note, do_g, do_ref, do_app])
+                if left:
+                    print(("left:", repr(left)))
                 container.body.append(P(atoms))
 
         elif kid.tag == "lg":
@@ -254,13 +280,16 @@ def main():
             m = re.match(r"^(.+篇).* \(\d+-\d+\)$", _pian_title)
             assert m
 
-            if snikaya.pians and snikaya.pians[-1].head == m.group(1):
+            head = [m.group(1)]
+
+            if snikaya.pians and snikaya.pians[-1].title == head:
                 pian = snikaya.pians[-1]
             else:
-                pian = Container(m.group(1))
-                print(pian.head)
+                pian = Container(head)
+
                 snikaya.pians.append(pian)
 
+            print(pian.title)
             make_tree(pian, cb_div)
 
 
