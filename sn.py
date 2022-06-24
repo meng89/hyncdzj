@@ -232,10 +232,16 @@ def make_tree(container, cbdiv):
     assert len(heads) <= 1
 
     container.title = title
-    print(title.kids)
+    # print(title.kids)
 
     for kid in cbdiv.kids:
+        if isinstance(kid, str):
+            container.body.append(P([kid]))
+            print("bug1:", kid)
+            continue
+
         assert isinstance(kid, xl.Element)
+
         if kid.tag == "p":
             # 略过只有数字的行
             if len(kid.kids) == 1 and re.match(r"^[〇一二三四五六七八九十]+$", kid.kids[0]):
@@ -244,6 +250,7 @@ def make_tree(container, cbdiv):
                 atoms, left = do_atoms(kid.kids, funs=[ignore_pb, ignore_lb, do_str, do_note, do_g, do_ref, do_app])
                 if left:
                     print(("left:", repr(left)))
+                    exit()
                 container.body.append(P(atoms))
 
         elif kid.tag == "lg":
