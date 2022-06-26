@@ -214,10 +214,15 @@ def exist_same_note_n(n, objs):
     return False
 
 
-def make_tree(container, cbdiv):
-    # cb:mulu 出现在目录中，而 title 出现在正文的标题中。title 有时会有 note 。冗余数据，也许该在上游精简。
-    # 少数 cbdiv 标签中无 title。
+def make_tree(father, cbdiv):
+    # cb:mulu 出现在目录中，而 head 出现在正文的标题中。head 有时会有 note 。两者似乎有冗余，也许该在上游精简。
+    # 少数 cb:div 标签中无 head。
 
+    if cbdiv.kids[0].tag != "cb:mulu":
+        print("bug3:", cbdiv.kids[0].tag)
+        return
+
+    container = Container()
     title = None
 
     heads = cbdiv.find_kids("head")
@@ -227,7 +232,8 @@ def make_tree(container, cbdiv):
     if len(heads) == 0:
         cbmulus = cbdiv.find_kids("cb:mulu")
         assert cbmulus
-        title = cbmulus[0]
+        title = cbmulus[0].kids
+        # print("bug2:", title)
 
     assert len(heads) <= 1
 
@@ -260,13 +266,13 @@ def make_tree(container, cbdiv):
         elif kid.tag == "lb":
             pass
 
+    father.subs.append(container)
+
     for sub_cbdiv in cbdiv.find_kids("cb:div"):
-        sub_container = Container()
-        make_tree(sub_container, sub_cbdiv)
-        container.subs.append(sub_container)
+        make_tree(container, sub_cbdiv)
 
 
-def main():
+def get_tree():
     snikaya = SN()
     for one in xmls:
         xmlstr = open(os.path.join(xmlp5_dir, one), "r").read()
@@ -299,6 +305,8 @@ def main():
             print(pian.title)
             make_tree(pian, cb_div)
 
+    return snikaya
+
 
 if __name__ == "__main__":
-    main()
+    get_tree()
