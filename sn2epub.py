@@ -1,5 +1,6 @@
 import sn
 
 
-def main():
-    snikaya = sn.get_tree()
+def make():
+    sntree = sn.get_tree()
+
