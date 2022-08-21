@@ -219,7 +219,7 @@ def make_tree(father, cbdiv):
     # 少数 cb:div 标签中无 head。
 
     if cbdiv.kids[0].tag != "cb:mulu":
-        print("bug3:", cbdiv.kids[0].tag)
+        print("bug3:", cbdiv.kids[0].tag, cbdiv.kids[0].kids[0])
         return
 
     container = Container()
@@ -228,17 +228,28 @@ def make_tree(father, cbdiv):
     heads = cbdiv.find_kids("head")
     # assert len(heads) == 1
     if len(heads) == 1:
-        title = heads[0]
+        title = heads[0].kids
+
     if len(heads) == 0:
         cbmulus = cbdiv.find_kids("cb:mulu")
         assert cbmulus
         title = cbmulus[0].kids
         # print("bug2:", title)
 
+    cbmulus = cbdiv.find_kids("cb:mulu")
+    if len(cbmulus) > 1:
+        print(cbmulus[0].kids)
+        input("hehe")
+        exit()
+    cbmulu = cbmulus[0]
+    level = cbmulu.attrs["level"]
+    if level == "1":
+        pass
+
+
     assert len(heads) <= 1
 
     container.title = title
-    # print(title.kids)
 
     for kid in cbdiv.kids:
         if isinstance(kid, str):
@@ -308,5 +319,21 @@ def get_tree():
     return snikaya
 
 
+def main():
+    sn = get_tree()
+    for pian in sn.pians:
+        print_title(pian, 0)
+
+
+def print_title(container, depth):
+    print(" "*depth, container.title)
+    for sub in container.subs:
+        print_title(sub, depth + 1)
+
+
+
+
+
 if __name__ == "__main__":
-    get_tree()
+    main()
+
