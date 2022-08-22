@@ -29,9 +29,13 @@ class SN(object):
 
 class Container(object):
     def __init__(self, title=None):
-        self.title = title
-        self.subs = []
-        self.body = []
+        # self.title = title
+        self.mulu = None
+        self.head = None
+        self.level = None
+        self.terms = []
+        # self.subs = []
+        # self.body = []
 
 
 def is_pin_sub(xy_cbdiv):
@@ -246,7 +250,6 @@ def make_tree(father, cbdiv):
     if level == "1":
         pass
 
-
     assert len(heads) <= 1
 
     container.title = title
@@ -283,6 +286,59 @@ def make_tree(father, cbdiv):
         make_tree(container, sub_cbdiv)
 
 
+def make_tree2(parent: Container, cbdiv: xl.Element):
+    # cb:mulu 出现在目录中，而 head 出现在正文的标题中。head 有时会有 note 。两者似乎有冗余，也许该在上游精简。
+    # 少数 cb:div 标签中无 head。
+
+    if cbdiv.kids[0].tag == "cb:mulu":
+        container = Container()
+        container.level = cbdiv.attrs["type"]
+        kids = cbdiv.kids
+        kids.pop(0)
+    # SN.46.6
+    else:
+        print(("bug3:", cbdiv.kids[0].tag, cbdiv.kids[0].kids[0]))
+        container = parent
+        kids = cbdiv.kids
+
+    first = cbdiv.kids[0]
+    if isinstance(first, xl.Element) and first.tag == "head":
+        container.head = first.kids[:]
+        input(container.head)
+        cbdiv.kids.pop(0)
+
+    for kid in cbdiv.kids:
+        if isinstance(kid, xl.Element) and kid.tag == "cb:div":
+            container.terms.append(make_tree2(container, kid))
+
+        if isinstance(kid, str):
+            container.terms.append(P([kid]))
+            print("bug1:", kid)
+            continue
+
+        assert isinstance(kid, xl.Element)
+
+        if kid.tag == "p":
+            # 略过只有数字的行
+            if len(kid.kids) == 1 and re.match(r"^[〇一二三四五六七八九十]+$", kid.kids[0]):
+                pass
+            else:
+                atoms, left = do_atoms(kid.kids, funs=[ignore_pb, ignore_lb, do_str, do_note, do_g, do_ref, do_app])
+                if left:
+                    print(("left:", repr(left)))
+                    exit()
+                container.terms.append(P(atoms))
+
+        elif kid.tag == "lg":
+            lg = Lg(kid)
+            container.terms.append(lg)
+
+        elif kid.tag == "lb":
+            pass
+
+    return container
+
+
 def get_tree():
     snikaya = SN()
     for one in xmls:
@@ -306,15 +362,16 @@ def get_tree():
 
             head = [m.group(1)]
 
-            if snikaya.pians and snikaya.pians[-1].title == head:
+            if snikaya.pians and snikaya.pians[-1].head == head:
                 pian = snikaya.pians[-1]
             else:
                 pian = Container(head)
 
                 snikaya.pians.append(pian)
 
-            print(pian.title)
-            make_tree(pian, cb_div)
+            print(pian.head)
+            pian.terms.append(make_tree2(pian, cb_div))
+            # make_tree(pian, cb_div)
 
     return snikaya
 
@@ -326,9 +383,10 @@ def main():
 
 
 def print_title(container, depth):
-    print(" "*depth, container.title)
-    for sub in container.subs:
-        print_title(sub, depth + 1)
+    print(" "*depth, container.head)
+    for term in container.terms:
+        if isinstance(term, Container):
+            print_title(term, depth + 1)
 
 
 
