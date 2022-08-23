@@ -389,9 +389,6 @@ def print_title(container, depth):
             print_title(term, depth + 1)
 
 
-
-
-
 if __name__ == "__main__":
     main()
 
