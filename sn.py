@@ -55,6 +55,7 @@ def is_pin_sub(xy_cbdiv):
 class Term(object):
     pass
 
+
 class Note(Term):
     def __init__(self, enote: xl.Element):
         self.contents = enote.kids
@@ -344,4 +345,3 @@ def print_title(container, depth):
 
 if __name__ == "__main__":
     main()
-

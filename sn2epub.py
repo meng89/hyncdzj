@@ -7,6 +7,8 @@ def make():
     sntree = sn.get_tree()
 
 
+def write_suttas(nikaya, epub: epubpacker.Epub, bns, xc, _test=False):
+
 def write_suttas(sn_obj, epub: epubpacker.Epub):
     pass
 
