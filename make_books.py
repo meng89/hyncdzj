@@ -2,6 +2,8 @@
 import os
 import tempfile
 
+from book_public import SC, TC
+
 import sn2epub
 
 
@@ -33,8 +35,8 @@ def main():
 
     sn2epub.make(temprootdir_td.name, books_dir)
 
-    # for xc in (SC(), TC()):
-    #    sn2epub.make(xc, temprootdir_td.name, books_dir, uc.EPUBCHECK)
+    for xc in (SC(), TC()):
+        sn2epub.make(xc, temprootdir_td.name, books_dir, uc.EPUBCHECK)
     #    mn2epub.make(xc, temprootdir_td.name, books_dir, uc.EPUBCHECK)
     #    dn2epub.make(xc, temprootdir_td.name, books_dir, uc.EPUBCHECK)
     #    an2epub.make(xc, temprootdir_td.name, books_dir, uc.EPUBCHECK)
