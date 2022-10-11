@@ -356,5 +356,9 @@ def print_title(container, depth):
             print_title(term, depth + 1)
 
 
+def is_sutta(ancestors, container):
+
+
+
 if __name__ == "__main__":
     main()
