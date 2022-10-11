@@ -7,18 +7,6 @@ from typing import List
 import xl
 
 
-
-
-
-def smooth_mulu(snikaya):
-    ("蘊相應")
-
-
-def smooth_mulu_push_middle(snikaya, xyname, ):
-
-
-
-
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 xmlp5_dir = os.path.join(PROJECT_ROOT, "xml-p5a")
 
@@ -253,7 +241,7 @@ def make_tree(sn: Container or SN, cbdiv: xl.Element):
     # cb:mulu 出现在目录中，而 head 出现在正文的标题中。head 有时会有 note 。两者似乎有冗余，也许该在上游精简。
     # 少数 cb:div 标签中无 head。
 
-    # 少数 cb:div 标签中无 cb:mulu.
+    # 少数 cb:div 标签中第一个子标签不是cb:mulu.
 
     kids = cbdiv.kids
 
@@ -286,8 +274,8 @@ def make_tree(sn: Container or SN, cbdiv: xl.Element):
 
     # SN.46.6
     else:
-        print(kids[0].tag)
-        print(("bug3:", cbdiv.kids[0].tag, cbdiv.kids[0].kids[0]))
+        input(kids[0].tag)
+        # print(("bug3:", cbdiv.kids[0].tag, cbdiv.kids[0].kids[0]))
         container = get_last_container(sn)
 
     first = cbdiv.kids[0]
@@ -362,7 +350,7 @@ def print_title(container, depth):
 
 
 def is_sutta(ancestors, container):
-
+    pass
 
 
 if __name__ == "__main__":
