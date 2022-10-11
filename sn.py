@@ -239,6 +239,8 @@ def get_last_container(container):
 def make_tree(sn: Container or SN, cbdiv: xl.Element):
     # cb:mulu 出现在目录中，而 head 出现在正文的标题中。head 有时会有 note 。两者似乎有冗余，也许该在上游精简。
     # 少数 cb:div 标签中无 head。
+    
+    # 少数 cb:div 标签中无 cb:mulu.
 
     kids = cbdiv.kids
 
@@ -256,6 +258,7 @@ def make_tree(sn: Container or SN, cbdiv: xl.Element):
                 container = Container()
                 container.level = level
                 container.mulu = mulu
+                print("mulu1:", container.mulu)
                 parent.terms.append(container)
             else:
                 container = parent.terms[-1]
@@ -263,12 +266,14 @@ def make_tree(sn: Container or SN, cbdiv: xl.Element):
             container = Container()
             container.level = level
             container.mulu = kids[0].kids[:]
+            print("mulu2:", container.mulu)
             parent.terms.append(container)
 
         kids.pop(0)
 
     # SN.46.6
     else:
+        print(kids[0].tag)
         print(("bug3:", cbdiv.kids[0].tag, cbdiv.kids[0].kids[0]))
         container = get_last_container(sn)
 
@@ -345,3 +350,12 @@ def print_title(container, depth):
 
 if __name__ == "__main__":
     main()
+
+#
+#  经目录不以 〔*〕 为开头：
+#  迦葉相應、入相應、生相應、煩惱相應、舍利弗相应、禪定相應、閻浮車相應、
+#  沙門出家相應、目犍連相應、質多相應、聚落主相應、無記說相應
+
+
+#  第* 和 〔*〕 颠倒：
+#  婆蹉種相應
