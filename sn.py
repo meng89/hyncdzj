@@ -2,8 +2,21 @@
 import re
 import os
 
+from typing import List
 
 import xl
+
+
+
+
+
+def smooth_mulu(snikaya):
+    ("蘊相應")
+
+
+def smooth_mulu_push_middle(snikaya, xyname, ):
+
+
 
 
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -24,7 +37,7 @@ xmls = [
 
 class SN(object):
     def __init__(self):
-        self.terms: list[Container] = []
+        self.terms: List[Container] = []
 
 
 class Container(object):
@@ -32,7 +45,7 @@ class Container(object):
         self.mulu = mulu
         self.head = None
         self.level = None
-        self.terms: list[Container or Term] = []
+        self.terms: List[Container or Term] = []
 
 
 def is_pin_sub(xy_cbdiv):
