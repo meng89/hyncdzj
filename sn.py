@@ -239,7 +239,7 @@ def get_last_container(container):
 def make_tree(sn: Container or SN, cbdiv: xl.Element):
     # cb:mulu 出现在目录中，而 head 出现在正文的标题中。head 有时会有 note 。两者似乎有冗余，也许该在上游精简。
     # 少数 cb:div 标签中无 head。
-    
+
     # 少数 cb:div 标签中无 cb:mulu.
 
     kids = cbdiv.kids
