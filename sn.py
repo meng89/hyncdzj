@@ -352,6 +352,17 @@ def print_title(container, depth):
 def is_sutta(ancestors, container):
     pass
 
+def is_lb(e:xl.Element):
+    if isinstance(e, xl.Element):
+        if e.tag == "lb":
+            if e.attrs["ed"] == "N":
+                if "n" in e.attrs.keys():
+                    if not e.kids:
+                        return True
+    return False
+
+
+def filter_element(e:xl.Element, fun):
 
 if __name__ == "__main__":
     main()
