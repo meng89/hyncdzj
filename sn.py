@@ -325,6 +325,9 @@ def get_tree():
 
         tei = xml.root
 
+        tei = filter_element(tei, is_lb)
+        tei = filter_element(tei, is_pb)
+
         text = tei.find_kids("text")[0]
         body = text.find_kids("body")[0]
         print(one)
@@ -352,17 +355,45 @@ def print_title(container, depth):
 def is_sutta(ancestors, container):
     pass
 
-def is_lb(e:xl.Element):
-    if isinstance(e, xl.Element):
-        if e.tag == "lb":
-            if e.attrs["ed"] == "N":
-                if "n" in e.attrs.keys():
-                    if not e.kids:
+
+def is_lb(x):
+    # <lb ed="N" n="0206a14"/>
+    if isinstance(x, xl.Element):
+        if x.tag == "lb":
+            if x.attrs["ed"] == "N":
+                if "n" in x.attrs.keys():
+                    if not x.kids:
                         return True
     return False
 
 
-def filter_element(e:xl.Element, fun):
+def is_pb(x):
+    # <pb ed="N" xml:id="N18.0006.0207a" n="0207a"/>
+    if isinstance(x, xl.Element):
+        if x.tag == "pb":
+            if x.attrs["ed"] == "N":
+                if "n" in x.attrs.keys():
+                    if "xml:id" in x.attrs.keys():
+                        if not x.kids:
+                            return True
+    return False
+
+
+def filter_element(x: xl.Element or str, fun: callable):
+    if isinstance(x, xl.Element):
+        new_e = xl.Element(tag=x.tag, attrs=x.attrs)
+        for kid in x.kids:
+            if fun(kid):
+                pass
+            else:
+                new_e.kids.append(filter_element(kid, fun))
+        return new_e
+
+    elif isinstance(x, str):
+        return x
+
+    raise TypeError
+
 
 if __name__ == "__main__":
     main()
