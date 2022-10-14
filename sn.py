@@ -160,20 +160,6 @@ def do_app(e):
         return False, e
 
 
-def ignore_lb(e):
-    if isinstance(e, xl.Element) and e.tag == "lb":
-        return True, []
-    else:
-        return False, e
-
-
-def ignore_pb(e):
-    if isinstance(e, xl.Element) and e.tag == "pb":
-        return True, []
-    else:
-        return False, e
-
-
 def do_atoms(atoms, funs):
     new_atoms = []
     for i in range(len(atoms)):
@@ -279,7 +265,6 @@ def make_tree(sn: Container or SN, cbdiv: xl.Element):
 
     # SN.46.6
     else:
-        input(kids[0].tag)
         for kid in kids:
             if isinstance(kid, xl.Element):
                 if kid.tag == "cb:mulu":
@@ -298,18 +283,14 @@ def make_tree(sn: Container or SN, cbdiv: xl.Element):
             make_tree(sn, kid)
 
         if isinstance(kid, str):
-            container.terms.append(P([kid]))
-            print("bug1:", kid)
-            continue
+            container.terms.append(ExposedStr(kid))
 
-        assert isinstance(kid, xl.Element)
-
-        if kid.tag == "p":
+        elif kid.tag == "p":
             # 略过只有数字的行
             if len(kid.kids) == 1 and re.match(r"^[〇一二三四五六七八九十]+$", kid.kids[0]):
                 pass
             else:
-                atoms, left = do_atoms(kid.kids, funs=[ignore_pb, ignore_lb, do_str, do_note, do_g, do_ref, do_app])
+                atoms, left = do_atoms(kid.kids, funs=[do_str, do_note, do_g, do_ref, do_app])
                 if left:
                     print(("left:", repr(left)))
                     exit()
@@ -318,9 +299,6 @@ def make_tree(sn: Container or SN, cbdiv: xl.Element):
         elif kid.tag == "lg":
             lg = Lg(kid)
             container.terms.append(lg)
-
-        elif kid.tag == "lb":
-            pass
 
     # return container
 
