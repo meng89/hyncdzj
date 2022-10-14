@@ -57,6 +57,11 @@ class Term(object):
     pass
 
 
+class ExposedStr(Term):
+    def __init__(self, string):
+        self.s = string
+
+
 class Note(Term):
     def __init__(self, enote: xl.Element):
         self.contents = enote.kids
@@ -275,7 +280,11 @@ def make_tree(sn: Container or SN, cbdiv: xl.Element):
     # SN.46.6
     else:
         input(kids[0].tag)
-        # print(("bug3:", cbdiv.kids[0].tag, cbdiv.kids[0].kids[0]))
+        for kid in kids:
+            if isinstance(kid, xl.Element):
+                if kid.tag == "cb:mulu":
+                    input(kid.tag)
+
         container = get_last_container(sn)
 
     first = cbdiv.kids[0]
