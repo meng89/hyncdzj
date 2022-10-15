@@ -333,14 +333,21 @@ def main():
 
 
 def print_title(container, depth):
+    for term in container.terms:
+        if is_sutta(container):
+            print(" "*depth, "sutta:", term.mulu, sep="")
+        else:
+            print(" " * depth, "mulu:", term.mulu, sep="")
+            
+
+
+
+def print_title(container, depth):
+
     print(" "*depth, "mulu:", container.mulu, sep="")
     for term in container.terms:
         if isinstance(term, Container):
             print_title(term, depth + 1)
-
-
-def is_sutta(ancestors, container):
-    pass
 
 
 def is_lb(x):
@@ -380,6 +387,29 @@ def filter_element(x: xl.Element or str, fun: callable):
         return x
 
     raise TypeError
+
+
+def is_sutta(parent_container: Container):
+    len_of_terms = len(parent_container.terms)
+    lot_of_match = 0
+    for sub in parent_container.terms:
+        if isinstance(sub, Container):
+            m = re.match("r〔[〇一二三四五六七八九十]+〕.+", sub.mulu)
+            if m:
+                lot_of_match += 1
+    if lot_of_match:
+        if lot_of_match == len_of_terms:
+            return True
+        else:
+            input("需要检查子div:{}".format(parent_container.mulu, 1))
+            return False
+    else:
+        return False
+
+
+def traverse_sn(sn: SN):
+    for pian in sn.terms:
+        print(pian)
 
 
 if __name__ == "__main__":
