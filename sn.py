@@ -250,15 +250,16 @@ def make_tree(sn: Container or SN, cbdiv: xl.Element):
                 container = Container()
                 container.level = level
                 container.mulu = mulu
-                print("mulu1:", container.mulu)
+                #print("mulu1:", container.mulu)
                 parent.terms.append(container)
             else:
                 container = parent.terms[-1]
         else:
             container = Container()
             container.level = level
-            container.mulu = kids[0].kids[:]
-            print("mulu2:", container.mulu)
+            assert len(kids[0].kids) == 1
+            container.mulu = kids[0].kids[0]
+            #print("mulu2:", container.mulu)
             parent.terms.append(container)
 
         kids.pop(0)
@@ -325,31 +326,6 @@ def get_tree():
     return snikaya
 
 
-def main():
-    sn = get_tree()
-    for pian in sn.terms:
-        # print(pian.mulu)
-        print_title(pian, 0)
-
-
-def print_title(container, depth):
-    for term in container.terms:
-        if is_sutta(container):
-            print(" "*depth, "sutta:", term.mulu, sep="")
-        else:
-            print(" " * depth, "mulu:", term.mulu, sep="")
-            
-
-
-
-def print_title(container, depth):
-
-    print(" "*depth, "mulu:", container.mulu, sep="")
-    for term in container.terms:
-        if isinstance(term, Container):
-            print_title(term, depth + 1)
-
-
 def is_lb(x):
     # <lb ed="N" n="0206a14"/>
     if isinstance(x, xl.Element):
@@ -390,18 +366,27 @@ def filter_element(x: xl.Element or str, fun: callable):
 
 
 def is_sutta(parent_container: Container):
-    len_of_terms = len(parent_container.terms)
+    len_of_container = 0
     lot_of_match = 0
     for sub in parent_container.terms:
         if isinstance(sub, Container):
-            m = re.match("r〔[〇一二三四五六七八九十]+〕.+", sub.mulu)
+            len_of_container += 1
+
+            if not isinstance(sub.mulu, str):
+                input(sub.mulu)
+
+            m = re.match(r"^〔[、～〇一二三四五六七八九十]+〕.*$", sub.mulu)
             if m:
                 lot_of_match += 1
+
     if lot_of_match:
-        if lot_of_match == len_of_terms:
+        if lot_of_match == len_of_container:
             return True
         else:
-            input("需要检查子div:{}".format(parent_container.mulu, 1))
+            print("需要检查子div:{}".format(parent_container.mulu, 1))
+            print("len_of_container:", len_of_container)
+            print("lot_of_match:", lot_of_match)
+            input()
             return False
     else:
         return False
@@ -412,14 +397,25 @@ def traverse_sn(sn: SN):
         print(pian)
 
 
+def print_title(sn):
+    for pian in sn.terms:
+        print_title2(pian, 0)
+
+
+def print_title2(container, depth):
+    for term in container.terms:
+        if isinstance(term, Container):
+            if is_sutta(container):
+                print(" " * depth, "<Sutta>:", term.mulu, sep="")
+            else:
+                print(" " * depth, term.mulu, sep="")
+            print_title2(term, depth + 4)
+
+
+def main():
+    sn = get_tree()
+    print_title2(sn, 0)
+
+
 if __name__ == "__main__":
     main()
-
-#
-#  经目录不以 〔*〕 为开头：
-#  迦葉相應、入相應、生相應、煩惱相應、舍利弗相应、禪定相應、閻浮車相應、
-#  沙門出家相應、目犍連相應、質多相應、聚落主相應、無記說相應
-
-
-#  第* 和 〔*〕 颠倒：
-#  婆蹉種相應
