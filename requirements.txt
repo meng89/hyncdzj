@@ -1,6 +1,5 @@
 opencc
 
+epubpacker@git+https://github.com/meng89/epubpacker@dev#egg=epubpacker
 
-epubpacker @git+https://github.com/meng89/epubpacker@dev#egg=epubpacker
-
-xl @git+https://github.com/meng89/xl@dev#egg=xl
+xl@git+https://github.com/meng89/xl@dev#egg=xl

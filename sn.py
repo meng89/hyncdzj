@@ -412,9 +412,17 @@ def print_title2(container, depth):
             print_title2(term, depth + 4)
 
 
+def check_x_first_term(sn):
+    for pian in sn.terms:
+        term = pian.terms[0]
+        print(pian.mulu)
+        if not isinstance(term, Container):
+            print(term)
+
 def main():
     sn = get_tree()
-    print_title2(sn, 0)
+    #print_title2(sn, 0)
+    check_x_first_term(sn)
 
 
 if __name__ == "__main__":
