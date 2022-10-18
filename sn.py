@@ -422,7 +422,7 @@ def check_x_first_term(sn):
 
 def main():
     sn = get_tree()
-    #print_title2(sn, 0)
+    print_title2(sn, 0)
     check_x_first_term(sn)
 
 
