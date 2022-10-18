@@ -7,14 +7,11 @@ import epub_public
 
 import sn
 
-
-def _pian_title_and_range(pian: sn.Container):
-    m = re.match(r"^(.+篇) \((\d+)-(\d+)\)$", pian.mulu)
-    assert m
-    return m.group(0), m.group(1), m.group(2)
+def term2xml(term):
+    return term.to_xml()
 
 
-def _xy_range(snikaya: sn.Container, pian: sn.Container):
+def _xy_range(snikaya: sn.SN, pian: sn.Container):
     xy_counter = 0
     xy_begin = None
     xy_end = None
@@ -33,26 +30,47 @@ def _xy_range(snikaya: sn.Container, pian: sn.Container):
     return xy_begin, xy_end
 
 
+def _xy_name(xy: sn.Container):
+    m = re.match(r"^第[一二三四五六七八九十]+　(.+相應)$", xy.mulu)
+    return m.group(0)
+
+
 def _sutta_range(container: sn.Container):
-    pass
+
 
 
 def write_suttas(nikaya: sn.SN, epub: epubpacker.Epub, bns, xc, _test=False):
     c = xc.c
     xy_serial = 0
+
+    elements_before_xy = []
+
     for pian in nikaya.terms:
         pian_title = pian.mulu
 
-        def _write_pian_part(_body):
-            xl.sub(_body, "h1", {"class": "title"}, [c(pian_title)])
-            nonlocal pian_toc
+        elements_before_xy.append(xl.Element("h1", {"class": "title"}, [c(pian_title)]))
 
-        for xy in pian.terms:
+        _xy_begin, _xy_end = _xy_range(nikaya, pian)
+        pian_toc = epubpacker.Toc(
+            c(pian_title) + "({}~{})".format(_xy_begin, _xy_end))
+        epub.root_toc.append(pian_toc)
+
+        for sub in pian.terms:
+            if not isinstance(sub, sn.Container):
+                elements_before_xy.append()
+
+            xy = sub
+
             xy_serial += 1
             xy_id = "sn"
             doc_path = "SN/SN.{}.xhtml".format(xy_serial)
-            _xy_title = xy_serial + ". " + c(xy.title)
+            _xy_title = "{}. {}".format(xy_serial, c(_xy_name(xy)))
             html, body = epub_public.make_doc(doc_path=doc_path, xc=xc, title=_xy_title)
+
+
+def write2(container: sn.Container, epub: epubpacker.Epub, xc, body: xl.Element):
+    fot sub in container.terms
+
 
 
 def make(xc, temprootdir, books_dir, epubcheck):
