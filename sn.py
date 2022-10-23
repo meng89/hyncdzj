@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
+import abc
 import re
 import os
 
 from typing import List
 
+import epubpacker
 import xl
 
+import epub_public
 
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 xmlp5_dir = os.path.join(PROJECT_ROOT, "xml-p5a")
@@ -15,12 +18,13 @@ xmls = [
     "N/N13/N13n0006.xml",
     "N/N14/N14n0006.xml",
     "N/N15/N15n0006.xml",
-
     "N/N16/N16n0006.xml",
     "N/N17/N17n0006.xml",
-
     "N/N18/N18n0006.xml"
 ]
+
+g_map = {"#CB03020": "婬"
+         }
 
 
 class SN(object):
@@ -52,51 +56,93 @@ def is_pin_sub(xy_cbdiv):
     return False
 
 
-########################################################################################################################
+################################################################################
+
+
 class Term(object):
-    pass
+    @abc.abstractmethod
+    def to_xml(self, *args, **kwargs) -> list:
+        pass
 
 
-class ExposedStr(Term):
+class Str(Term):
     def __init__(self, string):
-        self.s = string
+        if isinstance(string, str):
+            self._s = string
+        else:
+            raise TypeError
+
+    def to_xml(self, c, *args, **kwargs):
+        return xl.Element("p", kids=[c(self._s)])
 
 
 class Note(Term):
-    def __init__(self, enote: xl.Element):
-        self.contents = enote.kids
-        self.n = enote.attrs["n"]
+    def __init__(self, e: xl.Element):
+        if isinstance(e, xl.Element) and e.tag == "note":
+            self._e = e
+        else:
+            raise TypeError
+
+    def to_xml(self, c: callable, note_collection: NoteCollection, *args, **kwargs):
+        href = note_collection.add(self._e)
+        assert len(self._e.kids) == 1
+        a = xl.Element("a", {"epub:type": "noteref", "href": href, "class": "noteref"}, [c(self._e.kids[0])])
+        return [a]
 
 
 class P(Term):
-    def __init__(self, atoms=None):
-        self.atoms = atoms or []
+    def __init__(self, e):
+        if isinstance(e, xl.Element) and e.tag == "p":
+            self._e = e
+        else:
+            raise TypeError
+
+    def to_xml(self, c, *args, **kwargs) -> list:
+        p = xl.Element("p")
+        for x in self._e.kids:
+            p.kids.extend(term2xml(x, c))
+        return [p]
 
 
 class G(Term):
-    def __init__(self, ref):
-        self.ref = ref
+    def __init__(self, e: xl.Element):
+        if isinstance(e, xl.Element) and e.tag == "g":
+            self._e: xl.Element = e
+
+    def to_xml(self, c, *args, **kwargs) -> list:
+        return [c(g_map[self._e.attrs["ref"]])]
 
 
 class Ref(Term):
-    def __init__(self, cref):
-        self.cref = cref
+    def __init__(self, e: xl.Element):
+        if isinstance(e, xl.Element) and e.tag == "ref":
+            self._e = e
+        else:
+            raise TypeError
+
+    def to_xml(self, *args, **kwargs) -> list:
+        return [self._e]
 
 
 class Lg(Term):
-    def __init__(self, lg_element):
-        self.speaker = None
-        self.body = []
+    def __init__(self, e):
+        if isinstance(e, xl.Element) and e.tag == "lg":
+            pass
+        else:
+            raise TypeError
 
-        for le in lg_element.find_kids("l"):
+        self._poet = None
+        self._body = []
+
+        for le in e.find_kids("l"):
             line = []
             sentence = []
             for _lkid in le.kids:
                 if isinstance(_lkid, str):
                     m = re.match(r"^(〔.+〕)(.+)$", _lkid)
                     if m:
-                        assert self.speaker is None
-                        self.speaker = m.group(1)
+                        assert self._poet is None
+                        self._poet = m.group(1)
                         sentence.append(m.group(2))
                     else:
                         sentence.append(_lkid)
@@ -107,106 +153,112 @@ class Lg(Term):
                         sentence = []
                         continue
 
-                    match do_atom(e=_lkid, funs=[do_note, do_g, do_ref, do_app]):
-                        case True, atom:
-                            sentence.append(atom)
-                        case False, _:
-                            raise Exception(_lkid)
+                    else:
+                        sentence.append(do_atom(_lkid))
 
             assert sentence
             line.append(sentence)
-            self.body.append(line)
+            self._body.append(line)
+
+    def to_xml(self, c, *args, **kwargs) -> list:
+        div = xl.Element("div", {"class": "ji"})
+        if self._poet:
+            div.ekid("p", {"class": "_poet"}, [term2xml(self._poet, c)])
+        for line in self._body:
+            for sentence in line:
+                div.ekid("p", {"class": "sentence"}, [term2xml(sentence, c)])
+
+        return [div]
 
 
-########################################################################################################################
-
-
-def do_str(e):
-    if isinstance(e, str):
-        return True, [e]
-    else:
-        return False, e
-
-
-def do_note(e):
-    if isinstance(e, xl.Element) and e.tag == "note":
-        return True, Note(e)
-    else:
-        return False, e
-
-
-def do_g(e):
-    if isinstance(e, xl.Element) and e.tag == "g":
-        return True, [G(e.attrs["ref"])]
-    else:
-        return False, e
-
-
-def do_ref(e):
-    if isinstance(e, xl.Element) and e.tag == "ref":
-        return True, [Ref(e.attrs["cRef"])]
-    else:
-        return False, e
-
-
-def do_app(e):
-    if isinstance(e, xl.Element) and e.tag == "app":
-        lem = e.kids[0]
-        if isinstance(lem.kids[0], str):
-            return True, [lem.kids[0]]
-        elif isinstance(lem.kids[0], xl.Element) and lem.kids[0].tag == "space":
-            return True, []
-    else:
-        return False, e
-
-
-def do_atoms(atoms, funs):
-    new_atoms = []
-    for i in range(len(atoms)):
-        answer, value = do_atom(atoms[i], funs)
-        if answer is True:
-            new_atoms.append(value)
+class App(Term):
+    def __init__(self, e):
+        if isinstance(e, xl.Element) and e.tag == "app":
+            self._e = e
         else:
-            return new_atoms, atoms[i:]
+            raise TypeError
 
-    return new_atoms, []
-
-
-def do_atom(e, funs):
-    for fun in funs:
-        try:
-            answer, x = fun(e)
-            if answer is True:
-                return True, x
-        except TypeError:
-            print((fun, e))
-            exit()
-
-    return False, None
+    def to_xml(self, c, *args, **kwargs) -> list:
+        lem = self._e.kids[0]
+        if isinstance(lem.kids[0], str):
+            return [c(lem.kids[0])]
+        elif isinstance(lem.kids[0], xl.Element) and lem.kids[0].tag == "space":
+            return []
 
 
-########################################################################################################################
+def term2xml(term: Term or str, c):
+    if isinstance(term, str):
+        return [c(term)]
+    elif isinstance(term, Term):
+        return term.to_xml(c)
+    raise Exception
 
 
-class ElementError(Exception):
+class NoteNotFoundError(object):
     pass
 
 
-def note_filter(objs: list):
-    new_objs = []
-    for i in range(len(objs)):
-        obj = objs[i]
-        if isinstance(obj, Note):
-            if exist_same_note_n(obj.n, objs[i+1]):
-                continue
-        new_objs.append(obj)
+class NoteCollection(object):
+    def __init__(self, qty_of_list=100, path_prefix=None, id_prefix=None):
+        self._qty_of_list = qty_of_list
+        self._lists_of_notes = [[]]
+        self.path_prefix = path_prefix or "note/note"
+        self.id_prefix = "id"
+
+    def add(self, note):
+        try:
+            return self.get_link(note)
+        except NoteNotFoundError:
+            last_list = self._lists_of_notes[-1]
+            if len(last_list) < self._qty_of_list:
+                last_list.append(note)
+            else:
+                self._lists_of_notes.append([note])
+        finally:
+            return self.get_link(note)
+
+    def get_link(self, note):
+        for notes in self._lists_of_notes:
+            for _note in notes:
+                if note == _note:
+                    doc_path = "{}{}.xhtml".format(self.path_prefix, self._lists_of_notes.index(notes))
+                    id_ = "{}{}".format(self.id_prefix, notes.index(note))
+                    return doc_path + "#" + id_
+
+        raise NoteNotFoundError
+
+    def write2ebook(self, ebook: epubpacker.Epub, xc):
+        for notes in self._lists_of_notes:
+            doc_path = "{}{}.xhtml".format(self.path_prefix, self._lists_of_notes.index(notes))
+            html, body = epub_public.make_doc(doc_path, xc)
+            sec = body.ekid("section", {"epub:type": "endnotes", "role": "doc-endnotes"})
+            ol = sec.ekid("ol")
+            for note in notes:
+                id_ = "{}{}".format(self.id_prefix, notes.index(note))
+                li = ol.ekid("li", {"id": id_})
+                p = li.ekid("p")
+                for x in note.kids:
+                    p.kids.extend(term2xml(x, xc.c))
+            htmlstr = xl.Xml(root=html).to_str(do_pretty=True, dont_do_tags=["title", "p"])
+            ebook.userfiles[doc_path] = htmlstr
+            ebook.spine.append(doc_path)
 
 
-def exist_same_note_n(n, objs):
-    for obj in objs:
-        if isinstance(obj, Note) and obj.n == n:
-            return True
-    return False
+###############################################################################
+
+def do_atom(atom: any):
+    for Class in (Str, Lg, P, G, Ref, Note, App):
+        try:
+            return Class(atom)
+        except TypeError:
+            continue
+    raise TypeError
+
+
+################################################################################
+
+class ElementError(Exception):
+    pass
 
 
 def get_parent_container(container, level):
@@ -250,7 +302,6 @@ def make_tree(sn: Container or SN, cbdiv: xl.Element):
                 container = Container()
                 container.level = level
                 container.mulu = mulu
-                #print("mulu1:", container.mulu)
                 parent.terms.append(container)
             else:
                 container = parent.terms[-1]
@@ -259,14 +310,12 @@ def make_tree(sn: Container or SN, cbdiv: xl.Element):
             container.level = level
             assert len(kids[0].kids) == 1
             container.mulu = kids[0].kids[0]
-            #print("mulu2:", container.mulu)
             parent.terms.append(container)
 
         kids.pop(0)
 
     # SN.46.6
     else:
-        #input("hehe")
         for kid in kids:
             if isinstance(kid, xl.Element):
                 if kid.tag == "cb:mulu":
@@ -284,25 +333,8 @@ def make_tree(sn: Container or SN, cbdiv: xl.Element):
         if isinstance(kid, xl.Element) and kid.tag == "cb:div":
             make_tree(sn, kid)
 
-        if isinstance(kid, str):
-            container.terms.append(ExposedStr(kid))
-
-        elif kid.tag == "p":
-            # 略过只有数字的行
-            if len(kid.kids) == 1 and re.match(r"^[〇一二三四五六七八九十]+$", kid.kids[0]):
-                pass
-            else:
-                atoms, left = do_atoms(kid.kids, funs=[do_str, do_note, do_g, do_ref, do_app])
-                if left:
-                    print(("left:", repr(left)))
-                    exit()
-                container.terms.append(P(atoms))
-
-        elif kid.tag == "lg":
-            lg = Lg(kid)
-            container.terms.append(lg)
-
-    # return container
+        else:
+            container.terms.append(do_atom(kid))
 
 
 def get_tree():
@@ -316,6 +348,7 @@ def get_tree():
 
         tei = filter_element(tei, is_lb)
         tei = filter_element(tei, is_pb)
+        tei = filter_element(tei, is_num_p)
 
         text = tei.find_kids("text")[0]
         body = text.find_kids("body")[0]
@@ -350,6 +383,15 @@ def is_pb(x):
     return False
 
 
+def is_num_p(x):
+    if isinstance(x, xl.Element):
+        if x.tag == "p":
+            if len(x.kids) == 1:
+                if re.match(r"^[〇一二三四五六七八九十]+$", x.kids[0]):
+                    return True
+    return False
+
+
 def filter_element(x: xl.Element or str, fun: callable):
     if isinstance(x, xl.Element):
         new_e = xl.Element(tag=x.tag, attrs=x.attrs)
@@ -366,7 +408,7 @@ def filter_element(x: xl.Element or str, fun: callable):
     raise TypeError
 
 
-def is_sutta(parent_container: Container):
+def is_sutta_parent(parent_container: Container):
     len_of_container = 0
     lot_of_match = 0
     for sub in parent_container.terms:
@@ -406,7 +448,7 @@ def print_title(sn):
 def print_title2(container, depth):
     for term in container.terms:
         if isinstance(term, Container):
-            if is_sutta(container):
+            if is_sutta_parent(container):
                 print(" " * depth, "<Sutta>:", term.mulu, sep="")
             else:
                 print(" " * depth, term.mulu, sep="")
@@ -419,6 +461,7 @@ def check_x_first_term(sn):
         print(pian.mulu)
         if not isinstance(term, Container):
             print(term)
+
 
 def main():
     sn = get_tree()

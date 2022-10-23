@@ -5,17 +5,15 @@ import shutil
 import subprocess
 import string
 
-from boltons.setutils import IndexedSet
 
 import xl
 import epubpacker
 
-from pyabo import book_public, page_parsing, note_thing
-import dopdf
-import doepub
-from . import fanli, homage, notice
-from . import css
-from . import js
+import book_public
+
+import notice
+import css
+import js
 
 
 def make(nikaya, write_suttas_fun, xc: book_public.XC, temprootdir, books_dir, epubcheck):
@@ -30,7 +28,6 @@ def make(nikaya, write_suttas_fun, xc: book_public.XC, temprootdir, books_dir, e
     fanli.write_fanli(epub, xc)
     homage.write_homage(epub, xc, nikaya.homage_line)
     write_suttas_fun(nikaya=nikaya, epub=epub, bns=bns, xc=xc)
-    write_notes(epub, nikaya, xc)
     notice.write_notice(epub, xc)
 
     mytemprootdir, epub_path = write2file(epub=epub, mytemprootdir=mytemprootdir, bn=bn)
@@ -84,7 +81,6 @@ def copy2booksdir(epub_path, nikaya, xc, books_dir):
 
 
 def write2file(epub, mytemprootdir, bn):
-
     epub_path = os.path.join(mytemprootdir, "{}.epub".format(bn))
     epub.write(epub_path)
     return mytemprootdir, epub_path
@@ -94,7 +90,7 @@ def create(nikaya, xc: book_public.XC):
     epub = epubpacker.Epub()
 
     epub.meta.titles = [xc.c(nikaya.title_hant)]
-    epub.meta.creators = ["莊春江({})".format(xc.c("譯"))]
+    epub.meta.creators = ["元亨寺"]
     epub.meta.date = nikaya.last_modified.strftime("%Y-%m-%dT%H:%M:%SZ")
     epub.meta.languages = [xc.xmlang, "pi", "en-US"]
 
@@ -102,7 +98,7 @@ def create(nikaya, xc: book_public.XC):
     epub.meta.identifier = my_uuid.urn
 
     epub.meta.others.append(xl.Element("meta", {"property": "belongs-to-collection", "id": "c01"},
-                                       ["莊春江" + xc.c("漢譯經藏")]))
+                                       [xc.c("漢譯南傳大藏經")]))
     epub.meta.others.append(xl.Element("meta", {"refines": "#c01", "property": "collection-type"}, ["series"]))
 
     epub.userfiles[css.css1_path] = css.css1[xc.enlang]
@@ -114,57 +110,6 @@ def create(nikaya, xc: book_public.XC):
     epub.userfiles["_js/user_js2.js"] = "// 第二个自定义 JS 文件\n\n"
 
     return epub
-
-
-def write_notes(epub, nikaya, xc: book_public.XC):
-    bns = [nikaya.abbr]
-    _write_globalnotes(epub, bns, xc)
-    first_note_doc_path = _write_localnotes(epub, nikaya.local_notes, bns, xc)
-    epub.root_toc.append(epubpacker.Toc(xc.c("註解"), first_note_doc_path))
-    return epub
-
-
-def _write_globalnotes(epub: epubpacker.Epub, bns, xc):
-    notes = note_thing.get()
-    docs = {}
-    for key, note in notes.items():
-        _doc_path = doepub.note_docname_calculate(page_parsing.GLOBAL, (key, "_x"))
-        if _doc_path not in docs.keys():
-            docs[_doc_path] = _make_note_doc(xc.c("註解二"), xc, _doc_path)
-        _html, ol = docs[_doc_path]
-        li = xl.sub(ol, "li", {"id": key})
-
-        p = xl.sub(li, "p")
-        es = []
-        for subnote in note:
-            es.extend(dopdf.join_to_xml(subnote, bns=bns, c=xc.c, doc_path=_doc_path))
-            es.append(xl.Element("br"))
-        p.kids.extend(es[:-1])
-
-    for doc_path, (html, _ol) in docs.items():
-        epub.userfiles[doc_path] = _doc_str(html)
-        epub.spine.append(doc_path)
-
-
-def _write_localnotes(epub: epubpacker.Epub, notes: IndexedSet, bns, xc):
-    docs = {}
-
-    for note in notes:
-        _doc_path = doepub.note_docname_calculate(page_parsing.LOCAL, notes.index(note))
-        if _doc_path not in docs.keys():
-            docs[_doc_path] = _make_note_doc(xc.c("註解一"), xc, _doc_path)
-
-        _html, ol = docs[_doc_path]
-
-        li = xl.sub(ol, "li", {"id": str(notes.index(note))})
-        p = xl.sub(li, "p")
-        p.kids.extend(dopdf.join_to_xml(note, bns=bns, c=xc.c, doc_path=_doc_path))
-
-    for doc_path, (html, _ol) in docs.items():
-        epub.userfiles[doc_path] = _doc_str(html)
-        epub.spine.append(doc_path)
-
-    return list(docs.keys())[0]
 
 
 def _make_note_doc(title, xc: book_public.XC, doc_path):
@@ -236,7 +181,7 @@ def write_cover(epub, nikaya, xc: book_public.XC, mytemprootdir):
             t.substitute(bookname_han=xc.c(title_hant),
                          bookname_pi=nikaya.title_pali,
                          han_version=xc.han_version,
-                         translator="莊春江 " + xc.c("譯"),
+                         translator="元亨寺",
                          date=nikaya.last_modified.strftime("%Y年%m月")
                          )
         from html2image import Html2Image as HtI

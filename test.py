@@ -1,10 +1,6 @@
 #!/usr/bin/env python3
 
-is_pin = "is_pin"
-is_sutta = "is_sutta"
+from Levenshtein import ratio
 
-match "is_pin":
-    case "is_pin":
-        print("pin")
-    case "is_sutta":
-        print("sutta")
+print(ratio("五斷", "五是五蓋。"))
+
