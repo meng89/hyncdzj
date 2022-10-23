@@ -4,6 +4,8 @@ import posixpath
 import shutil
 import subprocess
 import string
+import uuid
+from urllib.parse import urlsplit
 
 
 import xl
@@ -16,12 +18,36 @@ import css
 import js
 
 
+def relpath(path1, path2):
+    """
+     ("note/note0.xhtml", "sn/sn01.xhtml") -> "../note/note0.xhtml"
+     ("sn/sn21.xhtml#SN.21.1, "sn/sn21.xhtml") -> "#SN.21.1"
+    """
+
+    path1_2 = posixpath.normpath(urlsplit(path1).path)
+    fragment = urlsplit(path1).fragment
+
+    path2_2 = posixpath.normpath(path2)
+
+    if path1_2 == path2_2:
+        if not fragment:
+            raise ValueError("How to link to self without a tag id?")
+        else:
+            return "#" + fragment
+    else:
+        return posixpath.relpath(path1_2, posixpath.dirname(path2_2)) + (("#" + fragment) if fragment else "")
+
+
+def get_uuid(s):
+    return uuid.uuid5(uuid.NAMESPACE_URL, "https://github.com/meng89/hyncdzj_ebook" + " " + s)
+
+
 def make(nikaya, write_suttas_fun, xc: book_public.XC, temprootdir, books_dir, epubcheck):
     bn = nikaya.abbr.lower()
     mytemprootdir = os.path.join(temprootdir, "{}_epub_{}".format(bn, xc.enlang))
     os.makedirs(mytemprootdir, exist_ok=True)
 
-    epub = create(nikaya, xc)
+    epub = create_ebook(nikaya, xc)
     bns = [nikaya.abbr]
 
     write_cover(epub, nikaya, xc, mytemprootdir)
@@ -86,7 +112,7 @@ def write2file(epub, mytemprootdir, bn):
     return mytemprootdir, epub_path
 
 
-def create(nikaya, xc: book_public.XC):
+def create_ebook(nikaya, xc: book_public.XC):
     epub = epubpacker.Epub()
 
     epub.meta.titles = [xc.c(nikaya.title_hant)]
@@ -94,7 +120,7 @@ def create(nikaya, xc: book_public.XC):
     epub.meta.date = nikaya.last_modified.strftime("%Y-%m-%dT%H:%M:%SZ")
     epub.meta.languages = [xc.xmlang, "pi", "en-US"]
 
-    my_uuid = doepub.get_uuid(xc.c(nikaya.title_hant) + xc.enlang)
+    my_uuid = get_uuid(xc.c(nikaya.title_hant) + xc.enlang)
     epub.meta.identifier = my_uuid.urn
 
     epub.meta.others.append(xl.Element("meta", {"property": "belongs-to-collection", "id": "c01"},
@@ -148,12 +174,12 @@ def make_doc(doc_path, xc, title=None):
     if title:
         _title = xl.sub(head, "title", kids=[title])
 
-    _make_css_link(head, doepub.relpath(css.css1_path, doc_path), "css1")
-    _make_css_link(head, doepub.relpath("_css/user_css1.css", doc_path), "user_css1")
-    _make_css_link(head, doepub.relpath("_css/user_css2.css", doc_path), "user_css2")
-    _make_js_link(head, doepub.relpath(js.js1_path, doc_path), "js1")
-    _make_js_link(head, doepub.relpath("_js/user_js1.js", doc_path), "user_js1")
-    _make_js_link(head, doepub.relpath("_js/user_js2.js", doc_path), "user_js2")
+    _make_css_link(head, relpath(css.css1_path, doc_path), "css1")
+    _make_css_link(head, relpath("_css/user_css1.css", doc_path), "user_css1")
+    _make_css_link(head, relpath("_css/user_css2.css", doc_path), "user_css2")
+    _make_js_link(head, relpath(js.js1_path, doc_path), "js1")
+    _make_js_link(head, relpath("_js/user_js1.js", doc_path), "user_js1")
+    _make_js_link(head, relpath("_js/user_js2.js", doc_path), "user_js2")
 
     body = xl.sub(html, "body")
     return html, body
@@ -197,7 +223,7 @@ def write_cover(epub, nikaya, xc: book_public.XC, mytemprootdir):
     html, body = make_doc(cover_doc_path, xc, "封面")
     body.attrs["style"] = "text-align: center;"
 
-    _img = xl.sub(body, "img", {"src": doepub.relpath(cover_img_path_in_epub, cover_doc_path),
+    _img = xl.sub(body, "img", {"src": relpath(cover_img_path_in_epub, cover_doc_path),
                                 "alt": "Cover Image",
                                 "title": "Cover Image"})
     htmlstr = xl.Xml(root=html).to_str()
