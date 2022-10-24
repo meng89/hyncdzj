@@ -70,6 +70,18 @@ class Term(object):
         pass
 
 
+class Head(Term):
+    def __init__(self, e: xl.Element):
+        if isinstance(e, xl.Element) and e.tag == "head":
+            self._e = e
+        else:
+            raise TypeError
+
+    def to_xml(self, *args, **kwargs) -> list:
+        #todo
+        raise Exception
+
+
 class Str(Term):
     def __init__(self, string):
         if isinstance(string, str):
@@ -114,7 +126,7 @@ class NoteCollection(object):
         for notes in self._lists_of_notes:
             doc_path = "{}{}.xhtml".format(self.path_prefix, self._lists_of_notes.index(notes))
             html, body = epub_public.make_doc(doc_path, xc)
-            sec = body.ekid("section", {"epub:type": "endnotes", "role": "doc-endnotes"})
+            sec = body.ekid("section", {"ebook:type": "endnotes", "role": "doc-endnotes"})
             ol = sec.ekid("ol")
             for note in notes:
                 id_ = "{}{}".format(self.id_prefix, notes.index(note))
@@ -137,7 +149,7 @@ class Note(Term):
     def to_xml(self, c: callable, note_collection: NoteCollection, *args, **kwargs):
         href = note_collection.add(self._e)
         assert len(self._e.kids) == 1
-        a = xl.Element("a", {"epub:type": "noteref", "href": href, "class": "noteref"}, [c(self._e.kids[0])])
+        a = xl.Element("a", {"ebook:type": "noteref", "href": href, "class": "noteref"}, [c(self._e.kids[0])])
         return [a]
 
 
@@ -159,6 +171,8 @@ class G(Term):
     def __init__(self, e: xl.Element):
         if isinstance(e, xl.Element) and e.tag == "g":
             self._e: xl.Element = e
+        else:
+            raise TypeError
 
     def to_xml(self, c, *args, **kwargs) -> list:
         return [c(g_map[self._e.attrs["ref"]])]
@@ -217,7 +231,9 @@ class Lg(Term):
             div.ekid("p", {"class": "_poet"}, [term2xml(self._poet, c, *args, **kwargs)])
         for line in self._body:
             for sentence in line:
-                div.ekid("p", {"class": "sentence"}, [term2xml(sentence, c, *args, **kwargs)])
+                p = div.ekid("p", {"class": "sentence"})
+                for term in sentence:
+                    p.kids.extend(term2xml(term, c, *args, **kwargs))
 
         return [div]
 
@@ -253,11 +269,12 @@ class NoteNotFoundError(object):
 ###############################################################################
 
 def do_atom(atom: any):
-    for Class in (Str, Lg, P, G, Ref, Note, App):
+    for Class in (Head, Str, Lg, P, G, Ref, Note, App):
         try:
             return Class(atom)
         except TypeError:
             continue
+    print(("ddd", type(atom), atom.tag, atom.attrs, atom.kids))
     raise TypeError
 
 
@@ -267,83 +284,56 @@ class ElementError(Exception):
     pass
 
 
-def get_parent_container(container, level):
-    if level == 1:
-        return container
-    else:
-        for term in reversed(container.terms):
-            if isinstance(term, Container):
-                return get_parent_container(term, level - 1)
-
-    raise Exception("cant be here")
-
-
 def get_last_container(container):
-    for term in reversed(container.terms):
-        if isinstance(term, Container):
+    for term in container.terms:
+        if isinstance(term, Container) or isinstance(term, SN):
             return get_last_container(term)
-
     return container
 
 
-def make_tree(sn: Container or SN, cbdiv: xl.Element):
-    # cb:mulu 出现在目录中，而 head 出现在正文的标题中。head 有时会有 note 。两者似乎有冗余，也许该在上游精简。
-    # 少数 cb:div 标签中无 head。
-
-    # 少数 cb:div 标签中第一个子标签不是cb:mulu.
-
-    kids = cbdiv.kids
-
-    if kids[0].tag == "cb:mulu":
-        _str_level = kids[0].attrs["level"]
-        level = int(_str_level)
-        parent = get_parent_container(sn, level)
-
-        if level == 1:
-            _pian_mulu = kids[0].kids[0]  # 篇
-            m = re.match(r"^(.+篇).* \(\d+-\d+\)$", _pian_mulu)
-            assert m
-            mulu = m.group(1)
-            if len(parent.terms) == 0 or parent.terms[-1].mulu != mulu:
-                container = Container()
-                container.level = level
-                container.mulu = mulu
-                parent.terms.append(container)
-            else:
-                container = parent.terms[-1]
-        else:
-            container = Container()
-            container.level = level
-            assert len(kids[0].kids) == 1
-            container.mulu = kids[0].kids[0]
-            parent.terms.append(container)
-
-        kids.pop(0)
-
-    # SN.46.6
+def get_parent_container(tree: SN or Container, level):
+    if level == 1:
+        assert isinstance(tree, SN)
+        return tree
     else:
-        for kid in kids:
-            if isinstance(kid, xl.Element):
-                if kid.tag == "cb:mulu":
-                    input(kid.tag)
-
-        container = get_last_container(sn)
-
-    first = cbdiv.kids[0]
-    if isinstance(first, xl.Element) and first.tag == "head":
-        container.head = first.kids[:]
-        # input(container.head)
-        cbdiv.kids.pop(0)
-
-    for kid in cbdiv.kids:
-        if isinstance(kid, xl.Element) and kid.tag == "cb:div":
-            make_tree(sn, kid)
-
-        else:
-            container.terms.append(do_atom(kid))
+        for term in reversed(tree.terms):
+            if isinstance(term, Container):
+                if term.level == level - 1:
+                    return term
+                else:
+                    return get_parent_container(term, level)
+    raise Exception
 
 
-def get_tree():
+def make_tree(snikaya, terms):
+    for term in terms:
+        if isinstance(term, xl.Element) and term.tag == "cb:div":
+            make_tree(snikaya, term.kids)
+            continue
+
+        if isinstance(term, xl.Element) and term.tag == "cb:mulu":
+            assert len(term.kids) == 1
+
+            container = Container()
+            container.level = int(term.attrs["level"])
+            parent_container = get_parent_container(snikaya, container.level)
+            parent_container.terms.append(container)
+
+            # 篇
+            if container.level == 1:
+                m = re.match(r"^(.+篇).* \(\d+-\d+\)$", term.kids[0])
+                assert m
+                container.mulu = m.group(1)
+            else:
+                container.mulu = term.kids[0]
+
+            continue
+
+        last_container = get_last_container(snikaya)
+        last_container.terms.append(do_atom(term))
+
+
+def get_nikaya():
     snikaya = SN()
     for one in xmls:
         filename = os.path.join(xmlp5_dir, one)
@@ -364,13 +354,13 @@ def get_tree():
         tei = filter_element(tei, is_lb)
         tei = filter_element(tei, is_pb)
         tei = filter_element(tei, is_num_p)
+        tei = filter_element(tei, is_milestone)
 
         text = tei.find_kids("text")[0]
         body = text.find_kids("body")[0]
         print(one)
 
-        for cb_div in body.find_kids("cb:div"):
-            make_tree(snikaya, cb_div)
+        make_tree(snikaya, body.kids)
 
     return snikaya
 
@@ -404,6 +394,16 @@ def is_num_p(x):
             if len(x.kids) == 1:
                 if re.match(r"^[〇一二三四五六七八九十]+$", x.kids[0]):
                     return True
+    return False
+
+
+def is_milestone(x):
+    if isinstance(x, xl.Element):
+        if x.tag == "milestone":
+            if x.attrs["unit"] == "juan":
+                if "n" in x.attrs.keys():
+                    if re.match(r"^\d+$", x.attrs["n"]):
+                        return True
     return False
 
 
@@ -450,16 +450,6 @@ def is_sutta_parent(parent_container: Container):
         return False
 
 
-def traverse_sn(sn: SN):
-    for pian in sn.terms:
-        print(pian)
-
-
-def print_title(sn):
-    for pian in sn.terms:
-        print_title2(pian, 0)
-
-
 def print_title2(container, depth):
     for term in container.terms:
         if isinstance(term, Container):
@@ -470,8 +460,8 @@ def print_title2(container, depth):
             print_title2(term, depth + 4)
 
 
-def check_x_first_term(sn):
-    for pian in sn.terms:
+def check_x_first_term(nikaya):
+    for pian in nikaya.terms:
         term = pian.terms[0]
         print(pian.mulu)
         if not isinstance(term, Container):
@@ -479,9 +469,9 @@ def check_x_first_term(sn):
 
 
 def main():
-    sn = get_tree()
-    print_title2(sn, 0)
-    check_x_first_term(sn)
+    nikaya = get_nikaya()
+    print_title2(nikaya, 0)
+    check_x_first_term(nikaya)
 
 
 if __name__ == "__main__":

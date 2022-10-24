@@ -37,7 +37,7 @@ def get_html_id(container, term, prefix=None):
         if _term == term:
             return current_prefix
 
-        if isinstance(_term, container):
+        if isinstance(_term, sn.Container):
             try:
                 return get_html_id(_term, term, current_prefix)
             except TermNotFoundError:
@@ -85,7 +85,7 @@ def transform_digit(han_digit: str):
     return int(str_digit)
 
 
-def get_sutta_range_and_name(mulu):
+def get_sutta_range_and_name(mulu: str):
     m = re.match(r"〔([一二三四五六七八九〇])+〕(\S*)$", mulu)
     if m:
         serial = transform_digit(m.group(1))
@@ -100,14 +100,15 @@ def get_sutta_range_and_name(mulu):
 
 def get_sutta_begin(container: sn.Container):
     if sn.is_sutta_parent(container):
-        return get_sutta_range_and_name(container.terms[0])[0]
+        #print("xxx", container.terms[0])
+        return get_sutta_range_and_name(container.terms[0].mulu)[0]
     else:
         return get_sutta_begin(container.terms[0])
 
 
 def get_sutta_end(container: sn.Container):
     if sn.is_sutta_parent(container):
-        return get_sutta_range_and_name(container.terms[-1])[0]
+        return get_sutta_range_and_name(container.terms[-1].mulu)[0]
     else:
         return get_sutta_end(container.terms[0])
 
@@ -168,7 +169,8 @@ def write_before_sutta(nikaya: sn.SN, container: sn.Container, note_collection,
                        xc, body: xl.Element):
     c = xc.c
     for term in container.terms:
-        name = no_serial_titlex
+        print("hhhh", type(term.mulu), term.mulu)
+        name = no_serial_titlex(term.mulu)
         _html_id = get_html_id(nikaya, term)
         xl.sub(body, "h3", {"class": "title", "id": _html_id}, kids=[c(name)])
         sutta_begin, sutta_end = get_sutta_range(term)
@@ -215,5 +217,5 @@ def write_after_sutta(nikaya, container, note_collection, doc_path, toc, xc, bod
 
 
 def make(xc, temprootdir, books_dir, epubcheck):
-    nikaya = sn.get_tree()
+    nikaya = sn.get_nikaya()
     epub_public.make(nikaya, write, xc, temprootdir, books_dir, epubcheck)

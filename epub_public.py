@@ -104,7 +104,7 @@ def check_epub(epub_path, epubcheck, mytemprootdir):
 
 def copy2booksdir(epub_path, nikaya, xc, books_dir):
     shutil.copy(epub_path,
-                os.path.join(books_dir, "{}_{}_{}{}_{}.epub".format(xc.c(nikaya.title_hant),
+                os.path.join(books_dir, "{}_{}_{}{}_{}.ebook".format(xc.c(nikaya.title_hant),
                                                                     xc.zhlang,
                                                                     "莊",
                                                                     nikaya.last_modified.strftime("%y%m"),
@@ -112,7 +112,7 @@ def copy2booksdir(epub_path, nikaya, xc, books_dir):
 
 
 def write2file(epub, mytemprootdir, bn):
-    epub_path = os.path.join(mytemprootdir, "{}.epub".format(bn))
+    epub_path = os.path.join(mytemprootdir, "{}.ebook".format(bn))
     epub.write(epub_path)
     return mytemprootdir, epub_path
 
@@ -146,7 +146,7 @@ def create_ebook(nikaya, xc: book_public.XC):
 def _make_note_doc(title, xc: book_public.XC, doc_path):
     html, body = make_doc(doc_path, xc, title)
     body.attrs["class"] = "note"
-    sec = xl.sub(body, "section", {"epub:type": "endnotes", "role": "doc-endnotes"})
+    sec = xl.sub(body, "section", {"ebook:type": "endnotes", "role": "doc-endnotes"})
     ol = xl.sub(sec, "ol")
     return html, ol
 
@@ -170,7 +170,7 @@ def _make_js_link(head, src, id_=None):
 
 
 def make_doc(doc_path, xc, title=None):
-    html = xl.Element("html", {"xmlns:epub": "http://www.idpf.org/2007/ops",
+    html = xl.Element("html", {"xmlns:ebook": "http://www.idpf.org/2007/ops",
                                "xmlns": "http://www.w3.org/1999/xhtml",
                                "xml:lang": xc.xmlang,
                                "lang": xc.xmlang})
@@ -190,10 +190,10 @@ def make_doc(doc_path, xc, title=None):
     return html, body
 
 
-def write_cover(epub, nikaya, xc: book_public.XC, mytemprootdir):
+def write_cover(ebook, nikaya, xc: book_public.XC, mytemprootdir):
 
     cover_img_filename = "{}_{}_cover.png".format(nikaya.abbr, xc.enlang)
-    cover_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "cover_images")
+    cover_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "cover_images")
     cover_img_path = os.path.join(cover_dir, cover_img_filename)
 
     if not os.path.exists(cover_img_path):
@@ -220,18 +220,18 @@ def write_cover(epub, nikaya, xc: book_public.XC, mytemprootdir):
         hti.screenshot(html_str=doc_str, size=(1600, 2560), save_as=cover_img_filename)
     assert os.path.exists(cover_img_path)
 
-    cover_img_path_in_epub = posixpath.join(nikaya.abbr, cover_img_filename)
-    epub.userfiles[cover_img_path_in_epub] = open(cover_img_path, "rb").read()
-    epub.cover_img_path = cover_img_path_in_epub
+    cover_img_path_in_ebook = posixpath.join(nikaya.abbr, cover_img_filename)
+    ebook.userfiles[cover_img_path_in_ebook] = open(cover_img_path, "rb").read()
+    ebook.cover_img_path = cover_img_path_in_ebook
 
     cover_doc_path = nikaya.abbr + "/cover.xhtml"
     html, body = make_doc(cover_doc_path, xc, "封面")
     body.attrs["style"] = "text-align: center;"
 
-    _img = xl.sub(body, "img", {"src": relpath(cover_img_path_in_epub, cover_doc_path),
+    _img = xl.sub(body, "img", {"src": relpath(cover_img_path_in_ebook, cover_doc_path),
                                 "alt": "Cover Image",
                                 "title": "Cover Image"})
     htmlstr = xl.Xml(root=html).to_str()
-    epub.userfiles[cover_doc_path] = htmlstr
-    epub.root_toc.append(epubpacker.Toc("封面", cover_doc_path))
-    epub.spine.append(cover_doc_path)
+    ebook.userfiles[cover_doc_path] = htmlstr
+    ebook.root_toc.append(epubpacker.Toc("封面", cover_doc_path))
+    ebook.spine.append(cover_doc_path)

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
+import os
 
-from Levenshtein import ratio
+cover_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "cover_images")
 
-print(ratio("五斷", "五是五蓋。"))
-
+print(os.path.dirname(os.path.abspath(__file__)))
+print(cover_dir)
