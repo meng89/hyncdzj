@@ -16,6 +16,7 @@ import book_public
 import notice
 import css
 import js
+import sn
 
 
 def relpath(path1, path2):
@@ -42,21 +43,25 @@ def get_uuid(s):
     return uuid.uuid5(uuid.NAMESPACE_URL, "https://github.com/meng89/hyncdzj_ebook" + " " + s)
 
 
-def make(nikaya, write_suttas_fun, xc: book_public.XC, temprootdir, books_dir, epubcheck):
+def make(nikaya, write_fun, xc: book_public.XC, temprootdir, books_dir, epubcheck):
     bn = nikaya.abbr.lower()
     mytemprootdir = os.path.join(temprootdir, "{}_epub_{}".format(bn, xc.enlang))
     os.makedirs(mytemprootdir, exist_ok=True)
 
-    epub = create_ebook(nikaya, xc)
+    ebook = create_ebook(nikaya, xc)
     bns = [nikaya.abbr]
 
-    write_cover(epub, nikaya, xc, mytemprootdir)
-    fanli.write_fanli(epub, xc)
-    homage.write_homage(epub, xc, nikaya.homage_line)
-    write_suttas_fun(nikaya=nikaya, epub=epub, bns=bns, xc=xc)
-    notice.write_notice(epub, xc)
+    write_cover(ebook, nikaya, xc, mytemprootdir)
+    # fanli.write_fanli(ebook, xc)
+    # homage.write_homage(ebook, xc, nikaya.homage_line)
 
-    mytemprootdir, epub_path = write2file(epub=epub, mytemprootdir=mytemprootdir, bn=bn)
+    note_collection: sn.NoteCollection = write_fun(nikaya=nikaya, ebook=ebook, xc=xc)
+
+    note_collection.write2ebook(ebook, xc)
+
+    notice.write_notice(ebook, xc)
+
+    mytemprootdir, epub_path = write2file(epub=ebook, mytemprootdir=mytemprootdir, bn=bn)
 
     check_result = False
     if is_java_exist() and os.path.exists(epubcheck):

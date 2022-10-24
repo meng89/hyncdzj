@@ -2,6 +2,7 @@
 import abc
 import re
 import os
+import datetime
 
 from typing import List
 
@@ -30,6 +31,10 @@ g_map = {"#CB03020": "婬"
 class SN(object):
     def __init__(self):
         self.terms: List[Container] = []
+        self.abbr = "SN"
+        self.title_hant = "相應部"
+        self.title_pali = "Saṃyutta Nikāya"
+        self.last_modified = None
 
 
 class Container(object):
@@ -76,6 +81,52 @@ class Str(Term):
         return xl.Element("p", kids=[c(self._s)])
 
 
+class NoteCollection(object):
+    def __init__(self, qty_of_list=100, path_prefix=None, id_prefix=None):
+        self._qty_of_list = qty_of_list
+        self._lists_of_notes = [[]]
+        self.path_prefix = path_prefix or "note/note"
+        self.id_prefix = id_prefix or "id"
+
+    def add(self, note):
+        try:
+            return self.get_link(note)
+        except NoteNotFoundError:
+            last_list = self._lists_of_notes[-1]
+            if len(last_list) < self._qty_of_list:
+                last_list.append(note)
+            else:
+                self._lists_of_notes.append([note])
+        finally:
+            return self.get_link(note)
+
+    def get_link(self, note):
+        for notes in self._lists_of_notes:
+            for _note in notes:
+                if note == _note:
+                    doc_path = "{}{}.xhtml".format(self.path_prefix, self._lists_of_notes.index(notes))
+                    id_ = "{}{}".format(self.id_prefix, notes.index(note))
+                    return doc_path + "#" + id_
+
+        raise NoteNotFoundError
+
+    def write2ebook(self, ebook: epubpacker.Epub, xc):
+        for notes in self._lists_of_notes:
+            doc_path = "{}{}.xhtml".format(self.path_prefix, self._lists_of_notes.index(notes))
+            html, body = epub_public.make_doc(doc_path, xc)
+            sec = body.ekid("section", {"epub:type": "endnotes", "role": "doc-endnotes"})
+            ol = sec.ekid("ol")
+            for note in notes:
+                id_ = "{}{}".format(self.id_prefix, notes.index(note))
+                li = ol.ekid("li", {"id": id_})
+                p = li.ekid("p")
+                for x in note.kids:
+                    p.kids.extend(term2xml(x, xc.c, self))
+            htmlstr = xl.Xml(root=html).to_str(do_pretty=True, dont_do_tags=["title", "p"])
+            ebook.userfiles[doc_path] = htmlstr
+            ebook.spine.append(doc_path)
+
+
 class Note(Term):
     def __init__(self, e: xl.Element):
         if isinstance(e, xl.Element) and e.tag == "note":
@@ -97,10 +148,10 @@ class P(Term):
         else:
             raise TypeError
 
-    def to_xml(self, c, *args, **kwargs) -> list:
+    def to_xml(self, c, note_collection, *args, **kwargs) -> list:
         p = xl.Element("p")
         for x in self._e.kids:
-            p.kids.extend(term2xml(x, c))
+            p.kids.extend(term2xml(x, c, note_collection))
         return [p]
 
 
@@ -163,10 +214,10 @@ class Lg(Term):
     def to_xml(self, c, *args, **kwargs) -> list:
         div = xl.Element("div", {"class": "ji"})
         if self._poet:
-            div.ekid("p", {"class": "_poet"}, [term2xml(self._poet, c)])
+            div.ekid("p", {"class": "_poet"}, [term2xml(self._poet, c, *args, **kwargs)])
         for line in self._body:
             for sentence in line:
-                div.ekid("p", {"class": "sentence"}, [term2xml(sentence, c)])
+                div.ekid("p", {"class": "sentence"}, [term2xml(sentence, c, *args, **kwargs)])
 
         return [div]
 
@@ -186,62 +237,17 @@ class App(Term):
             return []
 
 
-def term2xml(term: Term or str, c):
+def term2xml(term: Term or str, c, note_collection):
     if isinstance(term, str):
         return [c(term)]
     elif isinstance(term, Term):
-        return term.to_xml(c)
+        return term.to_xml(c, note_collection)
+    input(("type:{}".format(type(term))))
     raise Exception
 
 
 class NoteNotFoundError(object):
     pass
-
-
-class NoteCollection(object):
-    def __init__(self, qty_of_list=100, path_prefix=None, id_prefix=None):
-        self._qty_of_list = qty_of_list
-        self._lists_of_notes = [[]]
-        self.path_prefix = path_prefix or "note/note"
-        self.id_prefix = "id"
-
-    def add(self, note):
-        try:
-            return self.get_link(note)
-        except NoteNotFoundError:
-            last_list = self._lists_of_notes[-1]
-            if len(last_list) < self._qty_of_list:
-                last_list.append(note)
-            else:
-                self._lists_of_notes.append([note])
-        finally:
-            return self.get_link(note)
-
-    def get_link(self, note):
-        for notes in self._lists_of_notes:
-            for _note in notes:
-                if note == _note:
-                    doc_path = "{}{}.xhtml".format(self.path_prefix, self._lists_of_notes.index(notes))
-                    id_ = "{}{}".format(self.id_prefix, notes.index(note))
-                    return doc_path + "#" + id_
-
-        raise NoteNotFoundError
-
-    def write2ebook(self, ebook: epubpacker.Epub, xc):
-        for notes in self._lists_of_notes:
-            doc_path = "{}{}.xhtml".format(self.path_prefix, self._lists_of_notes.index(notes))
-            html, body = epub_public.make_doc(doc_path, xc)
-            sec = body.ekid("section", {"epub:type": "endnotes", "role": "doc-endnotes"})
-            ol = sec.ekid("ol")
-            for note in notes:
-                id_ = "{}{}".format(self.id_prefix, notes.index(note))
-                li = ol.ekid("li", {"id": id_})
-                p = li.ekid("p")
-                for x in note.kids:
-                    p.kids.extend(term2xml(x, xc.c))
-            htmlstr = xl.Xml(root=html).to_str(do_pretty=True, dont_do_tags=["title", "p"])
-            ebook.userfiles[doc_path] = htmlstr
-            ebook.spine.append(doc_path)
 
 
 ###############################################################################
@@ -340,7 +346,16 @@ def make_tree(sn: Container or SN, cbdiv: xl.Element):
 def get_tree():
     snikaya = SN()
     for one in xmls:
-        xmlstr = open(os.path.join(xmlp5_dir, one), "r").read()
+        filename = os.path.join(xmlp5_dir, one)
+        file = open(filename, "r")
+        last_modified = datetime.datetime.fromtimestamp(os.stat(filename).st_mtime)
+        if snikaya.last_modified:
+            if snikaya.last_modified < last_modified:
+                snikaya.last_modified = last_modified
+        else:
+            snikaya.last_modified = last_modified
+
+        xmlstr = file.read()
 
         xml = xl.parse(xmlstr, do_strip=True)
 

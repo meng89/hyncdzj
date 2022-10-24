@@ -116,7 +116,8 @@ def get_sutta_range(container: sn.Container):
     return get_sutta_begin(container), get_sutta_end(container)
 
 
-def write(nikaya: sn.SN, ebook: epubpacker.Epub, xc, _test=False):
+def write(nikaya, ebook: epubpacker.Epub, xc, _test=False) -> sn.NoteCollection():
+    note_collection = sn.NoteCollection()
     c = xc.c
     xy_serial = 0
 
@@ -134,7 +135,7 @@ def write(nikaya: sn.SN, ebook: epubpacker.Epub, xc, _test=False):
 
         for term in pian.terms:
             if not isinstance(term, sn.Container):
-                elements_before_xy.extend(sn.term2xml(term, c))
+                elements_before_xy.extend(sn.term2xml(term, c, note_collection))
                 continue
 
             xy = term
@@ -155,12 +156,14 @@ def write(nikaya: sn.SN, ebook: epubpacker.Epub, xc, _test=False):
             xl.sub(body, "h2", {"class": "title", "id": xy_id}, kids=[_xy_title])
 
             if sn.is_sutta_parent(xy):
-                write_suttas(nikaya, xy, doc_path, xy_toc, xc, body)
+                write_suttas(nikaya, xy, note_collection, doc_path, xy_toc, xc, body)
             else:
-                write_before_sutta(nikaya, xy, doc_path, xy_toc, xc, body)
+                write_before_sutta(nikaya, xy, note_collection, doc_path, xy_toc, xc, body)
+
+    return note_collection
 
 
-def write_before_sutta(nikaya: sn.SN, container: sn.Container,
+def write_before_sutta(nikaya: sn.SN, container: sn.Container, note_collection,
                        doc_path, toc,
                        xc, body: xl.Element):
     c = xc.c
@@ -174,12 +177,12 @@ def write_before_sutta(nikaya: sn.SN, container: sn.Container,
         toc.kids.append(my_toc)
 
         if sn.is_sutta_parent(term):
-            write_suttas(nikaya, term, doc_path, my_toc, xc, body)
+            write_suttas(nikaya, term, note_collection, doc_path, my_toc, xc, body)
         else:
-            write_before_sutta(nikaya, term, doc_path, my_toc, xc, body)
+            write_before_sutta(nikaya, term, note_collection, doc_path, my_toc, xc, body)
 
 
-def write_suttas(nikaya, container, doc_path, toc, xc, body):
+def write_suttas(nikaya, container, note_collection, doc_path, toc, xc, body):
     c = xc.c
     for sutta in container.terms:
         sutta_begin, sutta_end, name = get_sutta_range_and_name(sutta.mulu)
@@ -195,12 +198,12 @@ def write_suttas(nikaya, container, doc_path, toc, xc, body):
 
         for x in sutta.terms:
             if isinstance(x, sn.Container):
-                write_after_sutta(nikaya, container, doc_path, sutta_toc, xc, body)
+                write_after_sutta(nikaya, container, note_collection, doc_path, sutta_toc, xc, body)
             else:
-                body.kids.extend(sn.term2xml(x, c))
+                body.kids.extend(sn.term2xml(x, c, note_collection))
 
 
-def write_after_sutta(nikaya, container, doc_path, toc, xc, body):
+def write_after_sutta(nikaya, container, note_collection, doc_path, toc, xc, body):
     c = xc.c
     body.ekid("h5", {"class": "title", "id": get_html_id(nikaya, container)})
     _html_id = get_html_id(nikaya, container)
@@ -208,10 +211,9 @@ def write_after_sutta(nikaya, container, doc_path, toc, xc, body):
 
     for term in container.terms:
         assert isinstance(term, sn.Term)
-        body.kids.extend(sn.term2xml(term, c))
+        body.kids.extend(sn.term2xml(term, c, note_collection))
 
 
 def make(xc, temprootdir, books_dir, epubcheck):
-    snikaya = sn.get_tree()
-    note_collection = sn.NoteCollection()
-    epub_public.make(snikaya, write, xc, temprootdir, books_dir, epubcheck)
+    nikaya = sn.get_tree()
+    epub_public.make(nikaya, write, xc, temprootdir, books_dir, epubcheck)

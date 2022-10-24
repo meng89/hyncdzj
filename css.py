@@ -1,4 +1,4 @@
-from pyabo.book_public import TC, SC
+from book_public import TC, SC
 
 
 _css1 = """
