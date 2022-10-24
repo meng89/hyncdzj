@@ -79,6 +79,7 @@ class Head(Term):
 
     def to_xml(self, *args, **kwargs) -> list:
         #todo
+        return []
         raise Exception
 
 
@@ -90,7 +91,7 @@ class Str(Term):
             raise TypeError
 
     def to_xml(self, c, *args, **kwargs):
-        return xl.Element("p", kids=[c(self._s)])
+        return [xl.Element("p", kids=[c(self._s)])]
 
 
 class NoteCollection(object):
@@ -157,13 +158,17 @@ class P(Term):
     def __init__(self, e):
         if isinstance(e, xl.Element) and e.tag == "p":
             self._e = e
+            self._terms = []
+            for x in e.kids:
+                self._terms.append(do_atom(x))
         else:
             raise TypeError
 
     def to_xml(self, c, note_collection, *args, **kwargs) -> list:
         p = xl.Element("p")
-        for x in self._e.kids:
-            p.kids.extend(term2xml(x, c, note_collection))
+        for x in self._terms:
+            p.kids.extend(x.to_xml(c, note_collection))
+
         return [p]
 
 
@@ -192,7 +197,7 @@ class Ref(Term):
 class Lg(Term):
     def __init__(self, e):
         if isinstance(e, xl.Element) and e.tag == "lg":
-            pass
+            self._e = e
         else:
             raise TypeError
 
@@ -258,11 +263,11 @@ def term2xml(term: Term or str, c, note_collection):
         return [c(term)]
     elif isinstance(term, Term):
         return term.to_xml(c, note_collection)
-    input(("type:{}".format(type(term))))
+    print(("type:{}".format(type(term)), term.tag))
     raise Exception
 
 
-class NoteNotFoundError(object):
+class NoteNotFoundError(Exception):
     pass
 
 
@@ -305,15 +310,15 @@ def get_parent_container(tree: SN or Container, level):
     raise Exception
 
 
-def make_tree(snikaya, terms):
+def make_tree(snikaya, last_container, terms):
+    last_container = last_container
     for term in terms:
         if isinstance(term, xl.Element) and term.tag == "cb:div":
-            make_tree(snikaya, term.kids)
+            make_tree(snikaya, last_container, term.kids)
             continue
 
         if isinstance(term, xl.Element) and term.tag == "cb:mulu":
             assert len(term.kids) == 1
-
             container = Container()
             container.level = int(term.attrs["level"])
             parent_container = get_parent_container(snikaya, container.level)
@@ -326,10 +331,22 @@ def make_tree(snikaya, terms):
                 container.mulu = m.group(1)
             else:
                 container.mulu = term.kids[0]
+            # print(container.mulu)
+
+            last_container = container
 
             continue
 
-        last_container = get_last_container(snikaya)
+        if isinstance(term, xl.Element) and term.tag == "head":
+            if not last_container.head:
+                last_container.head = Head(term)
+            else:
+                print(term.kids)
+                raise Exception
+            continue
+
+        # container.terms.append(do_atom(term))
+        # last_container = get_last_container(snikaya)
         last_container.terms.append(do_atom(term))
 
 
@@ -360,7 +377,7 @@ def get_nikaya():
         body = text.find_kids("body")[0]
         print(one)
 
-        make_tree(snikaya, body.kids)
+        make_tree(snikaya, None, body.kids)
 
     return snikaya
 

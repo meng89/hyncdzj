@@ -91,19 +91,31 @@ def get_sutta_range_and_name(mulu: str):
         serial = transform_digit(m.group(1))
         return serial, serial, m.group(2)
 
+    m = re.match(r"〔([一二三四五六七八九〇])+〕(?:第[一二三四五六七八九〇十]+　)?(\S*)$", mulu)
+    if m:
+        serial = transform_digit(m.group(1))
+        return serial, serial, m.group(2)
+
     m = re.match(r"〔([一二三四五六七八九〇])+[、|～]([一二三四五六七八九〇])+〕(\S*)$", mulu)
     if m:
         return transform_digit(m.group(1)), transform_digit(m.group(2)), m.group(3)
 
+    print(mulu)
+    raise Exception
+
+
+def get_first_container_term(container: sn.Container):
+    for term in container.terms:
+        if isinstance(term, sn.Container):
+            return term
     raise Exception
 
 
 def get_sutta_begin(container: sn.Container):
     if sn.is_sutta_parent(container):
-        #print("xxx", container.terms[0])
-        return get_sutta_range_and_name(container.terms[0].mulu)[0]
+        return get_sutta_range_and_name(get_first_container_term(container).mulu)[0]
     else:
-        return get_sutta_begin(container.terms[0])
+        return get_sutta_begin(get_first_container_term(container))
 
 
 def get_sutta_end(container: sn.Container):
@@ -169,7 +181,9 @@ def write_before_sutta(nikaya: sn.SN, container: sn.Container, note_collection,
                        xc, body: xl.Element):
     c = xc.c
     for term in container.terms:
-        print("hhhh", type(term.mulu), term.mulu)
+        if isinstance(term, sn.Head):
+            print("Head", term._e.kids)
+            continue
         name = no_serial_titlex(term.mulu)
         _html_id = get_html_id(nikaya, term)
         xl.sub(body, "h3", {"class": "title", "id": _html_id}, kids=[c(name)])
@@ -202,6 +216,7 @@ def write_suttas(nikaya, container, note_collection, doc_path, toc, xc, body):
             if isinstance(x, sn.Container):
                 write_after_sutta(nikaya, container, note_collection, doc_path, sutta_toc, xc, body)
             else:
+                print(x._e.kids)
                 body.kids.extend(sn.term2xml(x, c, note_collection))
 
 
