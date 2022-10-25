@@ -1,4 +1,5 @@
 opencc
+cn2an
 
 html2image
 

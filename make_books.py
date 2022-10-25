@@ -22,7 +22,7 @@ def main():
     # for xn in "sn", "mn", "dn", "an":
     #    nikayas.load(xn, domain, uc.CACHE_DIR)
 
-    temprootdir_td = tempfile.TemporaryDirectory(prefix="ncdzj_")
+    temprootdir_td = tempfile.TemporaryDirectory(prefix="hyncdzj_ebook__")
 
     def print_temprootdir():
         print("temprootdir: {}".format(temprootdir_td.name))
@@ -33,13 +33,13 @@ def main():
 
     print_temprootdir()
 
-    for xc in (SC(), TC()):
+    for xc in (TC(), SC()):
         sn2epub.make(xc, temprootdir_td.name, BOOKS_DIR, EPUBCHECK)
     #    mn2epub.make(xc, temprootdir_td.name, BOOKS_DIR, uc.EPUBCHECK)
     #    dn2epub.make(xc, temprootdir_td.name, BOOKS_DIR, uc.EPUBCHECK)
     #    an2epub.make(xc, temprootdir_td.name, BOOKS_DIR, uc.EPUBCHECK)
 
-    while input("input e and press enter to exit:").rstrip() != "e":
+    while input("Input e and press enter to exit:").rstrip().lower() not in ("e", "q"):
         pass
 
 

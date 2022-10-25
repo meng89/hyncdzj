@@ -1,5 +1,9 @@
 import re
 
+
+import cn2an
+
+
 import epubpacker
 import xl
 
@@ -10,7 +14,8 @@ import sn
 
 def no_serial_titlex(mulu: str):
     # 第一　葦品
-    m = re.match("第[一二三四五六七八九十]+　(.+)$", mulu)
+    # 一　遠離依止
+    m = re.match("第?[一二三四五六七八九十]+　(.+)$", mulu)
     if m:
         return m.group(1)
 
@@ -71,41 +76,38 @@ def _xy_name(xy: sn.Container):
 
 
 def transform_digit(han_digit: str):
-    str_digit = han_digit \
-        .replace("〇", "0") \
-        .replace("一", "1") \
-        .replace("二", "2") \
-        .replace("三", "3") \
-        .replace("四", "4") \
-        .replace("五", "5") \
-        .replace("六", "6") \
-        .replace("七", "7") \
-        .replace("八", "8") \
-        .replace("九", "9")
-    return int(str_digit)
+    return cn2an.cn2an(han_digit, "smart")
 
 
 def get_sutta_range_and_name(mulu: str):
-    m = re.match(r"〔([一二三四五六七八九〇])+〕(\S*)$", mulu)
+    m = re.match(r"〔([〇一二三四五六七八九十]+)〕(\S*)$", mulu)
     if m:
         serial = transform_digit(m.group(1))
         return serial, serial, m.group(2)
 
-    m = re.match(r"〔([一二三四五六七八九〇])+〕(?:第[一二三四五六七八九〇十]+　)?(\S*)$", mulu)
+    m = re.match(r"〔([〇一二三四五六七八九十]+)〕第\S+?　(.*)$", mulu)
     if m:
         serial = transform_digit(m.group(1))
         return serial, serial, m.group(2)
 
-    m = re.match(r"〔([一二三四五六七八九〇])+[、|～]([一二三四五六七八九〇])+〕(\S*)$", mulu)
+    m = re.match(r"〔([〇一二三四五六七八九十]+)[、|～]([〇一二三四五六七八九十]+)〕(\S*)$", mulu)
     if m:
         return transform_digit(m.group(1)), transform_digit(m.group(2)), m.group(3)
 
-    print(mulu)
+    m = re.match(r"〔([〇一二三四五六七八九十]+)[、|～]([〇一二三四五六七八九十]+)〕"
+                 r"第\S+　(\S*)$", mulu)
+    if m:
+        return transform_digit(m.group(1)), transform_digit(m.group(2)), m.group(3)
+
+    if mulu == "〔三八～四三〕第八　父、第九　兄弟、第十　姊妹、第十一　子、第十二　女、第十三　妻":
+        return 38, 43, "父、兄弟、姊妹、子、女、妻"
+
+    print(repr(mulu))
     raise Exception
 
 
-def get_first_container_term(container: sn.Container):
-    for term in container.terms:
+def get_first_container_term(terms):
+    for term in terms:
         if isinstance(term, sn.Container):
             return term
     raise Exception
@@ -113,16 +115,17 @@ def get_first_container_term(container: sn.Container):
 
 def get_sutta_begin(container: sn.Container):
     if sn.is_sutta_parent(container):
-        return get_sutta_range_and_name(get_first_container_term(container).mulu)[0]
+        return get_sutta_range_and_name(get_first_container_term(container.terms).mulu)[0]
     else:
-        return get_sutta_begin(get_first_container_term(container))
+        return get_sutta_begin(get_first_container_term(container.terms))
 
 
 def get_sutta_end(container: sn.Container):
     if sn.is_sutta_parent(container):
-        return get_sutta_range_and_name(container.terms[-1].mulu)[0]
+        return get_sutta_range_and_name(get_first_container_term(reversed(container.terms)).mulu)[0]
     else:
-        return get_sutta_end(container.terms[0])
+        last = get_first_container_term(reversed(container.terms))
+        return get_sutta_end(last)
 
 
 def get_sutta_range(container: sn.Container):
@@ -148,10 +151,11 @@ def write(nikaya, ebook: epubpacker.Epub, xc, _test=False) -> sn.NoteCollection(
 
         for term in pian.terms:
             if not isinstance(term, sn.Container):
-                elements_before_xy.extend(sn.term2xml(term, c, note_collection))
+                elements_before_xy.extend(sn.term2xml(term, c, note_collection, "SN/SN.fake.xhtml"))
                 continue
 
             xy = term
+            # print("w", term.mulu)
             xy_serial += 1
             xy_id = "sn{}".format(xy_serial)
             doc_path = "SN/SN.{}.xhtml".format(xy_serial)
@@ -169,9 +173,13 @@ def write(nikaya, ebook: epubpacker.Epub, xc, _test=False) -> sn.NoteCollection(
             xl.sub(body, "h2", {"class": "title", "id": xy_id}, kids=[_xy_title])
 
             if sn.is_sutta_parent(xy):
-                write_suttas(nikaya, xy, note_collection, doc_path, xy_toc, xc, body)
+                write_sutta_parent(nikaya, xy, note_collection, doc_path, xy_toc, xc, body)
             else:
                 write_before_sutta(nikaya, xy, note_collection, doc_path, xy_toc, xc, body)
+
+            htmlstr = xl.Xml(root=html).to_str(do_pretty=True, dont_do_tags=["title", "p", "h1", "h2", "h3", "h4"])
+            ebook.userfiles[doc_path] = htmlstr
+            ebook.spine.append(doc_path)
 
     return note_collection
 
@@ -180,10 +188,16 @@ def write_before_sutta(nikaya: sn.SN, container: sn.Container, note_collection,
                        doc_path, toc,
                        xc, body: xl.Element):
     c = xc.c
-    for term in container.terms:
-        if isinstance(term, sn.Head):
-            print("Head", term._e.kids)
+    for _x in container.terms:
+        if isinstance(_x, sn.Head):
             continue
+
+        if isinstance(_x, sn.Term):
+            body.kids.extend(sn.term2xml(_x, c, note_collection, doc_path))
+            continue
+
+        term = _x
+        # print("wbs", term.mulu)
         name = no_serial_titlex(term.mulu)
         _html_id = get_html_id(nikaya, term)
         xl.sub(body, "h3", {"class": "title", "id": _html_id}, kids=[c(name)])
@@ -193,16 +207,21 @@ def write_before_sutta(nikaya: sn.SN, container: sn.Container, note_collection,
         toc.kids.append(my_toc)
 
         if sn.is_sutta_parent(term):
-            write_suttas(nikaya, term, note_collection, doc_path, my_toc, xc, body)
+            write_sutta_parent(nikaya, term, note_collection, doc_path, my_toc, xc, body)
         else:
             write_before_sutta(nikaya, term, note_collection, doc_path, my_toc, xc, body)
 
 
-def write_suttas(nikaya, container, note_collection, doc_path, toc, xc, body):
+def write_sutta_parent(nikaya, container, note_collection, doc_path, toc, xc, body):
     c = xc.c
-    for sutta in container.terms:
+    for _x in container.terms:
+        if isinstance(_x, sn.Term):
+            body.kids.extend(sn.term2xml(_x, c, note_collection, doc_path))
+            continue
+        sutta = _x
+        # print("ws", sutta.mulu, sutta.level)
         sutta_begin, sutta_end, name = get_sutta_range_and_name(sutta.mulu)
-        _html_id = get_html_id(nikaya, container)
+        _html_id = get_html_id(nikaya, sutta)
         if sutta_begin == sutta_end:
             serial = sutta_begin
         else:
@@ -214,21 +233,22 @@ def write_suttas(nikaya, container, note_collection, doc_path, toc, xc, body):
 
         for x in sutta.terms:
             if isinstance(x, sn.Container):
-                write_after_sutta(nikaya, container, note_collection, doc_path, sutta_toc, xc, body)
+                write_after_sutta(nikaya, x, note_collection, doc_path, sutta_toc, xc, body)
             else:
-                print(x._e.kids)
-                body.kids.extend(sn.term2xml(x, c, note_collection))
+                body.kids.extend(sn.term2xml(x, c, note_collection, doc_path))
 
 
 def write_after_sutta(nikaya, container, note_collection, doc_path, toc, xc, body):
     c = xc.c
-    body.ekid("h5", {"class": "title", "id": get_html_id(nikaya, container)})
+    body.ekid("h5", {"class": "title", "id": get_html_id(nikaya, container)}, kids=[c(container.mulu)])
     _html_id = get_html_id(nikaya, container)
     toc.kids.append(epubpacker.Toc(c(container.mulu), doc_path + "#" + _html_id))
 
     for term in container.terms:
-        assert isinstance(term, sn.Term)
-        body.kids.extend(sn.term2xml(term, c, note_collection))
+        if not isinstance(term, sn.Term):
+            print("ccc", type(term))
+            raise Exception
+        body.kids.extend(sn.term2xml(term, c, note_collection, doc_path))
 
 
 def make(xc, temprootdir, books_dir, epubcheck):

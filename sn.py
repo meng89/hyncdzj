@@ -91,7 +91,7 @@ class Str(Term):
             raise TypeError
 
     def to_xml(self, c, *args, **kwargs):
-        return [xl.Element("p", kids=[c(self._s)])]
+        return [c(self._s)]
 
 
 class NoteCollection(object):
@@ -126,15 +126,16 @@ class NoteCollection(object):
     def write2ebook(self, ebook: epubpacker.Epub, xc):
         for notes in self._lists_of_notes:
             doc_path = "{}{}.xhtml".format(self.path_prefix, self._lists_of_notes.index(notes))
-            html, body = epub_public.make_doc(doc_path, xc)
-            sec = body.ekid("section", {"ebook:type": "endnotes", "role": "doc-endnotes"})
+            html, body = epub_public.make_doc(doc_path, xc, xc.c("註解"))
+            sec = body.ekid("section", {"epub:type": "endnotes", "role": "doc-endnotes"})
             ol = sec.ekid("ol")
             for note in notes:
                 id_ = "{}{}".format(self.id_prefix, notes.index(note))
                 li = ol.ekid("li", {"id": id_})
                 p = li.ekid("p")
                 for x in note.kids:
-                    p.kids.extend(term2xml(x, xc.c, self))
+                    term = do_atom(x)
+                    p.kids.extend(term2xml(term, xc.c, self, doc_path))
             htmlstr = xl.Xml(root=html).to_str(do_pretty=True, dont_do_tags=["title", "p"])
             ebook.userfiles[doc_path] = htmlstr
             ebook.spine.append(doc_path)
@@ -144,14 +145,27 @@ class Note(Term):
     def __init__(self, e: xl.Element):
         if isinstance(e, xl.Element) and e.tag == "note":
             self._e = e
+            self._terms = []
+            for x in e.kids:
+                self._terms.append(do_atom(x))
         else:
             raise TypeError
 
-    def to_xml(self, c: callable, note_collection: NoteCollection, *args, **kwargs):
-        href = note_collection.add(self._e)
-        assert len(self._e.kids) == 1
-        a = xl.Element("a", {"ebook:type": "noteref", "href": href, "class": "noteref"}, [c(self._e.kids[0])])
+    def to_xml(self, c: callable, note_collection: NoteCollection, doc_path, *args, **kwargs):
+        note_href = note_collection.add(self._e)
+        href = epub_public.relpath(note_href, doc_path)
+        a = xl.Element("a", {"epub:type": "noteref", "href": href, "class": "noteref"})
+        a.kids.append("[注]")
         return [a]
+
+
+class Space(Term):
+    def __init__(self, e: xl.Element):
+        if isinstance(e, xl.Element) and e.tag == "space":
+            self._e = e
+
+    def to_xml(self, *args, **kwargs) -> list:
+        return []
 
 
 class P(Term):
@@ -164,10 +178,10 @@ class P(Term):
         else:
             raise TypeError
 
-    def to_xml(self, c, note_collection, *args, **kwargs) -> list:
+    def to_xml(self, *args, **kwargs) -> list:
         p = xl.Element("p")
         for x in self._terms:
-            p.kids.extend(x.to_xml(c, note_collection))
+            p.kids.extend(x.to_xml(*args, **kwargs))
 
         return [p]
 
@@ -191,6 +205,7 @@ class Ref(Term):
             raise TypeError
 
     def to_xml(self, *args, **kwargs) -> list:
+        return []
         return [self._e]
 
 
@@ -258,12 +273,11 @@ class App(Term):
             return []
 
 
-def term2xml(term: Term or str, c, note_collection):
+def term2xml(term: Term or str, c, note_collection, doc_path):
     if isinstance(term, str):
         return [c(term)]
     elif isinstance(term, Term):
-        return term.to_xml(c, note_collection)
-    print(("type:{}".format(type(term)), term.tag))
+        return term.to_xml(c, note_collection, doc_path)
     raise Exception
 
 
@@ -274,7 +288,7 @@ class NoteNotFoundError(Exception):
 ###############################################################################
 
 def do_atom(atom: any):
-    for Class in (Head, Str, Lg, P, G, Ref, Note, App):
+    for Class in (Head, Str, Lg, P, G, Ref, Note, App, Space):
         try:
             return Class(atom)
         except TypeError:
@@ -350,7 +364,14 @@ def make_tree(snikaya, last_container, terms):
         last_container.terms.append(do_atom(term))
 
 
+_nikaya = None
+
+
 def get_nikaya():
+    global _nikaya
+    if _nikaya:
+        return _nikaya
+
     snikaya = SN()
     for one in xmls:
         filename = os.path.join(xmlp5_dir, one)
@@ -370,15 +391,16 @@ def get_nikaya():
 
         tei = filter_element(tei, is_lb)
         tei = filter_element(tei, is_pb)
+        tei = filter_element(tei, is_pts_ref)
         tei = filter_element(tei, is_num_p)
         tei = filter_element(tei, is_milestone)
 
         text = tei.find_kids("text")[0]
         body = text.find_kids("body")[0]
-        print(one)
+        # print(one)
 
         make_tree(snikaya, None, body.kids)
-
+    _nikaya = snikaya
     return snikaya
 
 
@@ -405,11 +427,21 @@ def is_pb(x):
     return False
 
 
+def is_pts_ref(x):
+    if isinstance(x, xl.Element):
+        if x.tag == "ref":
+            if "cRef" in x.attrs.keys():
+                if re.match("^PTS", x.attrs["cRef"]):
+                    if len(x.kids) == 0:
+                        return True
+    return False
+
+
 def is_num_p(x):
     if isinstance(x, xl.Element):
         if x.tag == "p":
             if len(x.kids) == 1:
-                if re.match(r"^[〇一二三四五六七八九十]+$", x.kids[0]):
+                if re.match(r"^[〇一二三四五六七八九十※～]+$", x.kids[0]):
                     return True
     return False
 

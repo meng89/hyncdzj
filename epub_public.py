@@ -51,7 +51,7 @@ def make(nikaya, write_fun, xc: book_public.XC, temprootdir, books_dir, epubchec
     ebook = create_ebook(nikaya, xc)
     bns = [nikaya.abbr]
 
-    write_cover(ebook, nikaya, xc, mytemprootdir)
+    write_cover(ebook, nikaya, xc)
     # fanli.write_fanli(ebook, xc)
     # homage.write_homage(ebook, xc, nikaya.homage_line)
 
@@ -86,7 +86,7 @@ def check_epub(epub_path, epubcheck, mytemprootdir):
 
     def _run():
         nonlocal check_result
-        print("运行:", compile_cmd, end=" ", flush=True)
+        print("执行检查", repr(compile_cmd), end=" ", flush=True)
         p = subprocess.Popen(compile_cmd, cwd=mytemprootdir, shell=True,
                              stdout=stdout_file, stderr=stderr_file)
         p.communicate()
@@ -96,23 +96,23 @@ def check_epub(epub_path, epubcheck, mytemprootdir):
             check_result = True
     _run()
     if check_result:
-        print("成功！")
+        print("✔")
     else:
-        print("出错！")
+        print("✘")
     return check_result
 
 
 def copy2booksdir(epub_path, nikaya, xc, books_dir):
     shutil.copy(epub_path,
-                os.path.join(books_dir, "{}_{}_{}{}_{}.ebook".format(xc.c(nikaya.title_hant),
+                os.path.join(books_dir, "{}_{}_{}{}_{}.epub".format(xc.c(nikaya.title_hant),
                                                                     xc.zhlang,
-                                                                    "莊",
+                                                                    "元亨寺",
                                                                     nikaya.last_modified.strftime("%y%m"),
                                                                     datetime.datetime.now().strftime("%Y%m%d"))))
 
 
 def write2file(epub, mytemprootdir, bn):
-    epub_path = os.path.join(mytemprootdir, "{}.ebook".format(bn))
+    epub_path = os.path.join(mytemprootdir, "{}.epub".format(bn))
     epub.write(epub_path)
     return mytemprootdir, epub_path
 
@@ -146,7 +146,7 @@ def create_ebook(nikaya, xc: book_public.XC):
 def _make_note_doc(title, xc: book_public.XC, doc_path):
     html, body = make_doc(doc_path, xc, title)
     body.attrs["class"] = "note"
-    sec = xl.sub(body, "section", {"ebook:type": "endnotes", "role": "doc-endnotes"})
+    sec = xl.sub(body, "section", {"epub:type": "endnotes", "role": "doc-endnotes"})
     ol = xl.sub(sec, "ol")
     return html, ol
 
@@ -170,7 +170,7 @@ def _make_js_link(head, src, id_=None):
 
 
 def make_doc(doc_path, xc, title=None):
-    html = xl.Element("html", {"xmlns:ebook": "http://www.idpf.org/2007/ops",
+    html = xl.Element("html", {"xmlns:epub": "http://www.idpf.org/2007/ops",
                                "xmlns": "http://www.w3.org/1999/xhtml",
                                "xml:lang": xc.xmlang,
                                "lang": xc.xmlang})
@@ -190,7 +190,7 @@ def make_doc(doc_path, xc, title=None):
     return html, body
 
 
-def write_cover(ebook, nikaya, xc: book_public.XC, mytemprootdir):
+def write_cover(ebook, nikaya, xc: book_public.XC):
 
     cover_img_filename = "{}_{}_cover.png".format(nikaya.abbr, xc.enlang)
     cover_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "cover_images")
