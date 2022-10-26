@@ -10,7 +10,10 @@ _css1 = """
 }
 
 body.sutta p {
+    text-indent: 2em;
     margin: 0.3em;
+    font-family: "Noto Serif CJK TC";
+    font-weight: 400;
 }
 
 .tail_number {

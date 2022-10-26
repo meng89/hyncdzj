@@ -124,12 +124,22 @@ class NoteCollection(object):
         raise NoteNotFoundError
 
     def write2ebook(self, ebook: epubpacker.Epub, xc):
+
+        toc = epubpacker.Toc("註解")
+
         for notes in self._lists_of_notes:
             doc_path = "{}{}.xhtml".format(self.path_prefix, self._lists_of_notes.index(notes))
             html, body = epub_public.make_doc(doc_path, xc, xc.c("註解"))
             sec = body.ekid("section", {"epub:type": "endnotes", "role": "doc-endnotes"})
             ol = sec.ekid("ol")
             for note in notes:
+
+                if toc.href:
+                    pass
+                else:
+                    toc.href = doc_path
+                    ebook.root_toc.append(toc)
+
                 id_ = "{}{}".format(self.id_prefix, notes.index(note))
                 li = ol.ekid("li", {"id": id_})
                 p = li.ekid("p")

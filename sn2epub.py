@@ -168,14 +168,15 @@ def write(nikaya, ebook: epubpacker.Epub, xc, _test=False) -> sn.NoteCollection(
             pian_toc.kids.append(xy_toc)
             _xy_title = "{}. {}".format(xy_serial, c(xy_name))
             html, body = epub_public.make_doc(doc_path=doc_path, xc=xc, title=_xy_title)
+            body.attrs["class"] = "sutta"
             body.kids.extend(elements_before_xy)
             elements_before_xy.clear()
             xl.sub(body, "h2", {"class": "title", "id": xy_id}, kids=[_xy_title])
 
             if sn.is_sutta_parent(xy):
-                write_sutta_parent(nikaya, xy, note_collection, doc_path, xy_toc, xc, body)
+                write_sutta_parent(nikaya, xy, xy_serial, note_collection, doc_path, xy_toc, xc, body)
             else:
-                write_before_sutta(nikaya, xy, note_collection, doc_path, xy_toc, xc, body)
+                write_before_sutta(nikaya, xy, xy_serial, note_collection, doc_path, xy_toc, xc, body)
 
             htmlstr = xl.Xml(root=html).to_str(do_pretty=True, dont_do_tags=["title", "p", "h1", "h2", "h3", "h4"])
             ebook.userfiles[doc_path] = htmlstr
@@ -184,7 +185,7 @@ def write(nikaya, ebook: epubpacker.Epub, xc, _test=False) -> sn.NoteCollection(
     return note_collection
 
 
-def write_before_sutta(nikaya: sn.SN, container: sn.Container, note_collection,
+def write_before_sutta(nikaya: sn.SN, container: sn.Container, xy_serial, note_collection,
                        doc_path, toc,
                        xc, body: xl.Element):
     c = xc.c
@@ -207,12 +208,12 @@ def write_before_sutta(nikaya: sn.SN, container: sn.Container, note_collection,
         toc.kids.append(my_toc)
 
         if sn.is_sutta_parent(term):
-            write_sutta_parent(nikaya, term, note_collection, doc_path, my_toc, xc, body)
+            write_sutta_parent(nikaya, term, xy_serial, note_collection, doc_path, my_toc, xc, body)
         else:
-            write_before_sutta(nikaya, term, note_collection, doc_path, my_toc, xc, body)
+            write_before_sutta(nikaya, term, xy_serial, note_collection, doc_path, my_toc, xc, body)
 
 
-def write_sutta_parent(nikaya, container, note_collection, doc_path, toc, xc, body):
+def write_sutta_parent(nikaya, container, xy_serial, note_collection, doc_path, toc, xc, body):
     c = xc.c
     for _x in container.terms:
         if isinstance(_x, sn.Term):
@@ -229,7 +230,8 @@ def write_sutta_parent(nikaya, container, note_collection, doc_path, toc, xc, bo
         sutta_toc = epubpacker.Toc("{}. {}".format(serial, name), doc_path + "#" + _html_id)
         toc.kids.append(sutta_toc)
 
-        body.ekid("h4", {"class": "title", "id": get_html_id(nikaya, sutta)}, kids=[c(name)])
+        title = "SN {}.{}　{}".format(xy_serial, serial, c(name))
+        body.ekid("h4", {"class": "title", "id": get_html_id(nikaya, sutta)}, kids=[title])
 
         for x in sutta.terms:
             if isinstance(x, sn.Container):

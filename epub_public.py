@@ -133,8 +133,8 @@ def create_ebook(nikaya, xc: book_public.XC):
     epub.meta.others.append(xl.Element("meta", {"refines": "#c01", "property": "collection-type"}, ["series"]))
 
     epub.userfiles[css.css1_path] = css.css1[xc.enlang]
-    epub.userfiles[css.css2_path] = css.css2[xc.enlang]
-    epub.userfiles[js.js1_path] = js.js1
+    # epub.userfiles[css.css2_path] = css.css2[xc.enlang]
+    # epub.userfiles[js.js1_path] = js.js1
     epub.userfiles["_css/user_css1.css"] = "/* 第一个自定义 CSS 文件 */\n\n"
     epub.userfiles["_css/user_css2.css"] = "/* 第二个自定义 CSS 文件 */\n\n"
     epub.userfiles["_js/user_js1.js"] = "// 第一个自定义 JS 文件\n\n"
