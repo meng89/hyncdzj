@@ -130,6 +130,7 @@ class NoteCollection(object):
         for notes in self._lists_of_notes:
             doc_path = "{}{}.xhtml".format(self.path_prefix, self._lists_of_notes.index(notes))
             html, body = epub_public.make_doc(doc_path, xc, xc.c("註解"))
+            body.attrs["class"] = "note"
             sec = body.ekid("section", {"epub:type": "endnotes", "role": "doc-endnotes"})
             ol = sec.ekid("ol")
             for note in notes:
@@ -258,11 +259,13 @@ class Lg(Term):
     def to_xml(self, c, *args, **kwargs) -> list:
         div = xl.Element("div", {"class": "ji"})
         if self._poet:
-            div.ekid("p", {"class": "_poet"}, [term2xml(self._poet, c, *args, **kwargs)])
+            div.ekid("p", {"class": "poet"}, term2xml(self._poet, c, *args, **kwargs))
         for line in self._body:
             for sentence in line:
                 p = div.ekid("p", {"class": "sentence"})
                 for term in sentence:
+                    if isinstance(term, str):
+                        term = term.replace("「", "").replace("」", "")
                     p.kids.extend(term2xml(term, c, *args, **kwargs))
 
         return [div]

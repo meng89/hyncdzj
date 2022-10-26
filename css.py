@@ -9,24 +9,43 @@ _css1 = """
     text-decoration: inherit;
 }
 
+
 body.sutta p {
     text-indent: 2em;
     margin: 0.3em;
     font-family: "Noto Serif CJK TC";
-    font-weight: 400;
 }
-
-.tail_number {
+body.sutta div.ji{
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+}
+body.sutta p.poet{
+    text-indent: 3em;
+    color: DarkBlue;
+}
+body.sutta p.sentence{
+    text-indent: 6em;
+    color: DarkGreen;
+}
+body.sutta a.noteref {
+    color: inherit;
     font-size: small;
 }
 
-a.noteref {
-    color: inherit;
+
+
+body.note {
+    font-family: "Noto Serif", "Noto Serif CJK TC", Serif;
 }
 
 body.note ol {
     list-style: none;
 }
+
+
+
+
+
 
 a.suttaref_inbook {
     color: inherit;

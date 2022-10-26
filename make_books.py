@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 import os
 import tempfile
+import time
+import subprocess
 
 from book_public import SC, TC
 
@@ -32,6 +34,7 @@ def main():
     os.makedirs(BOOKS_DIR, exist_ok=True)
 
     print_temprootdir()
+    subprocess.run(["dolphin", temprootdir_td.name], stdout=subprocess.DEVNULL)
 
     for xc in (TC(), SC()):
         sn2epub.make(xc, temprootdir_td.name, BOOKS_DIR, EPUBCHECK)
