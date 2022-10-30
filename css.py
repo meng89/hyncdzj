@@ -9,6 +9,16 @@ _css1 = """
     text-decoration: inherit;
 }
 
+body.xu h3 {
+    text-align: center;
+}
+body.xu p {
+    text-indent: 2em;
+    font-family: "Noto Serif CJK TC";
+}
+body.xu p.luokuan{
+    text-align: right;
+}
 
 body.sutta p {
     text-indent: 2em;

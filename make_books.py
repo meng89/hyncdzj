@@ -7,6 +7,7 @@ import subprocess
 from book_public import SC, TC
 
 import sn2epub
+import mn2epub
 
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 
@@ -37,8 +38,8 @@ def main():
     subprocess.run(["dolphin", temprootdir_td.name], stdout=subprocess.DEVNULL)
 
     for xc in (TC(), SC()):
-        sn2epub.make(xc, temprootdir_td.name, BOOKS_DIR, EPUBCHECK)
-    #    mn2epub.make(xc, temprootdir_td.name, BOOKS_DIR, uc.EPUBCHECK)
+    #    sn2epub.make(xc, temprootdir_td.name, BOOKS_DIR, EPUBCHECK)
+        mn2epub.make(xc, temprootdir_td.name, BOOKS_DIR, EPUBCHECK)
     #    dn2epub.make(xc, temprootdir_td.name, BOOKS_DIR, uc.EPUBCHECK)
     #    an2epub.make(xc, temprootdir_td.name, BOOKS_DIR, uc.EPUBCHECK)
 

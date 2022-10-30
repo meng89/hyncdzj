@@ -7,16 +7,19 @@ import string
 import uuid
 from urllib.parse import urlsplit
 
-
+import cn2an
 import xl
 import epubpacker
 
+import base
 import book_public
+import config
 
 import notice
 import css
 import js
-import sn
+import xu
+
 
 
 def relpath(path1, path2):
@@ -55,7 +58,8 @@ def make(nikaya, write_fun, xc: book_public.XC, temprootdir, books_dir, epubchec
     # fanli.write_fanli(ebook, xc)
     # homage.write_homage(ebook, xc, nikaya.homage_line)
 
-    note_collection: sn.NoteCollection = write_fun(nikaya=nikaya, ebook=ebook, xc=xc)
+    xu.write_xu(ebook, xc)
+    note_collection: base.NoteCollection = write_fun(nikaya=nikaya, ebook=ebook, xc=xc)
 
     note_collection.write2ebook(ebook, xc)
 
@@ -69,6 +73,8 @@ def make(nikaya, write_fun, xc: book_public.XC, temprootdir, books_dir, epubchec
 
     if is_java_exist() and os.path.exists(epubcheck) and check_result:
         copy2booksdir(epub_path=epub_path, nikaya=nikaya, xc=xc, books_dir=books_dir)
+
+
 
 
 def is_java_exist():
@@ -104,10 +110,10 @@ def check_epub(epub_path, epubcheck, mytemprootdir):
 
 def copy2booksdir(epub_path, nikaya, xc, books_dir):
     shutil.copy(epub_path,
-                os.path.join(books_dir, "{}_{}_{}{}_{}.epub".format(xc.c(nikaya.title_hant),
+                os.path.join(books_dir, "{}_{}_{}{}_{}.epub".format(xc.c(nikaya.name_hant),
                                                                     xc.zhlang,
                                                                     "元亨寺",
-                                                                    nikaya.last_modified.strftime("%y%m"),
+                                                                    nikaya.mtime.strftime("%y%m"),
                                                                     datetime.datetime.now().strftime("%Y%m%d"))))
 
 
@@ -117,15 +123,15 @@ def write2file(epub, mytemprootdir, bn):
     return mytemprootdir, epub_path
 
 
-def create_ebook(nikaya, xc: book_public.XC):
+def create_ebook(nikaya: base.Nikaya, xc: book_public.XC):
     epub = epubpacker.Epub()
 
-    epub.meta.titles = [xc.c(nikaya.title_hant)]
+    epub.meta.titles = [xc.c(nikaya.name_hant)]
     epub.meta.creators = ["元亨寺"]
-    epub.meta.date = nikaya.last_modified.strftime("%Y-%m-%dT%H:%M:%SZ")
+    epub.meta.date = nikaya.mtime.strftime("%Y-%m-%dT%H:%M:%SZ")
     epub.meta.languages = [xc.xmlang, "pi", "en-US"]
 
-    my_uuid = get_uuid(xc.c(nikaya.title_hant) + xc.enlang)
+    my_uuid = get_uuid(xc.c(nikaya.name_hant) + xc.enlang)
     epub.meta.identifier = my_uuid.urn
 
     epub.meta.others.append(xl.Element("meta", {"property": "belongs-to-collection", "id": "c01"},
@@ -190,7 +196,7 @@ def make_doc(doc_path, xc, title=None):
     return html, body
 
 
-def write_cover(ebook, nikaya, xc: book_public.XC):
+def write_cover(ebook, nikaya: base.Nikaya, xc: book_public.XC):
 
     cover_img_filename = "{}_{}_cover.png".format(nikaya.abbr, xc.enlang)
     cover_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "cover_images")
@@ -204,16 +210,16 @@ def write_cover(ebook, nikaya, xc: book_public.XC):
             template_str = _template_str
         t = string.Template(template_str)
 
-        if len(nikaya.title_hant) == 2:
-            title_hant = nikaya.title_hant[0] + "&nbsp;&nbsp;" + nikaya.title_hant[1]
+        if len(nikaya.name_hant) == 2:
+            name_hant = nikaya.name_hant[0] + "&nbsp;&nbsp;" + nikaya.name_hant[1]
         else:
-            title_hant = nikaya.title_hant
+            name_hant = nikaya.name_hant
         doc_str = \
-            t.substitute(bookname_han=xc.c(title_hant),
-                         bookname_pi=nikaya.title_pali,
+            t.substitute(bookname_han=xc.c(name_hant),
+                         bookname_pi=nikaya.name_pali,
                          han_version=xc.han_version,
                          translator="元亨寺",
-                         date=nikaya.last_modified.strftime("%Y年%m月")
+                         date=nikaya.mtime.strftime("%Y年%m月")
                          )
         from html2image import Html2Image as HtI
         hti = HtI(browser_executable="google-chrome-stable", output_path=cover_dir)
@@ -235,3 +241,31 @@ def write_cover(ebook, nikaya, xc: book_public.XC):
     ebook.userfiles[cover_doc_path] = htmlstr
     ebook.root_toc.append(epubpacker.Toc("封面", cover_doc_path))
     ebook.spine.append(cover_doc_path)
+
+
+class TermNotFoundError(Exception):
+    pass
+
+
+def get_html_id(container, term, prefix=None):
+    prefix = prefix or "id"
+    serial = 0
+    for _term in container.terms:
+        serial += 1
+
+        current_prefix = "{}-{}".format(prefix, serial)
+
+        if _term is term:
+            return current_prefix
+
+        if isinstance(_term, base.Container):
+            try:
+                return get_html_id(_term, term, current_prefix)
+            except TermNotFoundError:
+                pass
+
+    raise TermNotFoundError()
+
+
+def transform_digit(han_digit: str):
+    return cn2an.cn2an(han_digit, "smart")
