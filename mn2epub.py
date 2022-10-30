@@ -77,10 +77,9 @@ def write(nikaya: base.Nikaya, ebook: epubpacker.Epub, xc, _test=False) -> base.
             pin_toc = epubpacker.Toc("{} {}~{}".format(c(pin.mulu), sutta_begin, sutta_end))
             pian_toc.kids.append(pin_toc)
 
-            html, body = epub_public.make_doc(doc_path=fake_path, xc=xc, title=c(pin.mulu))
-            body.attrs["class"] = "sutta"
-            body.kids.extend(elements_before_xy)
-            elements_before_xy.clear()
+
+            
+
             xl.sub(body, "h2", {"class": "title", "id": pin_id}, kids=[c(pin.mulu)])
 
             for term3 in pin.terms:
@@ -91,6 +90,11 @@ def write(nikaya: base.Nikaya, ebook: epubpacker.Epub, xc, _test=False) -> base.
                 sutta = term3
                 sutta_seril, sutta_name = get_sutta_seril_and_name(sutta.mulu)
                 doc_path = "MN/MN.{}.xhtml".format(sutta_seril)
+                html, body = epub_public.make_doc(doc_path=fake_path, xc=xc, title=c(pin.mulu))
+                body.attrs["class"] = "sutta"
+                body.kids.extend(elements_before_xy)
+                elements_before_xy.clear()
+
                 if not pian_toc.href:
                     pian_toc.href = doc_path + "#" + pian_id
                 if not pin_toc.href:

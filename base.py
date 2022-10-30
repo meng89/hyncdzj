@@ -414,28 +414,27 @@ def make_nikaya(nikaya, xmls):
         tei = xml.root
         text = tei.find_kids("text")[0]
         body = text.find_kids("body")[0]
-        new_body = filter_kids(body)
-        make_tree(nikaya, None, new_body.kids)
-        delete_old_note(nikaya)
+        body = filter_kids(body)
+        delete_old_note(body)
+        make_tree(nikaya, None, body.kids)
 
 
-def delete_old_note(container): #todo
-    new_terms = []
-    for term in container.terms:
-        if isinstance(term, Container):
-            delete_old_note(term)
+def delete_old_note(e: xl.Element):
+    new_kids = []
+    for kid in e.kids:
+        if isinstance(kid, xl.Element):
+            if kid.tag == "note":
+                if new_kids:
+                    if isinstance(new_kids[-1], xl.Element) and new_kids[-1].tag == "note":
+                        if new_kids[-1].attrs["n"] == kid.attrs["n"]:
+                            new_kids.pop()
+                            new_kids.append(kid)
 
-        elif isinstance(term, Note):
-            print(term.n)
-            if new_terms:
-                if isinstance(new_terms[-1], Note):
-
-                    if new_terms[-1].n == term.n:
-                        new_terms.pop()
-
-        new_terms.append(term)
-
-    container.terms[:] = new_terms
+            else:
+                delete_old_note(kid)
+        else:
+            new_kids.append(kid)
+    e.kids[:] = new_kids
 
 
 def make_tree(nikaya, container, xes):
