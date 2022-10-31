@@ -74,13 +74,10 @@ def write(nikaya: base.Nikaya, ebook: epubpacker.Epub, xc, _test=False) -> base.
             sutta_begin, sutta_end = get_sutta_range(pin)
             pin_id = epub_public.get_html_id(nikaya, pin)
 
-            pin_toc = epubpacker.Toc("{} {}~{}".format(c(pin.mulu), sutta_begin, sutta_end))
+            pin_toc = epubpacker.Toc("{}　{}~{}".format(c(pin.mulu), sutta_begin, sutta_end))
             pian_toc.kids.append(pin_toc)
 
-
-            
-
-            xl.sub(body, "h2", {"class": "title", "id": pin_id}, kids=[c(pin.mulu)])
+            elements_before_xy.append(xl.Element("h2", {"class": "title", "id": pin_id}, kids=[c(pin.mulu)]))
 
             for term3 in pin.terms:
                 if not isinstance(term2, base.Container):
@@ -100,7 +97,9 @@ def write(nikaya: base.Nikaya, ebook: epubpacker.Epub, xc, _test=False) -> base.
                 if not pin_toc.href:
                     pin_toc.href = doc_path + "#" + pin_id
                 sutta_id = get_html_id(nikaya, sutta)
-                sutta_toc = epubpacker.Toc("MN {}　{}".format(sutta_seril, c(sutta_name)), doc_path + "#" + sutta_id)
+                sutta_toc = epubpacker.Toc("{}.　{}".format(sutta_seril, c(sutta_name)), doc_path + "#" + sutta_id)
+                sutta_title = "MN {}　{}".format(sutta_seril, c(sutta_name))
+                body.ekid("h3", {"class": "title", "id": sutta_id}, kids=[c(sutta_title)])
                 pin_toc.kids.append(sutta_toc)
                 for term4 in sutta.terms:
                     if not isinstance(term4, base.Term):
