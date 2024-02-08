@@ -68,9 +68,7 @@ class Head(Term):
             raise TypeError
 
     def to_xml(self, *args, **kwargs) -> list:
-        #todo
         return []
-        raise Exception
 
 
 class Str(Term):
@@ -210,7 +208,6 @@ class Ref(Term):
 
     def to_xml(self, *args, **kwargs) -> list:
         return []
-        return [self._e]
 
 
 class Lg(Term):
@@ -423,22 +420,19 @@ def delete_old_note(e: xl.Element):
     new_kids = []
     for kid in e.kids:
         if isinstance(kid, xl.Element):
-            if kid.tag == "note":
+            if kid.tag == "note" and "n" in kid.attrs.keys():
                 if new_kids:
-                    if isinstance(new_kids[-1], xl.Element) and new_kids[-1].tag == "note":
+                    last = new_kids[-1]
+                    if isinstance(last, xl.Element) and last.tag == "note" and "n" in last.attrs.keys():
                         if new_kids[-1].attrs["n"] == kid.attrs["n"]:
                             new_kids.pop()
-                            new_kids.append(kid)
-
             else:
                 delete_old_note(kid)
-        else:
-            new_kids.append(kid)
+        new_kids.append(kid)
     e.kids[:] = new_kids
 
 
 def make_tree(nikaya, container, xes):
-    last_container = container or nikaya
     for xe in xes:
         if isinstance(xe, xl.Element):
             if xe.tag == "cb:div":
@@ -453,24 +447,24 @@ def make_tree(nikaya, container, xes):
                 parent_container = get_parent_container(nikaya, new_container.level)
                 parent_container.terms.append(new_container)
 
-                last_container = new_container
+                container = new_container
                 continue
 
             if xe.tag == "head":
-                if not last_container.head:
-                    last_container.head = Head(xe)
+                if not container.head:
+                    container.head = Head(xe)
                 else:
                     print(xe.kids)
                     raise Exception
                 continue
 
             try:
-                last_container.terms.append(do_atom(xe))
+                container.terms.append(do_atom(xe))
             except AttributeError:
                 print(xe, xe.tag, xe.attrs, xe.kids)
 
         else:
-            last_container.terms.append(do_atom(xe))
+            container.terms.append(do_atom(xe))
 
 
 def change_mulu(container, level, fun):
