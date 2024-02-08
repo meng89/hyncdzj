@@ -78,7 +78,7 @@ def write(nikaya: base.Nikaya, ebook: epubpacker.Epub, xc, _test=False) -> base.
             pian_toc.kids.append(pin_toc)
 
 
-            
+
 
             xl.sub(body, "h2", {"class": "title", "id": pin_id}, kids=[c(pin.mulu)])
 
