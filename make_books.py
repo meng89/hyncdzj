@@ -35,11 +35,12 @@ def main():
     os.makedirs(BOOKS_DIR, exist_ok=True)
 
     print_temprootdir()
-    subprocess.run(["dolphin", temprootdir_td.name], stdout=subprocess.DEVNULL)
+    #subprocess.run(["dolphin", temprootdir_td.name], stdout=subprocess.DEVNULL)
 
+    print("here")
     for xc in (TC(), SC()):
-    #    sn2epub.make(xc, temprootdir_td.name, BOOKS_DIR, EPUBCHECK)
-        mn2epub.make(xc, temprootdir_td.name, BOOKS_DIR, EPUBCHECK)
+        sn2epub.make(xc, temprootdir_td.name, BOOKS_DIR, EPUBCHECK)
+    #    mn2epub.make(xc, temprootdir_td.name, BOOKS_DIR, EPUBCHECK)
     #    dn2epub.make(xc, temprootdir_td.name, BOOKS_DIR, uc.EPUBCHECK)
     #    an2epub.make(xc, temprootdir_td.name, BOOKS_DIR, uc.EPUBCHECK)
 

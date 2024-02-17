@@ -50,14 +50,16 @@ def change_pian_mulu_fun(mulu: str):
     m = re.match(r"^(.+篇).* \(\d+-\d+\)$", mulu)
     if m:
         return m.group(1)
-    return mulu
+    else:
+        return mulu
 
 
 def change_xy_mulu_fun(mulu: str):
     m = re.match(r"^\S+　(\S+)$", mulu)
     if m:
         return m.group(1)
-    return mulu
+    else:
+        return mulu
 
 
 def change_pin_mulu_fun(mulu: str):
@@ -66,35 +68,36 @@ def change_pin_mulu_fun(mulu: str):
     m = re.match("第?[一二三四五六七八九十]+　(.+)$", mulu)
     if m:
         return m.group(1)
+    else:
 
-    # 第一品
-    # 異學廣說
-    m = re.match(r"^(\S+)$", mulu)
-    if m:
-        return m.group(1)
-
-    return mulu
+        # 第一品
+        # 異學廣說
+        m = re.match(r"^(\S+)$", mulu)
+        if m:
+            return m.group(1)
+        else:
+            return mulu
 
 
 def get_nikaya():
     global _nikaya
     if _nikaya:
         return _nikaya
+    else:
+        snikaya = SN()
+        base.make_nikaya(snikaya, xmls)
 
-    snikaya = SN()
-    base.make_nikaya(snikaya, xmls)
+        base.change_mulu(snikaya, 1, change_pian_mulu_fun)
+        base.change_mulu(snikaya, 2, change_xy_mulu_fun)
 
-    base.change_mulu(snikaya, 1, change_pian_mulu_fun)
-    base.change_mulu(snikaya, 2, change_xy_mulu_fun)
+        base.change_mulu(snikaya, 3, change_pin_mulu_fun)
+        base.change_mulu(snikaya, 4, change_pin_mulu_fun)
+        base.change_mulu(snikaya, 5, change_pin_mulu_fun)
 
-    base.change_mulu(snikaya, 3, change_pin_mulu_fun)
-    base.change_mulu(snikaya, 4, change_pin_mulu_fun)
-    base.change_mulu(snikaya, 5, change_pin_mulu_fun)
+        base.merge_terms(snikaya)
 
-    base.merge_terms(snikaya)
-
-    _nikaya = snikaya
-    return snikaya
+        _nikaya = snikaya
+        return snikaya
 
 
 def is_sutta_parent(parent_container: base.Container):
@@ -131,7 +134,7 @@ def print_title(container, depth):
                 print(" " * depth, "<Sutta>:", term.mulu, sep="")
             else:
                 print(" " * depth, term.mulu, sep="")
-            print_title(term, depth + 4)
+            print_title(term, depth + 2)
 
 
 def check_x_first_term(nikaya):

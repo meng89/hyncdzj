@@ -77,14 +77,9 @@ def write(nikaya: base.Nikaya, ebook: epubpacker.Epub, xc, _test=False) -> base.
             pin_toc = epubpacker.Toc("{}　{}~{}".format(c(pin.mulu), sutta_begin, sutta_end))
             pian_toc.kids.append(pin_toc)
 
-<<<<<<< HEAD
-
-
-
             xl.sub(body, "h2", {"class": "title", "id": pin_id}, kids=[c(pin.mulu)])
-=======
+
             elements_before_xy.append(xl.Element("h2", {"class": "title", "id": pin_id}, kids=[c(pin.mulu)]))
->>>>>>> 54811097b71ae4853d45b654f135ac65774c047f
 
             for term3 in pin.terms:
                 if not isinstance(term2, base.Container):

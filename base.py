@@ -469,15 +469,15 @@ def make_tree(nikaya, container, xes):
 
 def change_mulu(container, level, fun):
     for term in container.terms:
-        if not isinstance(term, Container):
-            continue
-
-        if term.level < level:
-            change_mulu(term, level, fun)
-        elif term.level == level:
-            term.mulu = fun(term.mulu)
+        if isinstance(term, Container):
+            if term.level < level:
+                change_mulu(term, level, fun)
+            elif term.level == level:
+                term.mulu = fun(term.mulu)
+            else:
+                raise Exception
         else:
-            raise Exception
+            pass
 
 
 def merge_terms(container):
@@ -506,3 +506,16 @@ def merge_terms(container):
             merge_terms(term)
 
     container.terms[:] = new_terms
+
+
+class Book(object):
+    def __init__(self):
+        self._abbr = None
+
+
+class Artcle(object):
+    def __init__(self):
+        self._abbr = None
+        self._hant = None
+        self._body = []  # 包含段落、小标题以及偈语
+        self._notes = []

@@ -128,7 +128,6 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-xml-p5a/
 cbeta_gaiji/
 gaiji-CB/
 
@@ -136,4 +135,5 @@ gaiji-CB/
 
 user_config.py
 
+sources/xml-p5a/
 books/
