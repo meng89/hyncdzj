@@ -1,12 +1,7 @@
 #!/usr/bin/env python3
 import re
-import os
-import datetime
-
-import xl
 
 import base
-import config
 
 
 xmls = [
@@ -135,6 +130,19 @@ def print_title(container, depth):
             else:
                 print(" " * depth, term.mulu, sep="")
             print_title(term, depth + 2)
+        else:
+            print(" " * depth, term, sep="")
+
+
+def is_container_in_it(term):
+    if isinstance(term, base.Container):
+        for sub_term in term.terms:
+            if isinstance(sub_term, base.Container):
+                return True
+
+        return False
+    else:
+        return False
 
 
 def check_x_first_term(nikaya):
@@ -142,13 +150,14 @@ def check_x_first_term(nikaya):
         term = pian.terms[0]
         print(pian.mulu)
         if not isinstance(term, base.Container):
-            print(term)
+            input("hehe")
+            print(term._e.to_str())
 
 
 def main():
     nikaya = get_nikaya()
     print_title(nikaya, 0)
-    check_x_first_term(nikaya)
+    # check_x_first_term(nikaya)
 
 
 if __name__ == "__main__":
