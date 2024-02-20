@@ -13,7 +13,7 @@ g_map = {"#CB03020": "婬"
          }
 
 
-class Nikaya(object):
+class Book(object):
     def __init__(self):
         self._abbr = None
         self._name_hant = None
@@ -304,14 +304,14 @@ class ElementError(Exception):
 
 def get_last_container(container):
     for term in container.terms:
-        if isinstance(term, Container) or isinstance(term, Nikaya):
+        if isinstance(term, Container) or isinstance(term, Book):
             return get_last_container(term)
     return container
 
 
-def get_parent_container(tree: Nikaya or Container, level):
+def get_parent_container(tree: Book or Container, level):
     if level == 1:
-        assert isinstance(tree, Nikaya)
+        assert isinstance(tree, Book)
         return tree
     else:
         for term in reversed(tree.terms):
@@ -508,13 +508,10 @@ def merge_terms(container):
     container.terms[:] = new_terms
 
 
-class Book(object):
-    def __init__(self):
-        self._abbr = None
-
-
 class Artcle(object):
-    def __init__(self):
+    def __init__(self, filename):
+        self._filename = filename
+        self._xmlobj = None
         self._abbr = None
         self._hant = None
         self._body = []  # 包含段落、小标题以及偈语

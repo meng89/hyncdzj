@@ -123,7 +123,7 @@ def write2file(epub, mytemprootdir, bn):
     return mytemprootdir, epub_path
 
 
-def create_ebook(nikaya: base.Nikaya, xc: book_public.XC):
+def create_ebook(nikaya: base.Book, xc: book_public.XC):
     epub = epubpacker.Epub()
 
     epub.meta.titles = [xc.c(nikaya.name_hant)]
@@ -196,7 +196,7 @@ def make_doc(doc_path, xc, title=None):
     return html, body
 
 
-def write_cover(ebook, nikaya: base.Nikaya, xc: book_public.XC):
+def write_cover(ebook, nikaya: base.Book, xc: book_public.XC):
 
     cover_img_filename = "{}_{}_cover.png".format(nikaya.abbr, xc.enlang)
     cover_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "cover_images")

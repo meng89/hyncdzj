@@ -43,7 +43,7 @@ def get_sutta_range(container: base.Container):
     return get_sutta_begin(container), get_sutta_end(container)
 
 
-def write(nikaya: base.Nikaya, ebook: epubpacker.Epub, xc, _test=False) -> base.NoteCollection():
+def write(nikaya: base.Book, ebook: epubpacker.Epub, xc, _test=False) -> base.NoteCollection():
     note_collection = base.NoteCollection()
     c = xc.c
 

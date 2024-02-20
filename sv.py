@@ -7,7 +7,7 @@ xmls = [
 ]
 
 
-class SV(base.Nikaya):
+class SV(base.Book):
     def __init__(self):
         super(SV, self).__init__()
         self._abbr = "SV"

@@ -21,7 +21,7 @@ xmls = [
 ]
 
 
-class MNikaya(base.Nikaya):
+class MNikaya(base.Book):
     def __init__(self):
         super().__init__()
         self._abbr = "MN"
