@@ -439,7 +439,7 @@ def make_tree(nikaya, container, xes):
                 make_tree(nikaya, container, xe.kids)
                 continue
 
-            if xe.tag == "cb:mulu":
+            elif xe.tag == "cb:mulu":
                 new_container = Container()
                 assert len(xe.kids) == 1
                 new_container.mulu = xe.kids[0]
@@ -450,7 +450,7 @@ def make_tree(nikaya, container, xes):
                 container = new_container
                 continue
 
-            if xe.tag == "head":
+            elif xe.tag == "head":
                 if not container.head:
                     container.head = Head(xe)
                 else:
@@ -458,10 +458,11 @@ def make_tree(nikaya, container, xes):
                     raise Exception
                 continue
 
-            try:
-                container.terms.append(do_atom(xe))
-            except AttributeError:
-                print(xe, xe.tag, xe.attrs, xe.kids)
+            else:
+                try:
+                    container.terms.append(do_atom(xe))
+                except AttributeError:
+                    print(xe, xe.tag, xe.attrs, xe.kids)
 
         else:
             container.terms.append(do_atom(xe))
