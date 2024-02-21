@@ -14,6 +14,5 @@ EPUBCHECK = "/mnt/data/software/epubcheck-4.2.6/epubcheck.jar"
 # 电子书存放目录
 BOOKS_DIR = os.path.join(PROJECT_ROOT, "_books")
 
-
-#xmlp5_dir = os.path.join(PROJECT_ROOT, "~/projects/xml-p5a")
+# xmlp5_dir = os.path.join(PROJECT_ROOT, "~/projects/xml-p5a")
 xmlp5_dir = "/mnt/data/projects/xml-p5a"

@@ -8,7 +8,6 @@ import epubpacker
 import xl
 import config
 
-
 g_map = {"#CB03020": "婬"
          }
 
@@ -407,13 +406,48 @@ def make_nikaya(nikaya, xmls):
             nikaya.mtime = mtime
 
         xmlstr = file.read()
+        file.close()
         xml = xl.parse(xmlstr, do_strip=True)
         tei = xml.root
         text = tei.find_kids("text")[0]
         body = text.find_kids("body")[0]
+
         body = filter_kids(body)
         delete_old_note(body)
         make_tree(nikaya, None, body.kids)
+
+
+def make_tree(nikaya, container, xes):
+    for xe in xes:
+        if isinstance(xe, xl.Element):
+            if xe.tag == "cb:div":
+                make_tree(nikaya, container, xe.kids)
+
+            elif xe.tag == "cb:mulu":
+                new_container = Container()
+                assert len(xe.kids) == 1
+                new_container.mulu = xe.kids[0]
+                new_container.level = int(xe.attrs["level"])
+                parent_container = get_parent_container(nikaya, new_container.level)
+                parent_container.terms.append(new_container)
+
+                container = new_container
+
+            elif xe.tag == "head":
+                if not container.head:
+                    container.head = Head(xe)
+                else:
+                    print(xe.kids)
+                    raise Exception
+
+            else:
+                try:
+                    container.terms.append(do_atom(xe))
+                except AttributeError:
+                    print(xe, xe.tag, xe.attrs, xe.kids)
+
+        else:
+            container.terms.append(do_atom(xe))
 
 
 def delete_old_note(e: xl.Element):
@@ -430,42 +464,6 @@ def delete_old_note(e: xl.Element):
                 delete_old_note(kid)
         new_kids.append(kid)
     e.kids[:] = new_kids
-
-
-def make_tree(nikaya, container, xes):
-    for xe in xes:
-        if isinstance(xe, xl.Element):
-            if xe.tag == "cb:div":
-                make_tree(nikaya, container, xe.kids)
-                continue
-
-            elif xe.tag == "cb:mulu":
-                new_container = Container()
-                assert len(xe.kids) == 1
-                new_container.mulu = xe.kids[0]
-                new_container.level = int(xe.attrs["level"])
-                parent_container = get_parent_container(nikaya, new_container.level)
-                parent_container.terms.append(new_container)
-
-                container = new_container
-                continue
-
-            elif xe.tag == "head":
-                if not container.head:
-                    container.head = Head(xe)
-                else:
-                    print(xe.kids)
-                    raise Exception
-                continue
-
-            else:
-                try:
-                    container.terms.append(do_atom(xe))
-                except AttributeError:
-                    print(xe, xe.tag, xe.attrs, xe.kids)
-
-        else:
-            container.terms.append(do_atom(xe))
 
 
 def change_mulu(container, level, fun):
@@ -510,10 +508,34 @@ def merge_terms(container):
 
 
 class Artcle(object):
-    def __init__(self, filename):
-        self._filename = filename
-        self._xmlobj = None
-        self._abbr = None
-        self._hant = None
-        self._body = []  # 包含段落、小标题以及偈语
-        self._notes = []
+    def __init__(self, filename=None):
+
+        if filename:
+            self._filename = filename
+            self._serial =
+            xmlstr = open(filename).read()
+            self._xml = xl.parse(xmlstr, do_strip=True)
+
+
+
+
+    @property
+    def body(self):
+        for kid in self._xml.root.kids:
+            if kid.tag == "body":
+                return kid.kids
+
+    @property
+    def notes(self):
+        for kid in self._xml.root.kids:
+            if kid.tag == "ns":
+                return kid.kids
+
+    @property
+    def ps(self):
+        for kid in self._xml.root.kids:
+            if kid.tag == "ps":
+                return kid.kids
+
+    def write(self, filename=None):
+        #todo
