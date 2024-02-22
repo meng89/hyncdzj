@@ -508,34 +508,71 @@ def merge_terms(container):
 
 
 class Artcle(object):
-    def __init__(self, filename=None):
+    @staticmethod
+    def parse_filename(path):
+        filename = os.path.splitext(os.path.split(path)[1])[0]
+        m = re.match(r"^([a-z]+) (\d(?:\.\d)*) (.*)$", filename)
+        if m:
+            serial = tuple([int(s) for s in m.group(2).split(".")])
+            return m.group(1), serial, m.group(3)
+        else:
+            raise Exception("无法解析文件名")
 
-        if filename:
-            self._filename = filename
-            self._serial =
-            xmlstr = open(filename).read()
+    def __init__(self, filepath=None, book_abbr=None, serial=None, title=None):
+        if filepath:
+            self._book_abbr, self._serial, self._title = self.parse_filename(filepath)
+            xmlstr = open(filepath).read()
             self._xml = xl.parse(xmlstr, do_strip=True)
-
-
-
+        else:
+            self._xml = xl.Xml()
+            self._xml.root.kids.append(xl.Element("body"))
+            self._xml.root.kids.append(xl.Element("notes"))
+            self._xml.root.kids.append(xl.Element("ps"))
 
     @property
     def body(self):
-        for kid in self._xml.root.kids:
-            if kid.tag == "body":
-                return kid.kids
+        return self._xml.root.find_kids("body")[0]
 
     @property
     def notes(self):
-        for kid in self._xml.root.kids:
-            if kid.tag == "ns":
-                return kid.kids
+        return self._xml.root.find_kids("notes")[0]
 
     @property
     def ps(self):
-        for kid in self._xml.root.kids:
-            if kid.tag == "ps":
-                return kid.kids
+        return self._xml.root.find_kids("ps")[0]
 
-    def write(self, filename=None):
-        #todo
+    def write(self, parentpath):
+        filename = " ".join([self._book_abbr, ".".join([str(x) for x in self._serial]), self._title]) + ".xml"
+        path = os.path.join(parentpath, filename)
+
+        xmlstr = self._xml.to_str()
+        f = open(path, "w")
+        f.write(xmlstr)
+        f.close()
+
+
+class Dir(object):
+    def __init__(self, path=None, name=None):
+        if path:
+            self._name = os.path.split(path)[1]
+            self.terms: List[Container or Term] = []
+            for one in sorted(os.listdir(path)):
+                subpath = os.path.join(path, one)
+                if os.path.isdir(subpath):
+                    self.terms.append(Dir(subpath))
+                elif os.path.isfile(subpath):
+                    self.terms.append(Artcle(subpath))
+        elif name:
+            self._name = name
+        else:
+            raise Exception("what?")
+
+    def write(self, parentpath):
+        mypath = os.path.join(parentpath, self._name)
+        try:
+            os.mkdir(os.path.join(parentpath, self._name))
+        except FileExistsError:
+            pass
+
+        for term in self.terms:
+            term.write(mypath)
