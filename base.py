@@ -542,7 +542,10 @@ class Artcle(object):
         return self._xml.root.find_kids("ps")[0]
 
     def write(self, parentpath):
-        filename = " ".join([self._book_abbr, ".".join([str(x) for x in self._serial]), self._title]) + ".xml"
+        filename = " ".join([self._book_abbr,
+                             ".".join([str(x) for x in self._serial]),
+                             self._title]
+                            ) + ".xml"
         path = os.path.join(parentpath, filename)
 
         xmlstr = self._xml.to_str()
