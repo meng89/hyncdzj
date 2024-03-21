@@ -507,27 +507,12 @@ def merge_terms(container):
     container.terms[:] = new_terms
 
 
-class Artcle(object):
-    @staticmethod
-    def parse_filename(path):
-        filename = os.path.splitext(os.path.split(path)[1])[0]
-        m = re.match(r"^([a-z]+) (\d(?:\.\d)*) (.*)$", filename)
-        if m:
-            serial = tuple([int(s) for s in m.group(2).split(".")])
-            return m.group(1), serial, m.group(3)
-        else:
-            raise Exception("无法解析文件名")
-
-    def __init__(self, filepath=None, book_abbr=None, serial=None, title=None):
-        if filepath:
-            self._book_abbr, self._serial, self._title = self.parse_filename(filepath)
-            xmlstr = open(filepath).read()
-            self._xml = xl.parse(xmlstr, do_strip=True)
-        else:
-            self._xml = xl.Xml()
-            self._xml.root.kids.append(xl.Element("body"))
-            self._xml.root.kids.append(xl.Element("notes"))
-            self._xml.root.kids.append(xl.Element("ps"))
+class _Artcle(object):
+    def _make_new_xml(self):
+        self._xml = xl.Xml()
+        self._xml.root.kids.append(xl.Element("body"))
+        self._xml.root.kids.append(xl.Element("notes"))
+        self._xml.root.kids.append(xl.Element("ps"))
 
     @property
     def body(self):
@@ -541,17 +526,67 @@ class Artcle(object):
     def ps(self):
         return self._xml.root.find_kids("ps")[0]
 
-    def write(self, parentpath):
-        filename = " ".join([self._book_abbr,
-                             ".".join([str(x) for x in self._serial]),
-                             self._title]
-                            ) + ".xml"
-        path = os.path.join(parentpath, filename)
+    @abc.abstractmethod
+    def _get_filename(self):
+        pass
 
+    def write(self, parentpath):
+        filename = self._get_filename()
+        path = os.path.join(parentpath, filename)
         xmlstr = self._xml.to_str()
         f = open(path, "w")
         f.write(xmlstr)
         f.close()
+
+
+class Artcle(_Artcle):
+    def __init__(self, filepath=None, book_abbr=None, serial=None, title=None):
+        super().__init__()
+        if filepath:
+            filename = os.path.splitext(os.path.split(filepath)[1])[0]
+            m = re.match(r"^([a-z]+) (\d(?:\.\d)*) (.*)$", filename)
+            if m:
+                serial = tuple([int(s) for s in m.group(2).split(".")])
+                self._book_abbr = m.group(1)
+                self._serial = serial
+                self._title = m.group(3)
+
+                xmlstr = open(filepath).read()
+                self._xml = xl.parse(xmlstr, do_strip=True)
+            else:
+                raise Exception("无法解析文件名")
+        else:
+            self._book_abbr = book_abbr
+            self._serial = serial
+            self._title = title
+            self._make_new_xml()
+
+    def _get_filename(self):
+        filename = " ".join([self._book_abbr,
+                             ".".join([str(x) for x in self._serial]),
+                             self._title]
+                            ) + ".xml"
+        return filename
+
+
+class Piece(_Artcle):
+    def __init__(self, filepath=None, serial=None):
+        super().__init__()
+        if filepath:
+            filename = os.path.splitext(os.path.split(filepath)[1])[0]
+            m = re.match(r"^(\d+)$", filename)
+            if m:
+                self._serial = m.group(1)
+                xmlstr = open(filepath).read()
+                self._xml = xl.parse(xmlstr, do_strip=True)
+            else:
+                raise Exception("无法解析文件名")
+        else:
+            self._serial = serial
+            self._make_new_xml()
+
+    def _get_filename(self):
+        return self._serial
 
 
 class Dir(object):

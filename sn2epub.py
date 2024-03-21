@@ -6,7 +6,7 @@ import xl
 import base
 import epub_public
 
-import sn_from_xml
+import sn_from_xmlp5
 from epub_public import get_html_id, transform_digit
 
 
