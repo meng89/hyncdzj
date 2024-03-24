@@ -539,6 +539,38 @@ class _Artcle(object):
         f.close()
 
 
+class Book(object):
+    def __init__(self):
+        pass
+
+
+class Dir(object):
+    def __init__(self, path=None, name=None):
+        if path:
+            self._name = os.path.split(path)[1]
+            self.terms: List[Container or Term] = []
+            for one in sorted(os.listdir(path)):
+                subpath = os.path.join(path, one)
+                if os.path.isdir(subpath):
+                    self.terms.append(Dir(subpath))
+                elif os.path.isfile(subpath):
+                    self.terms.append(Artcle(subpath))
+        elif name:
+            self._name = name
+        else:
+            raise Exception("what?")
+
+    def write(self, parentpath):
+        mypath = os.path.join(parentpath, self._name)
+        try:
+            os.mkdir(os.path.join(parentpath, self._name))
+        except FileExistsError:
+            pass
+
+        for term in self.terms:
+            term.write(mypath)
+
+
 class Artcle(_Artcle):
     def __init__(self, filepath=None, book_abbr=None, serial=None, title=None):
         super().__init__()
@@ -589,28 +621,3 @@ class Piece(_Artcle):
         return self._serial
 
 
-class Dir(object):
-    def __init__(self, path=None, name=None):
-        if path:
-            self._name = os.path.split(path)[1]
-            self.terms: List[Container or Term] = []
-            for one in sorted(os.listdir(path)):
-                subpath = os.path.join(path, one)
-                if os.path.isdir(subpath):
-                    self.terms.append(Dir(subpath))
-                elif os.path.isfile(subpath):
-                    self.terms.append(Artcle(subpath))
-        elif name:
-            self._name = name
-        else:
-            raise Exception("what?")
-
-    def write(self, parentpath):
-        mypath = os.path.join(parentpath, self._name)
-        try:
-            os.mkdir(os.path.join(parentpath, self._name))
-        except FileExistsError:
-            pass
-
-        for term in self.terms:
-            term.write(mypath)
