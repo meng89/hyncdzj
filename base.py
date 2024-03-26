@@ -19,6 +19,7 @@ class Book(object):
         self._name_pali = None
         self._mtime = None
         self._terms = []
+        self._subs = []
 
     @property
     def abbr(self) -> str:
@@ -43,6 +44,10 @@ class Book(object):
     @property
     def terms(self):
         return self._terms
+
+    @property
+    def subs(self):
+        return self._subs
 
 
 class Container(object):
