@@ -19,7 +19,7 @@ class Book(object):
         self._name_pali = None
         self._mtime = None
         self._terms = []
-        self._subs = []
+        self._entries = []
 
     @property
     def abbr(self) -> str:
@@ -46,8 +46,8 @@ class Book(object):
         return self._terms
 
     @property
-    def subs(self):
-        return self._subs
+    def entries(self):
+        return self._entries
 
 
 class Container(object):
@@ -551,6 +551,7 @@ class Book(object):
 
 class Dir(object):
     def __init__(self, path=None, name=None):
+        self._entries = []
         if path:
             self._name = os.path.split(path)[1]
             self.terms: List[Container or Term] = []
@@ -564,6 +565,10 @@ class Dir(object):
             self._name = name
         else:
             raise Exception("what?")
+
+    @property
+    def entries(self):
+        return self._entries
 
     def write(self, parentpath):
         mypath = os.path.join(parentpath, self._name)
