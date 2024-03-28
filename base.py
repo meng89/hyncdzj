@@ -12,42 +12,62 @@ g_map = {"#CB03020": "婬"
          }
 
 
+def read_dir(path):
+    entries = []
+    have_dir = False
+    for entry in os.listdir():
+        if os.path.isdir(os.path.join(path, entry)):
+            have_dir = True
+            break
+
+    for entry in sorted(os.listdir()):
+        entry_path = os.path.join(path, entry)
+        if os.path.isdir(entry_path):
+            entries.append(Dir(entry_path))
+        elif os.path.isfile(entry_path):
+            if entry.lower().endswith(".xml"):
+                if have_dir:
+                    entries.append(Piece(entry_path))
+                else:
+                    entries.append(Artcle(entry_path))
+    return entries
+
+
 class Book(object):
-    def __init__(self):
-        self._abbr = None
-        self._name_hant = None
-        self._name_pali = None
-        self._mtime = None
-        self._terms = []
-        self._entries = []
+    def __init__(self, path):
+        xmlstr = open(os.path.join(path, "sn.xml")).read()
+        self._xml = xl.parse(xmlstr, do_strip=True)
+        self._entries = read_dir(os.path.join(path, "entries"))
 
     @property
-    def abbr(self) -> str:
-        return self._abbr
+    def abbr(self):
+        return self._xml.root.find_kids("abbr")[0]
 
     @property
-    def name_hant(self) -> str:
-        return self._name_hant
+    def name_hant(self):
+        return self._xml.root.find_kids("name_hant")[0]
 
     @property
-    def name_pali(self) -> str:
-        return self._name_pali
-
-    @property
-    def mtime(self) -> datetime.datetime:
-        return self._mtime
-
-    @mtime.setter
-    def mtime(self, value: datetime.datetime):
-        self._mtime = value
-
-    @property
-    def terms(self):
-        return self._terms
+    def name_pali(self):
+        return self._xml.root.find_kids("name_pali")[0]
 
     @property
     def entries(self):
         return self._entries
+
+    def write(self, path):
+        os.makedirs(path, exist_ok=True)
+
+        filename = "x"
+        path = os.path.join(path, filename)
+        xmlstr = self._xml.to_str()
+        f = open(path, "w")
+        f.write(xmlstr)
+        f.close()
+
+        os.makedirs(os.path.join(path, "entries"), exist_ok=True)
+        for entry in self._entries:
+            entry.write(os.path.join(path, "entries"))
 
 
 class Container(object):
@@ -512,6 +532,32 @@ def merge_terms(container):
     container.terms[:] = new_terms
 
 
+class Dir(object):
+    def __init__(self, path=None, name=None):
+        if path:
+            self._name = os.path.split(path)[1]
+            self._entries = read_dir(path)
+        elif name:
+            self._name = name
+            self._entries = []
+        else:
+            raise Exception("what?")
+
+    @property
+    def entries(self):
+        return self._entries
+
+    def write(self, parentpath):
+        mypath = os.path.join(parentpath, self._name)
+        try:
+            os.mkdir(os.path.join(parentpath, self._name))
+        except FileExistsError:
+            pass
+
+        for entry in self._entries:
+            entry.write(mypath)
+
+
 class _Artcle(object):
     def _make_new_xml(self):
         self._xml = xl.Xml()
@@ -542,43 +588,6 @@ class _Artcle(object):
         f = open(path, "w")
         f.write(xmlstr)
         f.close()
-
-
-class Book(object):
-    def __init__(self):
-        pass
-
-
-class Dir(object):
-    def __init__(self, path=None, name=None):
-        self._entries = []
-        if path:
-            self._name = os.path.split(path)[1]
-            self.terms: List[Container or Term] = []
-            for one in sorted(os.listdir(path)):
-                subpath = os.path.join(path, one)
-                if os.path.isdir(subpath):
-                    self.terms.append(Dir(subpath))
-                elif os.path.isfile(subpath):
-                    self.terms.append(Artcle(subpath))
-        elif name:
-            self._name = name
-        else:
-            raise Exception("what?")
-
-    @property
-    def entries(self):
-        return self._entries
-
-    def write(self, parentpath):
-        mypath = os.path.join(parentpath, self._name)
-        try:
-            os.mkdir(os.path.join(parentpath, self._name))
-        except FileExistsError:
-            pass
-
-        for term in self.terms:
-            term.write(mypath)
 
 
 class Artcle(_Artcle):
@@ -629,5 +638,3 @@ class Piece(_Artcle):
 
     def _get_filename(self):
         return self._serial
-
-
