@@ -12,7 +12,7 @@ g_map = {"#CB03020": "婬"
          }
 
 
-def read_dir(path):
+def dir2entries(path):
     entries = []
     have_dir = False
     for entry in os.listdir():
@@ -37,7 +37,7 @@ class Book(object):
     def __init__(self, path):
         xmlstr = open(os.path.join(path, "sn.xml")).read()
         self._xml = xl.parse(xmlstr, do_strip=True)
-        self._entries = read_dir(os.path.join(path, "entries"))
+        self._entries = dir2entries(os.path.join(path, "entries"))
 
     @property
     def abbr(self):
@@ -68,14 +68,6 @@ class Book(object):
         os.makedirs(os.path.join(path, "entries"), exist_ok=True)
         for entry in self._entries:
             entry.write(os.path.join(path, "entries"))
-
-
-class Container(object):
-    def __init__(self, mulu=None):
-        self.mulu = mulu
-        self.head = None
-        self.level = None
-        self.terms: List[Container or Term] = []
 
 
 class Term(object):
@@ -442,28 +434,23 @@ def make_nikaya(nikaya, xmls):
         make_tree(nikaya, None, body.kids)
 
 
-def make_tree(nikaya, container, xes):
+def make_tree(nikaya, dir_, xes):
     for xe in xes:
         if isinstance(xe, xl.Element):
             if xe.tag == "cb:div":
-                make_tree(nikaya, container, xe.kids)
+                make_tree(nikaya, dir_, xe.kids)
 
             elif xe.tag == "cb:mulu":
-                new_container = Container()
+                new_dir = Dir(name=xe.kids[0])
                 assert len(xe.kids) == 1
-                new_container.mulu = xe.kids[0]
-                new_container.level = int(xe.attrs["level"])
-                parent_container = get_parent_container(nikaya, new_container.level)
-                parent_container.terms.append(new_container)
+                level = int(xe.attrs["level"])
+                parent_container = get_parent_container(nikaya, level)
+                parent_container.entries.append(new_dir)
 
-                container = new_container
+                dir_ = new_dir
 
             elif xe.tag == "head":
-                if not container.head:
-                    container.head = Head(xe)
-                else:
-                    print(xe.kids)
-                    raise Exception
+                pass
 
             else:
                 try:
@@ -536,7 +523,7 @@ class Dir(object):
     def __init__(self, path=None, name=None):
         if path:
             self._name = os.path.split(path)[1]
-            self._entries = read_dir(path)
+            self._entries = dir2entries(path)
         elif name:
             self._name = name
             self._entries = []
