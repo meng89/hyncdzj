@@ -434,27 +434,52 @@ def make_nikaya(nikaya, xmls):
         make_tree(nikaya, None, body.kids)
 
 
+def is_have_mulu(xes):
+    for i in range(len(xes)):
+        xe = xes[i]
+        if isinstance(xe, xl.Element):
+            if xe.tag == "cb:div":
+                if is_have_mulu(xes[i+1:]):
+                    return True
+                else:
+                    pass
+            elif xe.tag == "cb:mulu":
+                return True
+    return False
+
+
 def make_tree(nikaya, dir_, xes):
-    for xe in xes:
+    for i in range(len(xes)):
+        xe = xes[i]
         if isinstance(xe, xl.Element):
             if xe.tag == "cb:div":
                 make_tree(nikaya, dir_, xe.kids)
 
             elif xe.tag == "cb:mulu":
-                new_dir = Dir(name=xe.kids[0])
-                assert len(xe.kids) == 1
-                level = int(xe.attrs["level"])
-                parent_container = get_parent_container(nikaya, level)
-                parent_container.entries.append(new_dir)
+                if is_have_mulu(xes[i+1:]) is True:
+                    new_dir = Dir(name=xe.kids[0])
+                    assert len(xe.kids) == 1
+                    level = int(xe.attrs["level"])
+                    parent_container = get_parent_container(nikaya, level)
+                    parent_container.entries.append(new_dir)
+                    dir_ = new_dir
+                else:
 
-                dir_ = new_dir
 
             elif xe.tag == "head":
                 pass
 
             else:
                 try:
-                    container.terms.append(do_atom(xe))
+                    last_entry = dir_.entries[-1]
+
+                except IndexError:
+                    artcle = Artcle()
+                    dir_.entries.append(artcle)
+
+
+                try:
+                    dir_.entries.append(do_atom(xe))
                 except AttributeError:
                     print(xe, xe.tag, xe.attrs, xe.kids)
 
