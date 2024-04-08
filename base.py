@@ -464,7 +464,8 @@ def make_tree(nikaya, dir_, xes):
                     parent_container.entries.append(new_dir)
                     dir_ = new_dir
                 else:
-
+                    artcle = Artcle()
+                    dir_.entries.append(artcle)
 
             elif xe.tag == "head":
                 pass
