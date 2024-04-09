@@ -471,18 +471,10 @@ def make_tree(nikaya, dir_, xes):
                 pass
 
             else:
-                try:
-                    last_entry = dir_.entries[-1]
+                last_entry = dir_.entries[-1]
+                assert isinstance(last_entry, Artcle)
 
-                except IndexError:
-                    artcle = Artcle()
-                    dir_.entries.append(artcle)
-
-
-                try:
-                    dir_.entries.append(do_atom(xe))
-                except AttributeError:
-                    print(xe, xe.tag, xe.attrs, xe.kids)
+                last_entry.body.append(do_atom(xe))
 
         else:
             container.terms.append(do_atom(xe))
