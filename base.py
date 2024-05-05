@@ -318,27 +318,6 @@ class ElementError(Exception):
     pass
 
 
-def get_last_container(container):
-    for term in container.terms:
-        if isinstance(term, Container) or isinstance(term, Book):
-            return get_last_container(term)
-    return container
-
-
-def get_parent_container(tree: Book or Container, level):
-    if level == 1:
-        assert isinstance(tree, Book)
-        return tree
-    else:
-        for term in reversed(tree.terms):
-            if isinstance(term, Container):
-                if term.level == level - 1:
-                    return term
-                else:
-                    return get_parent_container(term, level)
-    raise Exception
-
-
 def is_lb(x):
     # <lb ed="N" n="0206a14"/>
     if isinstance(x, xl.Element):
@@ -460,7 +439,7 @@ def make_tree(nikaya, dir_, xes):
                     new_dir = Dir(name=xe.kids[0])
                     assert len(xe.kids) == 1
                     level = int(xe.attrs["level"])
-                    parent_container = get_parent_container(nikaya, level)
+                    parent_container = get_last_parent_container(nikaya, level)
                     parent_container.entries.append(new_dir)
                     dir_ = new_dir
                 else:
@@ -477,7 +456,17 @@ def make_tree(nikaya, dir_, xes):
                 last_entry.body.append(do_atom(xe))
 
         else:
-            container.terms.append(do_atom(xe))
+            print(xe)
+            raise Exception
+            # container.terms.append(do_atom(xe))
+
+
+def get_last_parent_container(tree, level):
+    if level == 1:
+        return tree
+    elif level > 1:
+        sub = tree.entries[-1]
+        return get_last_parent_container(sub, level - 1)
 
 
 def delete_old_note(e: xl.Element):
