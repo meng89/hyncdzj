@@ -35,9 +35,12 @@ def dir2entries(path):
 
 class Book(object):
     def __init__(self, path):
-        xmlstr = open(os.path.join(path, "sn.xml")).read()
-        self._xml = xl.parse(xmlstr, do_strip=True)
-        self._entries = dir2entries(os.path.join(path, "entries"))
+        if path:
+            xmlstr = open(os.path.join(path, "sn.xml")).read()
+            self._xml = xl.parse(xmlstr, do_strip=True)
+            self._entries = dir2entries(os.path.join(path, "entries"))
+        else:
+            self._entries = []
 
     @property
     def abbr(self):
