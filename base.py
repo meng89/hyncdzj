@@ -13,24 +13,31 @@ g_map = {"#CB03020": "婬"
 
 
 def dir2entries(path):
-    entries = []
-    have_dir = False
+    entries = {}
+
+    have_sub_dir = False
     for entry in os.listdir():
         if os.path.isdir(os.path.join(path, entry)):
-            have_dir = True
+            have_sub_dir = True
             break
 
     for entry in sorted(os.listdir()):
         entry_path = os.path.join(path, entry)
+
         if os.path.isdir(entry_path):
-            entries.append(Dir(entry_path))
+            m = re.match(r"^(\d+) (.*)$", entry)
+            name = m.group(2)
+            entries[name] = dir2entries(entry_path)
+
         elif os.path.isfile(entry_path):
             if entry.lower().endswith(".xml"):
-                if have_dir:
+                if have_sub_dir:
                     entries.append(Piece(entry_path))
                 else:
                     entries.append(Artcle(entry_path))
+
     return entries
+
 
 
 class Book(object):
@@ -534,7 +541,7 @@ def merge_terms(container):
     container.terms[:] = new_terms
 
 
-class Dir(object):
+class _Dir(object):
     def __init__(self, path=None, name=None):
         if path:
             self._name = os.path.split(path)[1]
