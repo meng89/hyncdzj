@@ -47,8 +47,8 @@ def get_nikaya():
     mnikaya = MNikaya()
     base.make_nikaya(mnikaya, xmls)
 
-    base.change_mulu(mnikaya, 1, change_pian_mulu_fun)
-    base.change_mulu(mnikaya, 2, change_pin_mulu_fun)
+    base.change_dirname(mnikaya, 1, change_pian_mulu_fun)
+    base.change_dirname(mnikaya, 2, change_pin_mulu_fun)
 
     base.merge_terms(mnikaya)
 

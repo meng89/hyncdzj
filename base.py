@@ -34,12 +34,13 @@ def dir2entries(path):
 
 
 class Book(object):
-    def __init__(self, path):
+    def __init__(self, path=None):
         if path:
             xmlstr = open(os.path.join(path, "sn.xml")).read()
             self._xml = xl.parse(xmlstr, do_strip=True)
             self._entries = dir2entries(os.path.join(path, "entries"))
         else:
+            self._xml = None
             self._entries = []
 
     @property
@@ -487,12 +488,16 @@ def delete_old_note(e: xl.Element):
         new_kids.append(kid)
     e.kids[:] = new_kids
 
+def change_dirname(container, cur_level, level, fun):
+    if cur_level == level:
+        for entry in container.entries:
 
-def change_mulu(container, level, fun):
+
+def change_dirname(container, level, fun):
     for term in container.terms:
-        if isinstance(term, Container):
+        if isinstance(term, container):
             if term.level < level:
-                change_mulu(term, level, fun)
+                change_dirname(term, level, fun)
             elif term.level == level:
                 term.mulu = fun(term.mulu)
             else:

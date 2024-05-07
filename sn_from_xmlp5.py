@@ -82,12 +82,12 @@ def get_nikaya():
         snikaya = SN()
         base.make_nikaya(snikaya, xmls)
 
-        base.change_mulu(snikaya, 1, change_pian_mulu_fun)
-        base.change_mulu(snikaya, 2, change_xy_mulu_fun)
+        base.change_dirname(snikaya, 1, change_pian_mulu_fun)
+        base.change_dirname(snikaya, 2, change_xy_mulu_fun)
 
-        base.change_mulu(snikaya, 3, change_pin_mulu_fun)
-        base.change_mulu(snikaya, 4, change_pin_mulu_fun)
-        base.change_mulu(snikaya, 5, change_pin_mulu_fun)
+        base.change_dirname(snikaya, 3, change_pin_mulu_fun)
+        base.change_dirname(snikaya, 4, change_pin_mulu_fun)
+        base.change_dirname(snikaya, 5, change_pin_mulu_fun)
 
         base.merge_terms(snikaya)
 

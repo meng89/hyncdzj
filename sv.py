@@ -26,8 +26,8 @@ def get_book():
     book = SV()
     base.make_nikaya(book, xmls)
 
-    base.change_mulu(book, 1, change_pian_mulu_fun)
-    base.change_mulu(book, 2, change_pin_mulu_fun)
+    base.change_dirname(book, 1, change_pian_mulu_fun)
+    base.change_dirname(book, 2, change_pin_mulu_fun)
 
     base.merge_terms(book)
 
