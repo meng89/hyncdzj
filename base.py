@@ -541,32 +541,6 @@ def merge_terms(container):
     container.terms[:] = new_terms
 
 
-class _Dir(object):
-    def __init__(self, path=None, name=None):
-        if path:
-            self._name = os.path.split(path)[1]
-            self._entries = dir2entries(path)
-        elif name:
-            self._name = name
-            self._entries = []
-        else:
-            raise Exception("what?")
-
-    @property
-    def entries(self):
-        return self._entries
-
-    def write(self, parentpath):
-        mypath = os.path.join(parentpath, self._name)
-        try:
-            os.mkdir(os.path.join(parentpath, self._name))
-        except FileExistsError:
-            pass
-
-        for entry in self._entries:
-            entry.write(mypath)
-
-
 class _Artcle(object):
     def _make_new_xml(self):
         self._xml = xl.Xml()
