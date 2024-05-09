@@ -21,16 +21,31 @@ def dir2entries(path):
             have_sub_dir = True
             break
 
+    have_num_prefix = True
+    for entry in os.listdir():
+        if not re.match(r"^\d+_", entry):
+            have_num_prefix = False
+            break
+
+
     for entry in sorted(os.listdir()):
+
+        if have_num_prefix:
+            m = re.match(r"^\d+_(.*)$", entry)
+            no_prefix_entry = m.group(1)
+        else:
+            no_prefix_entry = entry
+
         entry_path = os.path.join(path, entry)
 
         if os.path.isdir(entry_path):
-            m = re.match(r"^(\d+) (.*)$", entry)
-            name = m.group(2)
-            entries[name] = dir2entries(entry_path)
+            entries[no_prefix_entry] = dir2entries(entry_path)
 
         elif os.path.isfile(entry_path):
             if entry.lower().endswith(".xml"):
+
+                entries[no_prefix_entry] = Artcle(entry_path)
+
                 if have_sub_dir:
                     entries.append(Piece(entry_path))
                 else:
