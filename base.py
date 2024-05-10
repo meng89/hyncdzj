@@ -46,11 +46,6 @@ def dir2entries(path):
 
                 entries[no_prefix_entry] = Artcle(entry_path)
 
-                if have_sub_dir:
-                    entries.append(Piece(entry_path))
-                else:
-                    entries.append(Artcle(entry_path))
-
     return entries
 
 
@@ -589,12 +584,15 @@ class _Artcle(object):
 
 
 class Artcle(_Artcle):
-    def __init__(self, filepath=None, book_abbr=None, serial=None, title=None):
+    def __init__(self, filepath=None, no_num_prefix_path=None, book_abbr=None, serial=None, title=None):
         super().__init__()
+
         if filepath:
-            filename = os.path.splitext(os.path.split(filepath)[1])[0]
+            filename = os.path.splitext(os.path.split(no_num_prefix_path)[1])[0]
             m = re.match(r"^([a-z]+) (\d(?:\.\d)*) (.*)$", filename)
             if m:
+                self._is_piece = False
+
                 serial = tuple([int(s) for s in m.group(2).split(".")])
                 self._book_abbr = m.group(1)
                 self._serial = serial
@@ -602,8 +600,13 @@ class Artcle(_Artcle):
 
                 xmlstr = open(filepath).read()
                 self._xml = xl.parse(xmlstr, do_strip=True)
+
+            #非SN 1.1 这样的经文，可能是礼敬偈子，或是串联词
             else:
-                raise Exception("无法解析文件名")
+                self._is_piece = True
+
+                xmlstr = open(filepath).read()
+                self._xml = xl.parse(xmlstr, do_strip=True)
         else:
             self._book_abbr = book_abbr
             self._serial = serial
@@ -636,3 +639,4 @@ class Piece(_Artcle):
 
     def _get_filename(self):
         return self._serial
+
