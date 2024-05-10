@@ -79,8 +79,8 @@ def get_nikaya():
     if _nikaya:
         return _nikaya
     else:
-        snikaya = SN()
-        base.make_nikaya(snikaya, xmls)
+        book = base.Book()
+        base.load_from_xmlp5(book, xmls)
 
         base.change_dirname(snikaya, 1, change_pian_mulu_fun)
         base.change_dirname(snikaya, 2, change_xy_mulu_fun)

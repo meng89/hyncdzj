@@ -45,7 +45,7 @@ def get_nikaya():
         return _nikaya
 
     mnikaya = MNikaya()
-    base.make_nikaya(mnikaya, xmls)
+    base.load_from_xmls(mnikaya, xmls)
 
     base.change_dirname(mnikaya, 1, change_pian_mulu_fun)
     base.change_dirname(mnikaya, 2, change_pin_mulu_fun)

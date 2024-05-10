@@ -411,16 +411,10 @@ def filter_kids(x: xl.Element or str, funs=None):
     return new_e
 
 
-def make_nikaya(nikaya, xmls):
+def load_from_xmlp5(nikaya, xmls):
     for one in xmls:
         filename = os.path.join(config.xmlp5_dir, one)
         file = open(filename, "r")
-        mtime = datetime.datetime.fromtimestamp(os.stat(filename).st_mtime)
-        if nikaya.mtime:
-            if nikaya.mtime < mtime:
-                nikaya.mtime = mtime
-        else:
-            nikaya.mtime = mtime
 
         xmlstr = file.read()
         file.close()
@@ -601,7 +595,7 @@ class Artcle(_Artcle):
                 xmlstr = open(filepath).read()
                 self._xml = xl.parse(xmlstr, do_strip=True)
 
-            #非SN 1.1 这样的经文，可能是礼敬偈子，或是串联词
+                #非SN 1.1 这样的经文，可能是礼敬偈子，或串联
             else:
                 self._is_piece = True
 
@@ -639,4 +633,3 @@ class Piece(_Artcle):
 
     def _get_filename(self):
         return self._serial
-
