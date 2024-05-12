@@ -442,13 +442,14 @@ def is_have_sub_mulu(xes):
     return False
 
 
+
+#not every cb:mulu include in cb:div, like: pN14p0006a0301
 def make_tree(book, dir_, xes):
     for i in range(len(xes)):
         xe = xes[i]
         if isinstance(xe, xl.Element):
 
             if xe.tag == "cb:div":
-
                 make_tree(book, dir_, xe.kids)
 
             elif xe.tag == "cb:mulu":
@@ -472,7 +473,8 @@ def make_tree(book, dir_, xes):
                 pass
 
             else:
-                last_entry = dir_.entries[-1]
+                last_entry = list(dir_.values())[-1]
+
                 assert isinstance(last_entry, Artcle)
 
                 last_entry.body.append(do_atom(xe))
