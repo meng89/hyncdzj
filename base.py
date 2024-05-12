@@ -411,7 +411,7 @@ def filter_kids(x: xl.Element or str, funs=None):
     return new_e
 
 
-def load_from_xmlp5(nikaya, xmls):
+def load_from_xmlp5(book, xmls):
     for one in xmls:
         filename = os.path.join(config.xmlp5_dir, one)
         file = open(filename, "r")
@@ -425,15 +425,15 @@ def load_from_xmlp5(nikaya, xmls):
 
         body = filter_kids(body)
         delete_old_note(body)
-        make_tree(nikaya, None, body.kids)
+        make_tree(book, None, body.kids)
 
 
-def is_have_mulu(xes):
+def is_have_sub_mulu(xes):
     for i in range(len(xes)):
         xe = xes[i]
         if isinstance(xe, xl.Element):
             if xe.tag == "cb:div":
-                if is_have_mulu(xes[i+1:]):
+                if is_have_sub_mulu(xes[i + 1:]):
                     return True
                 else:
                     pass
@@ -442,24 +442,31 @@ def is_have_mulu(xes):
     return False
 
 
-def make_tree(nikaya, dir_, xes):
+def make_tree(book, dir_, xes):
     for i in range(len(xes)):
         xe = xes[i]
         if isinstance(xe, xl.Element):
+
             if xe.tag == "cb:div":
-                make_tree(nikaya, dir_, xe.kids)
+
+                make_tree(book, dir_, xe.kids)
 
             elif xe.tag == "cb:mulu":
-                if is_have_mulu(xes[i+1:]) is True:
-                    new_dir = Dir(name=xe.kids[0])
-                    assert len(xe.kids) == 1
+                assert len(xe.kids) == 1
+                mulu_name = xe.kids[0]
+
+                if is_have_sub_mulu(xes[i + 1:]) is True:
+                    new_dir = {}
+
                     level = int(xe.attrs["level"])
-                    parent_container = get_last_parent_container(nikaya, level)
-                    parent_container.entries.append(new_dir)
+                    parent_dir = get_last_parent_dir(book.entries, level)
+
+                    parent_dir[mulu_name] = new_dir
                     dir_ = new_dir
+
                 else:
                     artcle = Artcle()
-                    dir_.entries.append(artcle)
+                    dir_[mulu_name] = artcle
 
             elif xe.tag == "head":
                 pass
@@ -476,12 +483,12 @@ def make_tree(nikaya, dir_, xes):
             # container.terms.append(do_atom(xe))
 
 
-def get_last_parent_container(tree, level):
+def get_last_parent_dir(dir_, level):
     if level == 1:
-        return tree
+        return dir_
     elif level > 1:
-        sub = tree.entries[-1]
-        return get_last_parent_container(sub, level - 1)
+        sub_dir = dir_.items()[-1]
+        return get_last_parent_dir(sub_dir, level - 1)
 
 
 def delete_old_note(e: xl.Element):

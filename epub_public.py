@@ -56,7 +56,7 @@ def make(nikaya, write_fun, xc: book_public.XC, temprootdir, books_dir, epubchec
 
     write_cover(ebook, nikaya, xc)
     # fanli.write_fanli(ebook, xc)
-    # homage.write_homage(ebook, xc, nikaya.homage_line)
+    # homage.write_homage(ebook, xc, book.homage_line)
 
     xu.write_xu(ebook, xc)
     note_collection: base.NoteCollection = write_fun(nikaya=nikaya, ebook=ebook, xc=xc)

@@ -157,7 +157,7 @@ def check_x_first_term(nikaya):
 def main():
     nikaya = get_nikaya()
     print_title(nikaya, 0)
-    # check_x_first_term(nikaya)
+    # check_x_first_term(book)
 
 
 if __name__ == "__main__":
