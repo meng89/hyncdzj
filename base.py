@@ -474,9 +474,7 @@ def make_tree(book, dir_, xes):
 
             else:
                 last_entry = list(dir_.values())[-1]
-
                 assert isinstance(last_entry, Artcle)
-
                 last_entry.body.append(do_atom(xe))
 
         else:
@@ -489,7 +487,7 @@ def get_last_parent_dir(dir_, level):
     if level == 1:
         return dir_
     elif level > 1:
-        sub_dir = dir_.items()[-1]
+        sub_dir = list(dir_.values())[-1]
         return get_last_parent_dir(sub_dir, level - 1)
 
 
@@ -507,10 +505,6 @@ def delete_old_note(e: xl.Element):
                 delete_old_note(kid)
         new_kids.append(kid)
     e.kids[:] = new_kids
-
-def change_dirname(container, cur_level, level, fun):
-    if cur_level == level:
-        for entry in container.entries:
 
 
 def change_dirname(container, level, fun):
