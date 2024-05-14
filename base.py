@@ -411,7 +411,8 @@ def filter_kids(x: xl.Element or str, funs=None):
     return new_e
 
 
-def load_from_xmlp5(book, xmls):
+def load_from_xmlp5(xmls):
+    book = Book()
     for one in xmls:
         filename = os.path.join(config.xmlp5_dir, one)
         file = open(filename, "r")
@@ -426,6 +427,8 @@ def load_from_xmlp5(book, xmls):
         body = filter_kids(body)
         delete_old_note(body)
         make_tree(book, None, body.kids)
+
+    return book
 
 
 def is_have_sub_mulu(xes):
@@ -511,6 +514,10 @@ def delete_old_note(e: xl.Element):
     e.kids[:] = new_kids
 
 
+def change_dirname(dir_, level, fun):
+    if level == 1:
+        
+
 def change_dirname(container, level, fun):
     for term in container.terms:
         if isinstance(term, container):
@@ -574,7 +581,7 @@ class Artcle(_Artcle):
                 xmlstr = open(filepath).read()
                 self._xml = xl.parse(xmlstr, do_strip=True)
 
-                #非SN 1.1 这样的经文，可能是礼敬偈子，或串联
+                # 非SN 1.1 这样的经文，可能是礼敬偈子，或串联
             else:
                 self._is_piece = True
 

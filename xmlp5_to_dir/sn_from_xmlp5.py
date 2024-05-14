@@ -67,24 +67,17 @@ def change_pin_mulu_fun(mulu: str):
 
 
 def get_nikaya():
-    global _nikaya
-    if _nikaya:
-        return _nikaya
-    else:
-        book = base.Book()
-        base.load_from_xmlp5(book, xmls)
 
-        base.change_dirname(snikaya, 1, change_pian_mulu_fun)
-        base.change_dirname(snikaya, 2, change_xy_mulu_fun)
+    book = base.load_from_xmlp5(xmls)
 
-        base.change_dirname(snikaya, 3, change_pin_mulu_fun)
-        base.change_dirname(snikaya, 4, change_pin_mulu_fun)
-        base.change_dirname(snikaya, 5, change_pin_mulu_fun)
+    base.change_dirname(book, 1, change_pian_mulu_fun)
+    base.change_dirname(book, 2, change_xy_mulu_fun)
 
-        base.merge_terms(snikaya)
+    base.change_dirname(book, 3, change_pin_mulu_fun)
+    base.change_dirname(book, 4, change_pin_mulu_fun)
+    base.change_dirname(book, 5, change_pin_mulu_fun)
 
-        _nikaya = snikaya
-        return snikaya
+    return book
 
 
 def is_sutta_parent(parent_container: base.Container):
