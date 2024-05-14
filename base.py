@@ -442,8 +442,7 @@ def is_have_sub_mulu(xes):
     return False
 
 
-
-#not every cb:mulu include in cb:div, like: pN14p0006a0301
+# not every cb:mulu include in cb:div, like: pN14p0006a0301
 def make_tree(book, dir_, xes):
     for i in range(len(xes)):
         xe = xes[i]
@@ -462,10 +461,15 @@ def make_tree(book, dir_, xes):
                     level = int(xe.attrs["level"])
                     parent_dir = get_last_parent_dir(book.entries, level)
 
+                    if mulu_name in parent_dir.keys():
+                        raise Exception(mulu_name)
+
                     parent_dir[mulu_name] = new_dir
                     dir_ = new_dir
 
                 else:
+                    if mulu_name in dir_.keys():
+                        raise Exception(mulu_name)
                     artcle = Artcle()
                     dir_[mulu_name] = artcle
 
@@ -518,34 +522,6 @@ def change_dirname(container, level, fun):
                 raise Exception
         else:
             pass
-
-
-def merge_terms(container):
-    last_container = None
-    new_terms = []
-
-    for term in container.terms:
-        if isinstance(term, Container):
-
-            if last_container:
-                if term.mulu == last_container.mulu:
-                    last_container.terms.extend(term.terms)
-                else:
-                    new_terms.append(term)
-                    last_container = term
-
-            else:
-                new_terms.append(term)
-                last_container = term
-
-        else:
-            new_terms.append(term)
-
-    for term in new_terms:
-        if isinstance(term, Container):
-            merge_terms(term)
-
-    container.terms[:] = new_terms
 
 
 class _Artcle(object):

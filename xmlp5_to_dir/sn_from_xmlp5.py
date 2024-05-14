@@ -14,14 +14,6 @@ xmls = [
 ]
 
 
-class SN(base.Book):
-    def __init__(self):
-        super().__init__()
-        self._abbr = "SN"
-        self._name_hant = "相應部"
-        self._name_pali = "Saṃyutta Nikāya"
-
-
 def is_pin_sub(xy_cbdiv):
     pin_count = 0
     for div in xy_cbdiv.find_kids("cb:div"):
