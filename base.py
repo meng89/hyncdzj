@@ -516,7 +516,7 @@ def delete_old_note(e: xl.Element):
 
 def change_dirname(dir_, level, fun):
     if level == 1:
-        
+
 
 def change_dirname(container, level, fun):
     for term in container.terms:
