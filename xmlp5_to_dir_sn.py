@@ -33,6 +33,76 @@ def is_pin_sub(xy_cbdiv):
 _nikaya = None
 
 
+
+
+def change_name_add_range(dir_):
+    new_dir = {}
+    # pian
+    for k, v in dir_.items():
+        # xiangying
+        new_v = {}
+        for k2, v2 in v.items():
+            # pin or something else
+            if isinstance(v2, dict):
+                new_v2 = change_name_add_range2(v2)
+            else:
+                new_v2 = v2
+
+            new_v[k2] = new_v2
+
+        new_dir[k] = new_v
+
+    return new_dir
+
+
+def change_name_add_range2(dir_):
+    new_dir = {}
+    for k, v in dir_.items():
+        new_k = change_name_add_range3(k, v)
+        new_v = change_name_add_range2(v)
+        new_dir[new_k] = new_v
+    return new_dir
+
+
+def change_name_add_range3(k, v):
+    if re.match(r"^\d+\.", k):
+        return k, v
+    else:
+        begin, end = get_begin(v), get_end(v)
+        return k + "(" + begin + "-" + end + ")", v
+
+
+def get_begin(dir_):
+    k = list(dir_.keys())[0]
+    v = dir_[k]
+    if isinstance(v, dict):
+        return get_begin(v)
+    else:
+        _, seril, _ = unpack_artilc_name(k)
+        return seril.split(".")[-1]
+
+
+def get_end(dir_):
+    k = list(dir_.keys())[-1]
+    v = dir_[k]
+    if isinstance(v, dict):
+        return get_end(v)
+    else:
+        _, seril, _ = unpack_artilc_name(k)
+        return seril.split(".")[-1]
+
+
+
+
+
+def unpack_artilc_name(name):
+    m = re.match(r"^([a-z]+) (\d+(?:\.\d+)?) (\S+)$", name)
+    if m:
+        return m.group(1), m.group(2), m.group(3)
+    else:
+        raise Exception
+
+
 def change_pian_mulu_fun(mulu: str):
     m = re.match(r"^(.+篇).* \(\d+-\d+\)$", mulu)
     if m:

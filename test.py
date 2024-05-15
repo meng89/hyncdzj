@@ -3,8 +3,11 @@ import os
 
 import re
 
-filename = "sn 1.2.3.4 保留"
-m = re.match(r"^([a-z]+) (\d(?:\.\d)*) (.*)$", filename)
+filename = "sn 1.22 保留"
 
+
+m = re.match(r"^([a-zA-Z]+) (\d+(?:\.\d+)?) (\S+)$", filename)
 if m:
-    print(m.groups())
+    print(m.group(1), m.group(2), m.group(3))
+
+
