@@ -146,4 +146,5 @@ def main():
 
 
 if __name__ == "__main__":
+    book = base.load_from_xmlp5(xmls)
     main()

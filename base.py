@@ -514,21 +514,21 @@ def delete_old_note(e: xl.Element):
     e.kids[:] = new_kids
 
 
-def change_dirname(dir_, level, fun):
-    if level == 1:
+def change_dirname(dir_, fun):
+    change_dirname2([], dir_, fun)
 
 
-def change_dirname(container, level, fun):
-    for term in container.terms:
-        if isinstance(term, container):
-            if term.level < level:
-                change_dirname(term, level, fun)
-            elif term.level == level:
-                term.mulu = fun(term.mulu)
-            else:
-                raise Exception
+def change_dirname2(path, dir_, fun):
+    new_dir = {}
+    for k, v in dir_.items():
+        new_k = fun(path.append(k))
+        if isinstance(v, dict):
+            new_v = change_dirname2(path.append(new_k), v, fun)
         else:
-            pass
+            new_v = v
+        new_dir[new_k] = new_v
+
+    return new_dir
 
 
 class _Artcle(object):
