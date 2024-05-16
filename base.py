@@ -27,7 +27,6 @@ def dir2entries(path):
             have_num_prefix = False
             break
 
-
     for entry in sorted(os.listdir()):
 
         if have_num_prefix:
@@ -49,7 +48,6 @@ def dir2entries(path):
     return entries
 
 
-
 class Book(object):
     def __init__(self, path=None):
         if path:
@@ -58,7 +56,7 @@ class Book(object):
             self._entries = dir2entries(os.path.join(path, "entries"))
         else:
             self._xml = None
-            self._entries = []
+            self._entries = {}
 
     @property
     def abbr(self):
@@ -447,6 +445,9 @@ def is_have_sub_mulu(xes):
 
 # not every cb:mulu include in cb:div, like: pN14p0006a0301
 def make_tree(book, dir_, xes):
+    if dir_ is None:
+        dir_ = book.entries
+
     for i in range(len(xes)):
         xe = xes[i]
         if isinstance(xe, xl.Element):
