@@ -55,7 +55,7 @@ class Book(object):
             self._xml = xl.parse(xmlstr, do_strip=True)
             self._entries = dir2entries(os.path.join(path, "entries"))
         else:
-            self._xml = None
+            self._xml = xl.Xml()
             self._entries = {}
 
     @property
@@ -474,6 +474,7 @@ def make_tree(book, dir_, xes):
                 else:
                     if mulu_name in dir_.keys():
                         raise Exception(mulu_name)
+
                     artcle = Artcle()
                     dir_[mulu_name] = artcle
 
@@ -483,7 +484,7 @@ def make_tree(book, dir_, xes):
             else:
                 last_entry = list(dir_.values())[-1]
                 assert isinstance(last_entry, Artcle)
-                last_entry.body.append(do_atom(xe))
+                last_entry.body.kids.append(do_atom(xe))
 
         else:
             print(xe)
@@ -534,7 +535,7 @@ def change_dirname2(path, dir_, fun):
 
 class _Artcle(object):
     def _make_new_xml(self):
-        self._xml = xl.Xml()
+        self._xml = xl.Xml(xl.Element("root"))
         self._xml.root.kids.append(xl.Element("body"))
         self._xml.root.kids.append(xl.Element("notes"))
         self._xml.root.kids.append(xl.Element("ps"))
