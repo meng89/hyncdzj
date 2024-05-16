@@ -33,6 +33,8 @@ def is_pin_sub(xy_cbdiv):
 _nikaya = None
 
 
+def change_artcle_name(k):
+    m = re.match(r"〔(.*)〕", k)
 
 
 def change_name_add_range(dir_):
@@ -92,15 +94,14 @@ def get_end(dir_):
         return seril.split(".")[-1]
 
 
-
-
-
 def unpack_artilc_name(name):
     m = re.match(r"^([a-z]+) (\d+(?:\.\d+)?) (\S+)$", name)
     if m:
         return m.group(1), m.group(2), m.group(3)
     else:
         raise Exception
+
+
 
 
 def change_pian_mulu_fun(mulu: str):
