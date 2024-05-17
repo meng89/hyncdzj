@@ -7,7 +7,7 @@
 <p>立一面已，彼天神白世尊曰：「友！卿如何度瀑流耶？」〔世尊曰〕：「友！我不住不求以度瀑流。」「友！卿如何不住不求以度瀑流耶？」〔世尊曰〕：「友！我住時沈，求時溺。友！我如是不住不求以度瀑流。」</p>
 <j p="世尊">
 <s>不住與不求</s>
-<s>度<twn no="1">世間執著</twn></s>
+<s>度<twn n="1">世間執著</twn></s>
 <s>涅槃婆羅門</s>
 <s>久久我見知</s>
 </j>
@@ -15,9 +15,24 @@
 </body>
 
 <notes>
-<n no="1">世間執著（loke visattikaṁ）執著於世間，是指渴愛。但亦有被解釋為有關毒（visa）（visavā）之意義（Atthasālini P. 364）。</n>
+<note n="1">世間執著（loke visattikaṁ）執著於世間，是指渴愛。但亦有被解釋為有關毒（visa）（visavā）之意義（Atthasālini P. 364）。</note>
 </notes>
 
-<ps>任何你想说的</ps>
+<ps>任何你想说的，此ps标签内容不会出现在最终pdf和epub中。
+    root -> xml文件必须有一个根标签，无特别意义。
+    body -> 主文；
+    ps -> postscript 附言；
+    st -> sub title 子标题，长篇经文中可能会用到；
+
+    j -> jizi 偈子；
+    p属性 -> person 说此偈子的有情；
+    s -> sentence 句子；
+
+    twn -> TextWithNote 有注解的文本，
+    n属性 -> number 序号；
+
+    notes -> 注解列表；
+    note -> 单个注解；
+</ps>
 
 </root>

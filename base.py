@@ -91,7 +91,7 @@ class Book(object):
 
 class Term(object):
     @abc.abstractmethod
-    def to_xml(self, *args, **kwargs) -> list:
+    def to_elements(self, *args, **kwargs) -> list:
         pass
 
 
@@ -102,7 +102,7 @@ class Head(Term):
         else:
             raise TypeError
 
-    def to_xml(self, *args, **kwargs) -> list:
+    def to_elements(self, *args, **kwargs) -> list:
         return []
 
 
@@ -113,7 +113,7 @@ class Str(Term):
         else:
             raise TypeError
 
-    def to_xml(self, c, *args, **kwargs):
+    def to_elements(self, c, *args, **kwargs):
         return [c(self._s)]
 
 
@@ -187,7 +187,7 @@ class Note(Term):
         else:
             raise TypeError
 
-    def to_xml(self, c: callable, note_collection: NoteCollection, doc_path, *args, **kwargs):
+    def to_elements(self, c: callable, note_collection: NoteCollection, doc_path, *args, **kwargs):
         import epub_public
         note_href = note_collection.add(self._e)
         href = epub_public.relpath(note_href, doc_path)
@@ -201,7 +201,7 @@ class Space(Term):
         if isinstance(e, xl.Element) and e.tag == "space":
             self._e = e
 
-    def to_xml(self, *args, **kwargs) -> list:
+    def to_elements(self, *args, **kwargs) -> list:
         return []
 
 
@@ -215,7 +215,7 @@ class P(Term):
         else:
             raise TypeError
 
-    def to_xml(self, *args, **kwargs) -> list:
+    def to_elements(self, *args, **kwargs) -> list:
         p = xl.Element("p")
         for x in self._terms:
             p.kids.extend(x.to_xml(*args, **kwargs))
@@ -230,7 +230,7 @@ class G(Term):
         else:
             raise TypeError
 
-    def to_xml(self, c, *args, **kwargs) -> list:
+    def to_elements(self, c, *args, **kwargs) -> list:
         return [c(g_map[self._e.attrs["ref"]])]
 
 
@@ -241,7 +241,7 @@ class Ref(Term):
         else:
             raise TypeError
 
-    def to_xml(self, *args, **kwargs) -> list:
+    def to_elements(self, *args, **kwargs) -> list:
         return []
 
 
@@ -281,7 +281,7 @@ class Lg(Term):
             line.append(sentence)
             self._body.append(line)
 
-    def to_xml(self, c, *args, **kwargs) -> list:
+    def to_elements(self, c, *args, **kwargs) -> list:
         div = xl.Element("div", {"class": "ji"})
         if self._poet:
             div.ekid("p", {"class": "poet"}, term2xml(self._poet, c, *args, **kwargs))
@@ -303,7 +303,7 @@ class App(Term):
         else:
             raise TypeError
 
-    def to_xml(self, c, *args, **kwargs) -> list:
+    def to_elements(self, c, *args, **kwargs) -> list:
         lem = self._e.kids[0]
         if isinstance(lem.kids[0], str):
             return [c(lem.kids[0])]
@@ -315,7 +315,7 @@ def term2xml(term: Term or str, c, note_collection, doc_path):
     if isinstance(term, str):
         return [c(term)]
     elif isinstance(term, Term):
-        return term.to_xml(c, note_collection, doc_path)
+        return term.to_elements(c, note_collection, doc_path)
     raise Exception
 
 
@@ -326,9 +326,10 @@ class NoteNotFoundError(Exception):
 def do_atom(atom: any):
     for Class in (Head, Str, Lg, P, G, Ref, Note, App, Space):
         try:
-            return Class(atom)
+            return Class(atom).to_elements()
         except TypeError:
             continue
+
     print(("ddd", type(atom), atom.tag, atom.attrs, atom.kids))
     raise TypeError
 
@@ -443,6 +444,19 @@ def is_have_sub_mulu(xes):
     return False
 
 
+def make_tree(book, dir_, xes):
+    dir_ = dir_ or book.entries
+    for i in range(len(xes)):
+        xe = xes[i]
+
+        if xe.tag == "cb:div":
+            make_tree(dir_, xe.kids)
+        elif xe.tag == "cb:mulu":
+            assert len(xe.kids) == 1
+            mulu_name = xe.kids[0]
+            level = int(xe.attrs["level"])
+
+
 # not every cb:mulu include in cb:div, like: pN14p0006a0301
 def make_tree(book, dir_, xes):
     if dir_ is None:
@@ -459,11 +473,15 @@ def make_tree(book, dir_, xes):
                 assert len(xe.kids) == 1
                 mulu_name = xe.kids[0]
 
+                level = int(xe.attrs["level"])
+                parent_dir = get_last_parent_dir(book.entries, level)
+                input((book.entries, level))
+                if isinstance(parent_dir, Artcle):
+                    input(parent_dir._xml.to_str())
+                # print(parent_dir)
+
                 if is_have_sub_mulu(xes[i + 1:]) is True:
                     new_dir = {}
-
-                    level = int(xe.attrs["level"])
-                    parent_dir = get_last_parent_dir(book.entries, level)
 
                     if mulu_name in parent_dir.keys():
                         raise Exception(mulu_name)
@@ -474,9 +492,8 @@ def make_tree(book, dir_, xes):
                 else:
                     if mulu_name in dir_.keys():
                         raise Exception(mulu_name)
-
                     artcle = Artcle()
-                    dir_[mulu_name] = artcle
+                    parent_dir[mulu_name] = artcle
 
             elif xe.tag == "head":
                 pass
@@ -484,7 +501,7 @@ def make_tree(book, dir_, xes):
             else:
                 last_entry = list(dir_.values())[-1]
                 assert isinstance(last_entry, Artcle)
-                last_entry.body.kids.append(do_atom(xe))
+                last_entry.body.kids.extend(do_atom(xe))
 
         else:
             print(xe)
