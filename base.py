@@ -423,8 +423,7 @@ def load_from_xmlp5(xmls):
         text = tei.find_kids("text")[0]
         body = text.find_kids("body")[0]
 
-        body = filter_kids(body)
-        delete_old_note(body)
+        # body = filter_kids(body)
         make_tree(book, None, body.kids)
 
     return book
@@ -515,22 +514,6 @@ def get_last_parent_dir(dir_, level):
     elif level > 1:
         sub_dir = list(dir_.values())[-1]
         return get_last_parent_dir(sub_dir, level - 1)
-
-
-def delete_old_note(e: xl.Element):
-    new_kids = []
-    for kid in e.kids:
-        if isinstance(kid, xl.Element):
-            if kid.tag == "note" and "n" in kid.attrs.keys():
-                if new_kids:
-                    last = new_kids[-1]
-                    if isinstance(last, xl.Element) and last.tag == "note" and "n" in last.attrs.keys():
-                        if new_kids[-1].attrs["n"] == kid.attrs["n"]:
-                            new_kids.pop()
-            else:
-                delete_old_note(kid)
-        new_kids.append(kid)
-    e.kids[:] = new_kids
 
 
 def change_dirname(dir_, fun):
