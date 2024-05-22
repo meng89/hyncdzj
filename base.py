@@ -443,7 +443,7 @@ def is_have_sub_mulu(xes):
     return False
 
 
-def make_tree(book, dir_, xes):
+def make_tree(book, cb_mulu):
     dir_ = dir_ or book.entries
     for i in range(len(xes)):
         xe = xes[i]
