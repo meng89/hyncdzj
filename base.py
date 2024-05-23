@@ -442,9 +442,23 @@ def is_have_sub_mulu(xes):
                 return True
     return False
 
+
+# <cb:mulu type="其他" level="1">有偈篇 (1-11)</cb:mulu>
 def is_have_sub_mulu2(div: xl.Element):
-    for x in div.kids:
+    level = int(div.attrs["level"])
+    all_mulus = div.find_kids("cb:mulu")
         if isinstance(x, xl.Element):
+            pass
+
+        pass
+    pass
+
+def find_firmulu():
+    pass
+
+
+def does_it_have_sub(cb_div) -> bool:
+
 
 
 def find_node(data: dict, level, key, cur_level):
@@ -478,16 +492,7 @@ def make_tree(book, cb_div: xl.Element):
 
 
 
-    dir_ = dir_ or book.entries
-    for i in range(len(xes)):
-        xe = xes[i]
 
-        if xe.tag == "cb:div":
-            make_tree(dir_, xe.kids)
-        elif xe.tag == "cb:mulu":
-            assert len(xe.kids) == 1
-            mulu_name = xe.kids[0]
-            level = int(xe.attrs["level"])
 
 
 # not every cb:mulu include in cb:div, like: pN14p0006a0301
