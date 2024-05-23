@@ -442,8 +442,42 @@ def is_have_sub_mulu(xes):
                 return True
     return False
 
+def is_have_sub_mulu2(div: xl.Element):
+    for x in div.kids:
+        if isinstance(x, xl.Element):
 
-def make_tree(book, cb_mulu):
+
+def find_node(data: dict, level, key, cur_level):
+    keys = list(data.keys())
+    if cur_level == level:
+        if key in keys:
+            if key == keys[0]:
+                input("重复的key: {}, 回车继续运行".format(repr(key)))
+                return data[key]
+            else:
+                raise Exception("非切割同级目录出现")
+        else:
+            return None
+    else:
+        find_node(data[keys[-1]], level, key, cur_level+1)
+
+
+def make_tree(book, cb_div: xl.Element):
+    level = int(cb_div.attrs["level"])
+    kid0 = cb_div.kids[0]
+    assert isinstance(kid0, xl.Element) and kid0.tag == "head" and len(kid0.kids) == 1 and isinstance(kid0.kids[0], str)
+    key = kid0.kids[0]
+    if is_have_sub_mulu(cb_div.kids):
+        value = {}
+    else:
+        value = {}
+
+    result = find_node(book.entries, level, key, 1)
+    if result is None:
+        is_have_sub_mulu()
+
+
+
     dir_ = dir_ or book.entries
     for i in range(len(xes)):
         xe = xes[i]
