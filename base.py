@@ -443,14 +443,12 @@ def is_have_sub_mulu(xes):
     return False
 
 
-# <cb:mulu type="其他" level="1">有偈篇 (1-11)</cb:mulu>
-def is_have_sub_mulu2(div: xl.Element):
-    level = int(div.attrs["level"])
-    all_mulus = div.find_kids("cb:mulu")
-        if isinstance(x, xl.Element):
-            pass
+# <cb:mulu type="其他" level="1">有偈篇 (1-11)</cb:mulu><head>
+def is_have_sub_mulu2(cb_div: xl.Element):
+    level = int(cb_div.attrs["level"])
+    if isinstance(cb_div.kids[0],
 
-        pass
+
     pass
 
 def find_firmulu():
@@ -660,3 +658,16 @@ class Piece(_Artcle):
 
     def _get_filename(self):
         return self._serial
+
+
+def flter(e: xl.Element()):
+    new_e = xl.Element(tag=e.tag)
+    new_e.attrs.update(e.attrs)
+    for kid in e.kids:
+        if isinstance(kid, xl.Element) and kid.tag in ("lb", "pb", "milestone"):
+            pass
+        elif isinstance(kid, str) and kid in ("\n", "\n\r"):
+            pass
+        else:
+            new_e.kids.append(filter_kids(kid))
+    return new_e
