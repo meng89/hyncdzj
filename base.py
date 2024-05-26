@@ -429,34 +429,24 @@ def load_from_xmlp5(xmls):
     return book
 
 
-def is_have_sub_mulu(xes):
-    for i in range(len(xes)):
-        xe = xes[i]
-        if isinstance(xe, xl.Element):
-            if xe.tag == "cb:div":
-                if is_have_sub_mulu(xes[i + 1:]):
-                    return True
-                else:
-                    pass
-            elif xe.tag == "cb:mulu":
+# <cb:mulu type="其他" level="1">有偈篇 (1-11)</cb:mulu><head>
+def does_it_have_sub_mulu(cb_div: xl.Element) -> bool:
+    level = get_level(cb_div)
+    for kid in cb_div.kids[2:]:
+        if isinstance(kid, xl.Element) and kid.tag == "cb:div":
+            if get_level(kid) < level:
                 return True
+            else:
+                return False
     return False
 
 
-# <cb:mulu type="其他" level="1">有偈篇 (1-11)</cb:mulu><head>
-def is_have_sub_mulu2(cb_div: xl.Element):
-    level = int(cb_div.attrs["level"])
-    if isinstance(cb_div.kids[0],
-
-
-    pass
-
-def find_firmulu():
-    pass
-
-
-def does_it_have_sub(cb_div) -> bool:
-
+def get_level(cb_div: xl.Element) -> int:
+    kid1 = cb_div.kids[0]
+    kid2 = cb_div.kids[1]
+    assert isinstance(kid1, xl.Element) and kid1.tag == "mulu"
+    assert isinstance(kid2, xl.Element) and kid2.tag == "head"
+    return int(kid1.attrs["level"])
 
 
 def find_node(data: dict, level, key, cur_level):
