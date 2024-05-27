@@ -441,12 +441,21 @@ def does_it_have_sub_mulu(cb_div: xl.Element) -> bool:
     return False
 
 
-def get_level(cb_div: xl.Element) -> int:
+# get level, mulu, head
+def get_lmh(cb_div: xl.Element) -> tuple:
     kid1 = cb_div.kids[0]
     kid2 = cb_div.kids[1]
-    assert isinstance(kid1, xl.Element) and kid1.tag == "mulu"
+    assert isinstance(kid1, xl.Element) and kid1.tag == "mulu" and len(kid1.kids) == 1 and isinstance(kid1.kids[0], str)
     assert isinstance(kid2, xl.Element) and kid2.tag == "head"
-    return int(kid1.attrs["level"])
+
+    return int(kid1.attrs["level"]), kid1.kids[0], kid2.kids[:],
+
+
+def get_level(cb_div: xl.Element) -> int: return get_lmh(cb_div)[0]
+
+def get_mulu(cb_div: xl.Element) -> str: return get_lmh(cb_div)[1]
+
+def get_head(cb_div: xl.Element) -> str: return get_lmh(cb_div)[2]
 
 
 
@@ -465,25 +474,34 @@ def find_node(data: dict, data_level, key, level):
         find_node(data[keys[-1]], level, key, data_level + 1)
 
 
-def make_node(data: dict, level, data_level, key, node: Artcle or dict):
-    if data_level ==
-    find_node(data, level -1)
-
+def make_node(data: dict, data_level, key, node: Artcle or dict, level):
+    if data_level == level:
+        data[key] = node
+    else:
+        keys = list(data.keys())
+        make_node(data[keys[-1]], data_level + 1, key, node, level)
 
 
 def make_tree(book, cb_div: xl.Element):
-    level = int(cb_div.attrs["level"])
+    level = get_level(cb_div)
     kid0 = cb_div.kids[0]
     assert isinstance(kid0, xl.Element) and kid0.tag == "head" and len(kid0.kids) == 1 and isinstance(kid0.kids[0], str)
-    key = kid0.kids[0]
-    if is_have_sub_mulu(cb_div.kids):
-        value = {}
-    else:
-        value = {}
 
-    result = find_node(book.entries, 1, key, level)
-    if result is None:
+    key = kid0.kids[0]
+
+    node = find_node(book.entries, 1, key, level)
+    if node is None:
         if does_it_have_sub_mulu(cb_div) is True:
+            node = {}
+        else:
+            node = Artcle()
+        make_node(book.entries, 1, key, node, level)
+
+    for kid in cb_div.kids[2:]:
+        if isinstance(kid, xl.Element) and kid.tag == "cb:div":
+            make_tree(book, kid)
+        else:
+
 
 
 
