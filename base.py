@@ -449,11 +449,12 @@ def get_level(cb_div: xl.Element) -> int:
     return int(kid1.attrs["level"])
 
 
-def find_node(data: dict, level, key, cur_level):
+
+def find_node(data: dict, data_level, key, level):
     keys = list(data.keys())
-    if cur_level == level:
+    if data_level == level:
         if key in keys:
-            if key == keys[0]:
+            if key == keys[-1]:
                 input("重复的key: {}, 回车继续运行".format(repr(key)))
                 return data[key]
             else:
@@ -461,7 +462,13 @@ def find_node(data: dict, level, key, cur_level):
         else:
             return None
     else:
-        find_node(data[keys[-1]], level, key, cur_level+1)
+        find_node(data[keys[-1]], level, key, data_level + 1)
+
+
+def make_node(data: dict, level, data_level, key, node: Artcle or dict):
+    if data_level ==
+    find_node(data, level -1)
+
 
 
 def make_tree(book, cb_div: xl.Element):
@@ -474,9 +481,11 @@ def make_tree(book, cb_div: xl.Element):
     else:
         value = {}
 
-    result = find_node(book.entries, level, key, 1)
+    result = find_node(book.entries, 1, key, level)
     if result is None:
-        is_have_sub_mulu()
+        if does_it_have_sub_mulu(cb_div) is True:
+
+
 
 
 
