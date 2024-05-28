@@ -3,7 +3,7 @@ import re
 import xl
 
 
-def trans_elements(elements, note_index):
+def trans_elements(elements, note_index) -> tuple:
     new_elements = []
     notes = []
     new_note_index = note_index

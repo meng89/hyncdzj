@@ -8,6 +8,8 @@ import epubpacker
 import xl
 import config
 
+import xmlp5_element_to_simplexml_element
+
 g_map = {"#CB03020": "婬"
          }
 
@@ -453,10 +455,11 @@ def get_lmh(cb_div: xl.Element) -> tuple:
 
 def get_level(cb_div: xl.Element) -> int: return get_lmh(cb_div)[0]
 
+
 def get_mulu(cb_div: xl.Element) -> str: return get_lmh(cb_div)[1]
 
-def get_head(cb_div: xl.Element) -> str: return get_lmh(cb_div)[2]
 
+def get_head(cb_div: xl.Element) -> str: return get_lmh(cb_div)[2]
 
 
 def find_node(data: dict, data_level, key, level):
@@ -495,76 +498,21 @@ def make_tree(book, cb_div: xl.Element):
             node = Artcle()
         make_node(book.entries, 1, key, node, level)
 
+    note_index = 1
+    notes = []
     for kid in cb_div.kids[2:]:
         if isinstance(kid, xl.Element) and kid.tag == "cb:div":
             make_tree(book, kid)
+
         else:
             # 如果不是底层
-            if isinstance(node, dict):
+            if does_it_have_sub_mulu(cb_div) is True:
                 print("debug")
                 print(type(kid))
             else:
-                node.body.extend(kid)
-
-
-
-
-
-
-
-
-
-
-# not every cb:mulu include in cb:div, like: pN14p0006a0301
-def make_tree(book, dir_, xes):
-    if dir_ is None:
-        dir_ = book.entries
-
-    for i in range(len(xes)):
-        xe = xes[i]
-        if isinstance(xe, xl.Element):
-
-            if xe.tag == "cb:div":
-                make_tree(book, dir_, xe.kids)
-
-            elif xe.tag == "cb:mulu":
-                assert len(xe.kids) == 1
-                mulu_name = xe.kids[0]
-
-                level = int(xe.attrs["level"])
-                parent_dir = get_last_parent_dir(book.entries, level)
-                input((book.entries, level))
-                if isinstance(parent_dir, Artcle):
-                    input(parent_dir._xml.to_str())
-                # print(parent_dir)
-
-                if is_have_sub_mulu(xes[i + 1:]) is True:
-                    new_dir = {}
-
-                    if mulu_name in parent_dir.keys():
-                        raise Exception(mulu_name)
-
-                    parent_dir[mulu_name] = new_dir
-                    dir_ = new_dir
-
-                else:
-                    if mulu_name in dir_.keys():
-                        raise Exception(mulu_name)
-                    artcle = Artcle()
-                    parent_dir[mulu_name] = artcle
-
-            elif xe.tag == "head":
-                pass
-
-            else:
-                last_entry = list(dir_.values())[-1]
-                assert isinstance(last_entry, Artcle)
-                last_entry.body.kids.extend(do_atom(xe))
-
-        else:
-            print(xe)
-            raise Exception
-            # container.terms.append(do_atom(xe))
+                new_elements, new_notes, note_index = xmlp5_element_to_simplexml_element.trans_element(kid, note_index)
+                notes.extend(new_notes)
+                node.body.extend(new_elements)
 
 
 def get_last_parent_dir(dir_, level):
