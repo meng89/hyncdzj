@@ -484,10 +484,8 @@ def make_node(data: dict, data_level, key, node: Artcle or dict, level):
 
 def make_tree(book, cb_div: xl.Element):
     level = get_level(cb_div)
-    kid0 = cb_div.kids[0]
-    assert isinstance(kid0, xl.Element) and kid0.tag == "head" and len(kid0.kids) == 1 and isinstance(kid0.kids[0], str)
-
-    key = kid0.kids[0]
+    key = get_mulu(cb_div)
+    head = get_head(cb_div)
 
     node = find_node(book.entries, 1, key, level)
     if node is None:
@@ -501,6 +499,13 @@ def make_tree(book, cb_div: xl.Element):
         if isinstance(kid, xl.Element) and kid.tag == "cb:div":
             make_tree(book, kid)
         else:
+            # 如果不是底层
+            if isinstance(node, dict):
+                print("debug")
+                print(type(kid))
+            else:
+                node.body.extend(kid)
+
 
 
 
