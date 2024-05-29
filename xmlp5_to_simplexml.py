@@ -16,11 +16,14 @@ def trans_elements(elements, note_index) -> tuple:
 
 
 def trans_element(element, note_index):
-    for fun in (head, string):
+    for fun in (head, string, lg, p):
         try:
             return fun(element, note_index)
+
         except TypeError:
             continue
+
+    print("cannot handle this element:", element.tag)
     raise Exception
 
 
@@ -175,7 +178,7 @@ def lg(e, note_index):
         for s in sentences:
             j.kids.append(xl.Element("s", kids=s))
 
-        return [j], new_note_index
+        return [j], notes, new_note_index
 
     else:
         raise TypeError
@@ -197,7 +200,10 @@ def g(e, note_index):
 
 # 普通句子
 def p(e, note_index):
+    element = xl.Element("p")
     if isinstance(e, xl.Element) and e.tag == "p":
-        return trans_elements(e.kids, note_index)
+        kids, notes, new_note_index = trans_elements(e.kids, note_index)
+        element.kids[:] = kids
+        return [element], notes, new_note_index
     else:
         raise TypeError

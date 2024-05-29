@@ -102,8 +102,6 @@ def unpack_artilc_name(name):
         raise Exception
 
 
-
-
 def change_pian_mulu_fun(mulu: str):
     m = re.match(r"^(.+篇).* \(\d+-\d+\)$", mulu)
     if m:
@@ -137,84 +135,8 @@ def change_pin_mulu_fun(mulu: str):
             return mulu
 
 
-def get_nikaya():
-
-    book = base.load_from_xmlp5(xmls)
-
-    base.change_dirname(book, 1, change_pian_mulu_fun)
-    base.change_dirname(book, 2, change_xy_mulu_fun)
-
-    base.change_dirname(book, 3, change_pin_mulu_fun)
-    base.change_dirname(book, 4, change_pin_mulu_fun)
-    base.change_dirname(book, 5, change_pin_mulu_fun)
-
-    return book
-
-
-# def is_sutta_parent(parent_container: base.Container):
-#     len_of_container = 0
-#     lot_of_match = 0
-#     for sub in parent_container.terms:
-#         if isinstance(sub, base.Container):
-#             len_of_container += 1
-#
-#             if not isinstance(sub.mulu, str):
-#                 input(sub.mulu)
-#
-#             m = re.match(r"^〔[、～〇一二三四五六七八九十]+〕.*$", sub.mulu)
-#             if m:
-#                 lot_of_match += 1
-#
-#     if lot_of_match:
-#         if lot_of_match == len_of_container:
-#             return True
-#         else:
-#             print("需要检查子div:{}".format(parent_container.mulu, 1))
-#             print("len_of_container:", len_of_container)
-#             print("lot_of_match:", lot_of_match)
-#             input()
-#             return False
-#     else:
-#         return False
-#
-#
-# def print_title(container, depth):
-#     for term in container.terms:
-#         if isinstance(term, base.Container):
-#             if is_sutta_parent(container):
-#                 print(" " * depth, "<Sutta>:", term.mulu, sep="")
-#             else:
-#                 print(" " * depth, term.mulu, sep="")
-#             print_title(term, depth + 2)
-#         else:
-#             print(" " * depth, term, sep="")
-#
-#
-# def is_container_in_it(term):
-#     if isinstance(term, base.Container):
-#         for sub_term in term.terms:
-#             if isinstance(sub_term, base.Container):
-#                 return True
-#
-#         return False
-#     else:
-#         return False
-#
-#
-# def check_x_first_term(nikaya):
-#     for pian in nikaya.terms:
-#         term = pian.terms[0]
-#         print(pian.mulu)
-#         if not isinstance(term, base.Container):
-#             input("hehe")
-#             print(term._e.to_str())
-#
-
 def main():
     book = base.load_from_xmlp5(xmls)
-    # nikaya = get_nikaya()
-    # print_title(nikaya, 0)
-    # check_x_first_term(book)
 
 
 if __name__ == "__main__":

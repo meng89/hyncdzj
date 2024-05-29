@@ -148,12 +148,6 @@ class Piece(_Artcle):
 def dir2entries(path):
     entries = {}
 
-    have_sub_dir = False
-    for entry in os.listdir():
-        if os.path.isdir(os.path.join(path, entry)):
-            have_sub_dir = True
-            break
-
     have_num_prefix = True
     for entry in os.listdir():
         if not re.match(r"^\d+_", entry):
@@ -200,18 +194,6 @@ def is_num_p(x):
     return False
 
 
-def _filter_kids(x, fun):
-    new_e = xl.Element(tag=x.tag, attrs=x.attrs)
-    for kid in x.kids:
-        if fun(kid):
-            continue
-        if isinstance(kid, xl.Element):
-            new_e.kids.append(_filter_kids(kid, fun))
-        else:
-            new_e.kids.append(kid)
-    return new_e
-
-
 def load_from_xmlp5(xmls):
     book = Book()
     for one in xmls:
@@ -237,7 +219,7 @@ def does_it_have_sub_mulu(cb_div: xl.Element) -> bool:
     level = get_level(cb_div)
     for kid in cb_div.kids[2:]:
         if isinstance(kid, xl.Element) and kid.tag == "cb:div":
-            if get_level(kid) < level:
+            if get_level(kid) > level:
                 return True
             else:
                 return False
@@ -248,7 +230,10 @@ def does_it_have_sub_mulu(cb_div: xl.Element) -> bool:
 def get_lmh(cb_div: xl.Element) -> tuple:
     kid1 = cb_div.kids[0]
     kid2 = cb_div.kids[1]
-    assert isinstance(kid1, xl.Element) and kid1.tag == "mulu" and len(kid1.kids) == 1 and isinstance(kid1.kids[0], str)
+    if not (isinstance(kid1, xl.Element) and kid1.tag == "cb:mulu" and len(kid1.kids) == 1 and isinstance(kid1.kids[0], str)):
+        print(kid1.tag)
+        raise Exception
+
     assert isinstance(kid2, xl.Element) and kid2.tag == "head"
 
     return int(kid1.attrs["level"]), kid1.kids[0], kid2.kids[:],
@@ -275,7 +260,11 @@ def find_node(data: dict, data_level, key, level):
         else:
             return None
     else:
-        find_node(data[keys[-1]], level, key, data_level + 1)
+        sub = data[keys[-1]],
+        if isinstance(sub, dict):
+            return find_node(sub, level, key, data_level + 1)
+        else:
+            return None
 
 
 def make_node(data: dict, data_level, key, node: Artcle or dict, level):
@@ -287,6 +276,7 @@ def make_node(data: dict, data_level, key, node: Artcle or dict, level):
 
 
 def make_tree(book, cb_div: xl.Element):
+
     level = get_level(cb_div)
     mulu = get_mulu(cb_div)
     head = get_head(cb_div)
@@ -306,15 +296,16 @@ def make_tree(book, cb_div: xl.Element):
             make_tree(book, kid)
 
         else:
-            # 如果不是底层
+            # 如果不是底层, 这些片段属于目录
             if does_it_have_sub_mulu(cb_div) is True:
+
                 print("debug")
                 print(type(kid))
             else:
                 new_elements, new_notes, note_index = xmlp5_to_simplexml.trans_element(kid, note_index)
                 notes.extend(new_notes)
-                node.body.extend(new_elements)
-                node.notes.extend(notes)
+                node.body.kids.extend(new_elements)
+                node.notes.kids.extend(notes)
 
 
 def get_last_parent_dir(dir_, level):
@@ -342,7 +333,11 @@ def change_dirname2(path, dir_, fun):
     return new_dir
 
 
-def filter_(e: xl.Element):
+def filter_(term: xl.Element or str):
+    if isinstance(term, str):
+        return term
+
+    e = term
     new_e = xl.Element(tag=e.tag)
     new_e.attrs.update(e.attrs)
     for kid in e.kids:
