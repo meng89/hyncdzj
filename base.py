@@ -8,46 +8,10 @@ import epubpacker
 import xl
 import config
 
-import xmlp5_element_to_simplexml_element
+import xmlp5_to_simplexml
 
 g_map = {"#CB03020": "婬"
          }
-
-
-def dir2entries(path):
-    entries = {}
-
-    have_sub_dir = False
-    for entry in os.listdir():
-        if os.path.isdir(os.path.join(path, entry)):
-            have_sub_dir = True
-            break
-
-    have_num_prefix = True
-    for entry in os.listdir():
-        if not re.match(r"^\d+_", entry):
-            have_num_prefix = False
-            break
-
-    for entry in sorted(os.listdir()):
-
-        if have_num_prefix:
-            m = re.match(r"^\d+_(.*)$", entry)
-            no_prefix_entry = m.group(1)
-        else:
-            no_prefix_entry = entry
-
-        entry_path = os.path.join(path, entry)
-
-        if os.path.isdir(entry_path):
-            entries[no_prefix_entry] = dir2entries(entry_path)
-
-        elif os.path.isfile(entry_path):
-            if entry.lower().endswith(".xml"):
-
-                entries[no_prefix_entry] = Artcle(entry_path)
-
-    return entries
 
 
 class Book(object):
@@ -89,455 +53,6 @@ class Book(object):
         os.makedirs(os.path.join(path, "entries"), exist_ok=True)
         for entry in self._entries:
             entry.write(os.path.join(path, "entries"))
-
-
-class Term(object):
-    @abc.abstractmethod
-    def to_elements(self, *args, **kwargs) -> list:
-        pass
-
-
-class Head(Term):
-    def __init__(self, e: xl.Element):
-        if isinstance(e, xl.Element) and e.tag == "head":
-            self._e = e
-        else:
-            raise TypeError
-
-    def to_elements(self, *args, **kwargs) -> list:
-        return []
-
-
-class Str(Term):
-    def __init__(self, string):
-        if isinstance(string, str):
-            self._s = string
-        else:
-            raise TypeError
-
-    def to_elements(self, c, *args, **kwargs):
-        return [c(self._s)]
-
-
-class NoteCollection(object):
-    def __init__(self, qty_of_list=100, path_prefix=None, id_prefix=None):
-        self._qty_of_list = qty_of_list
-        self._lists_of_notes = [[]]
-        self.path_prefix = path_prefix or "note/note"
-        self.id_prefix = id_prefix or "id"
-
-    def add(self, note):
-        try:
-            return self.get_link(note)
-        except NoteNotFoundError:
-            last_list = self._lists_of_notes[-1]
-            if len(last_list) < self._qty_of_list:
-                last_list.append(note)
-            else:
-                self._lists_of_notes.append([note])
-        finally:
-            return self.get_link(note)
-
-    def get_link(self, note):
-        for notes in self._lists_of_notes:
-            for _note in notes:
-                if note == _note:
-                    doc_path = "{}{}.xhtml".format(self.path_prefix, self._lists_of_notes.index(notes))
-                    id_ = "{}{}".format(self.id_prefix, notes.index(note))
-                    return doc_path + "#" + id_
-
-        raise NoteNotFoundError
-
-    def write2ebook(self, ebook: epubpacker.Epub, xc):
-        import epub_public
-
-        toc = epubpacker.Toc(xc.c("註解"))
-
-        for notes in self._lists_of_notes:
-            doc_path = "{}{}.xhtml".format(self.path_prefix, self._lists_of_notes.index(notes))
-            html, body = epub_public.make_doc(doc_path, xc, xc.c("註解"))
-            body.attrs["class"] = "note"
-            sec = body.ekid("section", {"epub:type": "endnotes", "role": "doc-endnotes"})
-            ol = sec.ekid("ol")
-            for note in notes:
-
-                if toc.href:
-                    pass
-                else:
-                    toc.href = doc_path
-                    ebook.root_toc.append(toc)
-
-                id_ = "{}{}".format(self.id_prefix, notes.index(note))
-                li = ol.ekid("li", {"id": id_})
-                p = li.ekid("p")
-                for x in note.kids:
-                    term = do_atom(x)
-                    p.kids.extend(term2xml(term, xc.c, self, doc_path))
-            htmlstr = xl.Xml(root=html).to_str(do_pretty=True, dont_do_tags=["title", "p"])
-            ebook.userfiles[doc_path] = htmlstr
-            ebook.spine.append(doc_path)
-
-
-class Note(Term):
-    def __init__(self, e: xl.Element):
-        if isinstance(e, xl.Element) and e.tag == "note":
-            self._e = e
-            self.n = e.attrs["n"]
-            self._terms = []
-            for x in e.kids:
-                self._terms.append(do_atom(x))
-        else:
-            raise TypeError
-
-    def to_elements(self, c: callable, note_collection: NoteCollection, doc_path, *args, **kwargs):
-        import epub_public
-        note_href = note_collection.add(self._e)
-        href = epub_public.relpath(note_href, doc_path)
-        a = xl.Element("a", {"epub:type": "noteref", "href": href, "class": "noteref"})
-        a.kids.append("[注]")
-        return [a]
-
-
-class Space(Term):
-    def __init__(self, e: xl.Element):
-        if isinstance(e, xl.Element) and e.tag == "space":
-            self._e = e
-
-    def to_elements(self, *args, **kwargs) -> list:
-        return []
-
-
-class P(Term):
-    def __init__(self, e):
-        if isinstance(e, xl.Element) and e.tag == "p":
-            self._e = e
-            self._terms = []
-            for x in e.kids:
-                self._terms.append(do_atom(x))
-        else:
-            raise TypeError
-
-    def to_elements(self, *args, **kwargs) -> list:
-        p = xl.Element("p")
-        for x in self._terms:
-            p.kids.extend(x.to_xml(*args, **kwargs))
-
-        return [p]
-
-
-class G(Term):
-    def __init__(self, e: xl.Element):
-        if isinstance(e, xl.Element) and e.tag == "g":
-            self._e: xl.Element = e
-        else:
-            raise TypeError
-
-    def to_elements(self, c, *args, **kwargs) -> list:
-        return [c(g_map[self._e.attrs["ref"]])]
-
-
-class Ref(Term):
-    def __init__(self, e: xl.Element):
-        if isinstance(e, xl.Element) and e.tag == "ref":
-            self._e = e
-        else:
-            raise TypeError
-
-    def to_elements(self, *args, **kwargs) -> list:
-        return []
-
-
-class Lg(Term):
-    def __init__(self, e):
-        if isinstance(e, xl.Element) and e.tag == "lg":
-            self._e = e
-        else:
-            raise TypeError
-
-        self._poet = None
-        self._body = []
-
-        for le in e.find_kids("l"):
-            line = []
-            sentence = []
-            for _lkid in le.kids:
-                if isinstance(_lkid, str):
-                    m = re.match(r"^(〔.+〕)(.+)$", _lkid)
-                    if m:
-                        assert self._poet is None
-                        self._poet = m.group(1)
-                        sentence.append(m.group(2))
-                    else:
-                        sentence.append(_lkid)
-
-                elif isinstance(_lkid, xl.Element):
-                    if _lkid.tag == "caesura":
-                        line.append(sentence)
-                        sentence = []
-                        continue
-
-                    else:
-                        sentence.append(do_atom(_lkid))
-
-            assert sentence
-            line.append(sentence)
-            self._body.append(line)
-
-    def to_elements(self, c, *args, **kwargs) -> list:
-        div = xl.Element("div", {"class": "ji"})
-        if self._poet:
-            div.ekid("p", {"class": "poet"}, term2xml(self._poet, c, *args, **kwargs))
-        for line in self._body:
-            for sentence in line:
-                p = div.ekid("p", {"class": "sentence"})
-                for term in sentence:
-                    if isinstance(term, str):
-                        term = term.replace("「", "").replace("」", "")
-                    p.kids.extend(term2xml(term, c, *args, **kwargs))
-
-        return [div]
-
-
-class App(Term):
-    def __init__(self, e):
-        if isinstance(e, xl.Element) and e.tag == "app":
-            self._e = e
-        else:
-            raise TypeError
-
-    def to_elements(self, c, *args, **kwargs) -> list:
-        lem = self._e.kids[0]
-        if isinstance(lem.kids[0], str):
-            return [c(lem.kids[0])]
-        elif isinstance(lem.kids[0], xl.Element) and lem.kids[0].tag == "space":
-            return []
-
-
-def term2xml(term: Term or str, c, note_collection, doc_path):
-    if isinstance(term, str):
-        return [c(term)]
-    elif isinstance(term, Term):
-        return term.to_elements(c, note_collection, doc_path)
-    raise Exception
-
-
-class NoteNotFoundError(Exception):
-    pass
-
-
-def do_atom(atom: any):
-    for Class in (Head, Str, Lg, P, G, Ref, Note, App, Space):
-        try:
-            return Class(atom).to_elements()
-        except TypeError:
-            continue
-
-    print(("ddd", type(atom), atom.tag, atom.attrs, atom.kids))
-    raise TypeError
-
-
-class ElementError(Exception):
-    pass
-
-
-def is_lb(x):
-    # <lb ed="N" n="0206a14"/>
-    if isinstance(x, xl.Element):
-        if x.tag == "lb":
-            if x.attrs["ed"] == "N":
-                if "n" in x.attrs.keys():
-                    if not x.kids:
-                        return True
-    return False
-
-
-def is_pb(x):
-    # <pb ed="N" xml:id="N18.0006.0207a" n="0207a"/>
-    if isinstance(x, xl.Element):
-        if x.tag == "pb":
-            if x.attrs["ed"] == "N":
-                if "n" in x.attrs.keys():
-                    if "xml:id" in x.attrs.keys():
-                        if not x.kids:
-                            return True
-    return False
-
-
-def is_pts_ref(x):
-    if isinstance(x, xl.Element):
-        if x.tag == "ref":
-            if "cRef" in x.attrs.keys():
-                if re.match("^PTS", x.attrs["cRef"]):
-                    if len(x.kids) == 0:
-                        return True
-    return False
-
-
-def is_num_p(x):
-    if isinstance(x, xl.Element):
-        if x.tag == "p":
-            if len(x.kids) == 1:
-                if re.match(r"^[〇一二三四五六七八九十※～]+$", x.kids[0]):
-                    return True
-    return False
-
-
-def is_milestone(x):
-    if isinstance(x, xl.Element):
-        if x.tag == "milestone":
-            if x.attrs["unit"] == "juan":
-                if "n" in x.attrs.keys():
-                    if re.match(r"^\d+$", x.attrs["n"]):
-                        return True
-    return False
-
-
-def _filter_kids(x, fun):
-    new_e = xl.Element(tag=x.tag, attrs=x.attrs)
-    for kid in x.kids:
-        if fun(kid):
-            continue
-        if isinstance(kid, xl.Element):
-            new_e.kids.append(_filter_kids(kid, fun))
-        else:
-            new_e.kids.append(kid)
-    return new_e
-
-
-def filter_kids(x: xl.Element or str, funs=None):
-    funs = funs or [is_lb, is_pb, is_pts_ref, is_num_p, is_milestone]
-    new_e = x
-    for fun in funs:
-        new_e = _filter_kids(new_e, fun)
-    return new_e
-
-
-def load_from_xmlp5(xmls):
-    book = Book()
-    for one in xmls:
-        filename = os.path.join(config.xmlp5_dir, one)
-        file = open(filename, "r")
-
-        xmlstr = file.read()
-        file.close()
-        xml = xl.parse(xmlstr, do_strip=True)
-        tei = xml.root
-        text = tei.find_kids("text")[0]
-        body = text.find_kids("body")[0]
-
-        # body = filter_kids(body)
-        make_tree(book, None, body.kids)
-
-    return book
-
-
-# <cb:mulu type="其他" level="1">有偈篇 (1-11)</cb:mulu><head>
-def does_it_have_sub_mulu(cb_div: xl.Element) -> bool:
-    level = get_level(cb_div)
-    for kid in cb_div.kids[2:]:
-        if isinstance(kid, xl.Element) and kid.tag == "cb:div":
-            if get_level(kid) < level:
-                return True
-            else:
-                return False
-    return False
-
-
-# get level, mulu, head
-def get_lmh(cb_div: xl.Element) -> tuple:
-    kid1 = cb_div.kids[0]
-    kid2 = cb_div.kids[1]
-    assert isinstance(kid1, xl.Element) and kid1.tag == "mulu" and len(kid1.kids) == 1 and isinstance(kid1.kids[0], str)
-    assert isinstance(kid2, xl.Element) and kid2.tag == "head"
-
-    return int(kid1.attrs["level"]), kid1.kids[0], kid2.kids[:],
-
-
-def get_level(cb_div: xl.Element) -> int: return get_lmh(cb_div)[0]
-
-
-def get_mulu(cb_div: xl.Element) -> str: return get_lmh(cb_div)[1]
-
-
-def get_head(cb_div: xl.Element) -> str: return get_lmh(cb_div)[2]
-
-
-def find_node(data: dict, data_level, key, level):
-    keys = list(data.keys())
-    if data_level == level:
-        if key in keys:
-            if key == keys[-1]:
-                input("重复的key: {}, 回车继续运行".format(repr(key)))
-                return data[key]
-            else:
-                raise Exception("非切割同级目录出现")
-        else:
-            return None
-    else:
-        find_node(data[keys[-1]], level, key, data_level + 1)
-
-
-def make_node(data: dict, data_level, key, node: Artcle or dict, level):
-    if data_level == level:
-        data[key] = node
-    else:
-        keys = list(data.keys())
-        make_node(data[keys[-1]], data_level + 1, key, node, level)
-
-
-def make_tree(book, cb_div: xl.Element):
-    level = get_level(cb_div)
-    key = get_mulu(cb_div)
-    head = get_head(cb_div)
-
-    node = find_node(book.entries, 1, key, level)
-    if node is None:
-        if does_it_have_sub_mulu(cb_div) is True:
-            node = {}
-        else:
-            node = Artcle()
-        make_node(book.entries, 1, key, node, level)
-
-    note_index = 1
-    notes = []
-    for kid in cb_div.kids[2:]:
-        if isinstance(kid, xl.Element) and kid.tag == "cb:div":
-            make_tree(book, kid)
-
-        else:
-            # 如果不是底层
-            if does_it_have_sub_mulu(cb_div) is True:
-                print("debug")
-                print(type(kid))
-            else:
-                new_elements, new_notes, note_index = xmlp5_element_to_simplexml_element.trans_element(kid, note_index)
-                notes.extend(new_notes)
-                node.body.extend(new_elements)
-
-
-def get_last_parent_dir(dir_, level):
-    if level == 1:
-        return dir_
-    elif level > 1:
-        sub_dir = list(dir_.values())[-1]
-        return get_last_parent_dir(sub_dir, level - 1)
-
-
-def change_dirname(dir_, fun):
-    change_dirname2([], dir_, fun)
-
-
-def change_dirname2(path, dir_, fun):
-    new_dir = {}
-    for k, v in dir_.items():
-        new_k = fun(path.append(k))
-        if isinstance(v, dict):
-            new_v = change_dirname2(path.append(new_k), v, fun)
-        else:
-            new_v = v
-        new_dir[new_k] = new_v
-
-    return new_dir
 
 
 class _Artcle(object):
@@ -630,14 +145,217 @@ class Piece(_Artcle):
         return self._serial
 
 
-def flter(e: xl.Element()):
+def dir2entries(path):
+    entries = {}
+
+    have_sub_dir = False
+    for entry in os.listdir():
+        if os.path.isdir(os.path.join(path, entry)):
+            have_sub_dir = True
+            break
+
+    have_num_prefix = True
+    for entry in os.listdir():
+        if not re.match(r"^\d+_", entry):
+            have_num_prefix = False
+            break
+
+    for entry in sorted(os.listdir()):
+
+        if have_num_prefix:
+            m = re.match(r"^\d+_(.*)$", entry)
+            no_prefix_entry = m.group(1)
+        else:
+            no_prefix_entry = entry
+
+        entry_path = os.path.join(path, entry)
+
+        if os.path.isdir(entry_path):
+            entries[no_prefix_entry] = dir2entries(entry_path)
+
+        elif os.path.isfile(entry_path):
+            if entry.lower().endswith(".xml"):
+
+                entries[no_prefix_entry] = Artcle(entry_path)
+
+    return entries
+
+
+def is_pts_ref(x):
+    if isinstance(x, xl.Element):
+        if x.tag == "ref":
+            if "cRef" in x.attrs.keys():
+                if re.match("^PTS", x.attrs["cRef"]):
+                    if len(x.kids) == 0:
+                        return True
+    return False
+
+
+def is_num_p(x):
+    if isinstance(x, xl.Element):
+        if x.tag == "p":
+            if len(x.kids) == 1:
+                if re.match(r"^[〇一二三四五六七八九十※～]+$", x.kids[0]):
+                    return True
+    return False
+
+
+def _filter_kids(x, fun):
+    new_e = xl.Element(tag=x.tag, attrs=x.attrs)
+    for kid in x.kids:
+        if fun(kid):
+            continue
+        if isinstance(kid, xl.Element):
+            new_e.kids.append(_filter_kids(kid, fun))
+        else:
+            new_e.kids.append(kid)
+    return new_e
+
+
+def load_from_xmlp5(xmls):
+    book = Book()
+    for one in xmls:
+        filename = os.path.join(config.xmlp5_dir, one)
+        file = open(filename, "r")
+
+        xmlstr = file.read()
+        file.close()
+        xml = xl.parse(xmlstr, do_strip=True)
+        tei = xml.root
+        text = tei.find_kids("text")[0]
+        body = text.find_kids("body")[0]
+
+        body = filter_(body)
+        for cb_div in body.find_kids("cb:div"):
+            make_tree(book, cb_div)
+
+    return book
+
+
+# <cb:mulu type="其他" level="1">有偈篇 (1-11)</cb:mulu><head>
+def does_it_have_sub_mulu(cb_div: xl.Element) -> bool:
+    level = get_level(cb_div)
+    for kid in cb_div.kids[2:]:
+        if isinstance(kid, xl.Element) and kid.tag == "cb:div":
+            if get_level(kid) < level:
+                return True
+            else:
+                return False
+    return False
+
+
+# get level, mulu, head
+def get_lmh(cb_div: xl.Element) -> tuple:
+    kid1 = cb_div.kids[0]
+    kid2 = cb_div.kids[1]
+    assert isinstance(kid1, xl.Element) and kid1.tag == "mulu" and len(kid1.kids) == 1 and isinstance(kid1.kids[0], str)
+    assert isinstance(kid2, xl.Element) and kid2.tag == "head"
+
+    return int(kid1.attrs["level"]), kid1.kids[0], kid2.kids[:],
+
+
+def get_level(cb_div: xl.Element) -> int: return get_lmh(cb_div)[0]
+
+
+def get_mulu(cb_div: xl.Element) -> str: return get_lmh(cb_div)[1]
+
+
+def get_head(cb_div: xl.Element) -> str: return get_lmh(cb_div)[2]
+
+
+def find_node(data: dict, data_level, key, level):
+    keys = list(data.keys())
+    if data_level == level:
+        if key in keys:
+            if key == keys[-1]:
+                input("重复的key: {}, 回车继续运行".format(repr(key)))
+                return data[key]
+            else:
+                raise Exception("非切割同级目录出现")
+        else:
+            return None
+    else:
+        find_node(data[keys[-1]], level, key, data_level + 1)
+
+
+def make_node(data: dict, data_level, key, node: Artcle or dict, level):
+    if data_level == level:
+        data[key] = node
+    else:
+        keys = list(data.keys())
+        make_node(data[keys[-1]], data_level + 1, key, node, level)
+
+
+def make_tree(book, cb_div: xl.Element):
+    level = get_level(cb_div)
+    mulu = get_mulu(cb_div)
+    head = get_head(cb_div)
+
+    node = find_node(book.entries, 1, mulu, level)
+    if node is None:
+        if does_it_have_sub_mulu(cb_div) is True:
+            node = {}
+        else:
+            node = Artcle()
+        make_node(book.entries, 1, mulu, node, level)
+
+    note_index = 1
+    notes = []
+    for kid in cb_div.kids[2:]:
+        if isinstance(kid, xl.Element) and kid.tag == "cb:div":
+            make_tree(book, kid)
+
+        else:
+            # 如果不是底层
+            if does_it_have_sub_mulu(cb_div) is True:
+                print("debug")
+                print(type(kid))
+            else:
+                new_elements, new_notes, note_index = xmlp5_to_simplexml.trans_element(kid, note_index)
+                notes.extend(new_notes)
+                node.body.extend(new_elements)
+                node.notes.extend(notes)
+
+
+def get_last_parent_dir(dir_, level):
+    if level == 1:
+        return dir_
+    elif level > 1:
+        sub_dir = list(dir_.values())[-1]
+        return get_last_parent_dir(sub_dir, level - 1)
+
+
+def change_dirname(dir_, fun):
+    change_dirname2([], dir_, fun)
+
+
+def change_dirname2(path, dir_, fun):
+    new_dir = {}
+    for k, v in dir_.items():
+        new_k = fun(path.append(k))
+        if isinstance(v, dict):
+            new_v = change_dirname2(path.append(new_k), v, fun)
+        else:
+            new_v = v
+        new_dir[new_k] = new_v
+
+    return new_dir
+
+
+def filter_(e: xl.Element):
     new_e = xl.Element(tag=e.tag)
     new_e.attrs.update(e.attrs)
     for kid in e.kids:
         if isinstance(kid, xl.Element) and kid.tag in ("lb", "pb", "milestone"):
             pass
+        elif isinstance(kid, xl.Element) and kid.tag == "p" \
+                and len(kid.kids) == 1 and re.match(r"^[〇一二三四五六七八九十※～]+$", kid.kids[0]):
+            pass
+
         elif isinstance(kid, str) and kid in ("\n", "\n\r"):
             pass
+
         else:
-            new_e.kids.append(filter_kids(kid))
+            new_e.kids.append(filter_(kid))
+
     return new_e
