@@ -16,14 +16,14 @@ def trans_elements(elements, note_index) -> tuple:
 
 
 def trans_element(element, note_index):
-    for fun in (head, string, lg, p):
-        try:
-            return fun(element, note_index)
-
-        except TypeError:
+    for fun in (head, string, lg, p, note, app, space, ref, g):
+        result = fun(element, note_index)
+        if result:
+            return result
+        else:
             continue
 
-    print("cannot handle this element:", element.tag)
+    print("cannot handle this element:", element.to_str())
     raise Exception
 
 
@@ -34,14 +34,14 @@ def head(e, note_index):
         h1 = xl.Element("h1", kids=es)
         return [h1], notes, new_note_index
     else:
-        raise TypeError
+        return None
 
 
 def string(e, note_index):
     if isinstance(e, str):
         return [e], [], note_index
     else:
-        raise TypeError
+        return None
 
 
 # 禍從欲望生
@@ -64,10 +64,13 @@ def note(e, note_index):
         if len(e.kids) == 0:
             return [], [], note_index
 
-        if "【CB】" in e.kids[0] and "【南傳】" in e.kids[0]:
+        elif len(e.kids) == 1 and isinstance(e.kids[0], xl.Element) and e.kids[0].tag == "space":
             return [], [], note_index
 
-        if "add" in e.attrs.keys():
+        elif "【CB】" in e.kids[0] and "【南傳】" in e.kids[0]:
+            return [], [], note_index
+
+        elif "add" in e.attrs.keys():
             return [], [], note_index
 
         else:
@@ -75,13 +78,15 @@ def note(e, note_index):
             twn = xl.Element(tag="twn",
                              attrs={"n": str(new_note_index)},
                              kids=["[{}]".format(new_note_index)])
+
             note_ = xl.Element(tag="note",
                                attrs={"n": str(new_note_index)},
-                               kids=e.kids)
+                               kids=e.kids[:])
+
             return [twn], [note_], new_note_index
 
     else:
-        raise TypeError
+        return None
 
 
 # 〔一六〕睡
@@ -94,9 +99,9 @@ def note(e, note_index):
 def app(e, note_index):
     if isinstance(e, xl.Element) and e.tag == "app":
         lem = e.kids[0]
-        return trans_element(lem, note_index)
+        return trans_elements(lem.kids, note_index)
     else:
-        raise TypeError
+        return None
 
 
 def space(e, note_index):
@@ -105,7 +110,7 @@ def space(e, note_index):
         return [" " * quantity], [], note_index
 
     else:
-        raise TypeError
+        return None
 
 
 # <head>
@@ -117,7 +122,7 @@ def ref(e, note_index):
     if isinstance(e, xl.Element) and e.tag == "ref":
         return [e], [], note_index
     else:
-        raise TypeError
+        return None
 
 
 # <lg type="regular" xml:id="lgN13p0003a0101" style="margin-left:0em;text-indent:0em;">
@@ -181,7 +186,7 @@ def lg(e, note_index):
         return [j], notes, new_note_index
 
     else:
-        raise TypeError
+        return None
 
 
 # 遠離於
@@ -191,11 +196,17 @@ def lg(e, note_index):
 # 無欲修梵行
 ####
 # 不在 Unicode 里的生僻字
+g_map = {
+    "#CB03020": "婬"
+}
+
+
 def g(e, note_index):
     if isinstance(e, xl.Element) and e.tag == "g":
-        return [e], [], note_index
+        s = g_map[e.attrs["ref"]]
+        return [s], [], note_index
     else:
-        raise TypeError
+        return None
 
 
 # 普通句子
@@ -206,4 +217,4 @@ def p(e, note_index):
         element.kids[:] = kids
         return [element], notes, new_note_index
     else:
-        raise TypeError
+        return None

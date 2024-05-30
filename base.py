@@ -10,9 +10,6 @@ import config
 
 import xmlp5_to_simplexml
 
-g_map = {"#CB03020": "婬"
-         }
-
 
 class Book(object):
     def __init__(self, path=None):
@@ -231,7 +228,6 @@ def get_lmh(cb_div: xl.Element) -> tuple:
     kid1 = cb_div.kids[0]
     kid2 = cb_div.kids[1]
     if not (isinstance(kid1, xl.Element) and kid1.tag == "cb:mulu" and len(kid1.kids) == 1 and isinstance(kid1.kids[0], str)):
-        print(kid1.tag)
         raise Exception
 
     assert isinstance(kid2, xl.Element) and kid2.tag == "head"
@@ -306,6 +302,26 @@ def make_tree(book, cb_div: xl.Element):
                 notes.extend(new_notes)
                 node.body.kids.extend(new_elements)
                 node.notes.kids.extend(notes)
+
+
+def make_tree2(book, elements):
+    for term in elements:
+        if isinstance(term, xl.Element) and term.tag == "cb:mulu":
+            make_node()
+
+        elif isinstance(term, xl.Element) and term.tag == "cb:div":
+            make_tree2(book, term.kids)
+
+        else:
+            node = get_node()
+            attach(node, x)
+
+
+
+def feed(book, mulu_element: xl.Element):
+    level = int(mulu_element.attrs["level"])
+
+
 
 
 def get_last_parent_dir(dir_, level):
