@@ -223,6 +223,13 @@ def does_it_have_sub_mulu(cb_div: xl.Element) -> bool:
     return False
 
 
+def does_it_have_sub_mulu2(elements: list, term: xl.Element) -> bool:
+    level = int(term.attrs["level"])
+    for x in elements:
+        if x == term:
+
+
+
 # get level, mulu, head
 def get_lmh(cb_div: xl.Element) -> tuple:
     kid1 = cb_div.kids[0]
@@ -305,9 +312,20 @@ def make_tree(book, cb_div: xl.Element):
 
 
 def make_tree2(book, elements):
+
     for term in elements:
         if isinstance(term, xl.Element) and term.tag == "cb:mulu":
-            make_node()
+            assert len(term.kids) == 1
+            level = int(term.attrs["level"]),
+            mulu_str = term.kids[0]
+
+            node = find_node(book.entries, 1, mulu_str, level)
+            if node is None:
+                if does_it_have_sub_mulu2(elements, term) is True:
+                    node = {}
+                else:
+                    node = Artcle()
+                make_node(book.entries, 1, mulu, node, level)
 
         elif isinstance(term, xl.Element) and term.tag == "cb:div":
             make_tree2(book, term.kids)
@@ -370,3 +388,13 @@ def filter_(term: xl.Element or str):
             new_e.kids.append(filter_(kid))
 
     return new_e
+
+
+def eliminate_cbdiv(elements) -> list:
+    new_elements = []
+    for x in elements:
+        if isinstance(x, xl.Element) and x.tag == "cb:div":
+            new_elements.extend(eliminate_cbdiv(x.kids))
+        else:
+            new_elements.append(x)
+    return new_elements
