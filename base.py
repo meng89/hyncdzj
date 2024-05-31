@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import abc
 import datetime
 import re
@@ -8,7 +10,7 @@ import epubpacker
 import xl
 import config
 
-import xmlp5_to_simplexml
+import xmlp5a_to_simplexml
 
 
 class Book(object):
@@ -194,7 +196,7 @@ def is_num_p(x):
 def load_from_xmlp5(xmls):
     book = Book()
     for one in xmls:
-        filename = os.path.join(config.xmlp5_dir, one)
+        filename = os.path.join(config.xmlp5a_dir, one)
         file = open(filename, "r")
 
         xmlstr = file.read()
@@ -227,7 +229,8 @@ def does_it_have_sub_mulu2(elements: list, term: xl.Element) -> bool:
     level = int(term.attrs["level"])
     for x in elements:
         if x == term:
-
+            pass
+        # todo
 
 
 # get level, mulu, head
@@ -375,10 +378,14 @@ def filter_(term: xl.Element or str):
     new_e = xl.Element(tag=e.tag)
     new_e.attrs.update(e.attrs)
     for kid in e.kids:
+        # if isinstance(kid, xl.Element):
+        #    print("debug:", kid.to_str())
+
         if isinstance(kid, xl.Element) and kid.tag in ("lb", "pb", "milestone"):
             pass
+
         elif isinstance(kid, xl.Element) and kid.tag == "p" \
-                and len(kid.kids) == 1 and re.match(r"^[〇一二三四五六七八九十※～]+$", kid.kids[0]):
+                and len(kid.kids) == 1 and isinstance(kid.kids[0], str) and re.match(r"^[〇一二三四五六七八九十※～]+$", kid.kids[0]):
             pass
 
         elif isinstance(kid, str) and kid in ("\n", "\n\r"):
@@ -398,3 +405,98 @@ def eliminate_cbdiv(elements) -> list:
         else:
             new_elements.append(x)
     return new_elements
+
+
+# 在div之后有与div平级的元素
+def check(path: list, elements: list):
+    # print(path)
+    bit_map = []
+    for x in elements:
+        if isinstance(x, xl.Element) and x.tag == "cb:div":
+            sub_path = path + [x.kids[0].kids[0]]
+            check(sub_path, x.kids)
+            bit_map.append(0)
+
+        else:
+            bit_map.append(1)
+
+    have_head, have_tail, have_middle = xxx(bit_map)
+
+    if have_tail or have_middle:
+        print()
+        print("tail:", have_tail, "middle:", have_middle, )
+        print("    path:", path)
+
+
+def xxx(bit_map: list):
+    have_head = False
+    have_tail = False
+    have_middle = False
+
+    new_bit_map = bit_map[:]
+    while True:
+        if len(new_bit_map) > 0 and new_bit_map[0] == 1:
+            new_bit_map.pop(0)
+            have_head = True
+        else:
+            break
+
+    new_bit_map.reverse()
+
+    while True:
+        if len(new_bit_map) > 0 and new_bit_map[0] == 1:
+            new_bit_map.pop(0)
+            have_tail = True
+        else:
+            break
+
+    new_bit_map.reverse()
+
+    for x in new_bit_map:
+        if x == 1:
+            have_middle = True
+
+    return have_head, have_tail, have_middle
+
+
+def test(xmls):
+    # import xmlp5a_to_dir_sn
+    # xmls = xmlp5a_to_dir_sn.xmls
+
+    for one in xmls:
+        filename = os.path.join(config.xmlp5a_dir, one)
+        print("xml:", filename)
+        file = open(filename, "r")
+
+        xmlstr = file.read()
+        file.close()
+        xml = xl.parse(xmlstr, do_strip=True)
+        tei = xml.root
+        text = tei.find_kids("text")[0]
+        body = text.find_kids("body")[0]
+
+        body = filter_(body)
+        check([], body.kids)
+
+
+def all_n_xmls(dir_):
+    xmls = []
+    for one in os.listdir(dir_, ):
+        path = os.path.join(dir_, one)
+        if os.path.isfile(path) and one.lower().endswith(".xml"):
+            xmls.append(path)
+        elif os.path.isdir(path):
+            xmls.extend(all_n_xmls(path))
+
+    return xmls
+
+
+if __name__ == "__main__":
+    no_prefix_xmls = []
+    for one2 in sorted(all_n_xmls(config.xmlp5a_dir)):
+        if one2.startswith(config.xmlp5a_dir):
+            no_prefix_xmls.append(one2.removeprefix(config.xmlp5a_dir))
+        else:
+            raise Exception
+
+    test(no_prefix_xmls)
