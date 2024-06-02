@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+import sys
+
+sys.path.append("/mnt/data/projects/xl")
+
 
 import abc
 import datetime
@@ -168,7 +172,6 @@ def dir2entries(path):
 
         elif os.path.isfile(entry_path):
             if entry.lower().endswith(".xml"):
-
                 entries[no_prefix_entry] = Artcle(entry_path)
 
     return entries
@@ -237,7 +240,8 @@ def does_it_have_sub_mulu2(elements: list, term: xl.Element) -> bool:
 def get_lmh(cb_div: xl.Element) -> tuple:
     kid1 = cb_div.kids[0]
     kid2 = cb_div.kids[1]
-    if not (isinstance(kid1, xl.Element) and kid1.tag == "cb:mulu" and len(kid1.kids) == 1 and isinstance(kid1.kids[0], str)):
+    if not (isinstance(kid1, xl.Element) and kid1.tag == "cb:mulu" and len(kid1.kids) == 1 and isinstance(kid1.kids[0],
+                                                                                                          str)):
         raise Exception
 
     assert isinstance(kid2, xl.Element) and kid2.tag == "head"
@@ -282,7 +286,6 @@ def make_node(data: dict, data_level, key, node: Artcle or dict, level):
 
 
 def make_tree(book, cb_div: xl.Element):
-
     level = get_level(cb_div)
     mulu = get_mulu(cb_div)
     head = get_head(cb_div)
@@ -315,7 +318,6 @@ def make_tree(book, cb_div: xl.Element):
 
 
 def make_tree2(book, elements):
-
     for term in elements:
         if isinstance(term, xl.Element) and term.tag == "cb:mulu":
             assert len(term.kids) == 1
@@ -338,11 +340,8 @@ def make_tree2(book, elements):
             attach(node, x)
 
 
-
 def feed(book, mulu_element: xl.Element):
     level = int(mulu_element.attrs["level"])
-
-
 
 
 def get_last_parent_dir(dir_, level):
@@ -385,7 +384,8 @@ def filter_(term: xl.Element or str):
             pass
 
         elif isinstance(kid, xl.Element) and kid.tag == "p" \
-                and len(kid.kids) == 1 and isinstance(kid.kids[0], str) and re.match(r"^[〇一二三四五六七八九十※～]+$", kid.kids[0]):
+                and len(kid.kids) == 1 and isinstance(kid.kids[0], str) and re.match(r"^[〇一二三四五六七八九十※～]+$",
+                                                                                     kid.kids[0]):
             pass
 
         elif isinstance(kid, str) and kid in ("\n", "\n\r"):
@@ -413,7 +413,20 @@ def check(path: list, elements: list):
     bit_map = []
     for x in elements:
         if isinstance(x, xl.Element) and x.tag == "cb:div":
-            sub_path = path + [x.kids[0].kids[0]]
+            if len(x.kids) == 0:
+                print("空标签:", repr(x.to_str()))
+                continue
+            elif not isinstance(x.kids[0], xl.Element):
+                print("子元素非Element:", repr(x.to_str()))
+                continue
+
+            try:
+                sub_path = path + [x.kids[0].kids[0]]
+            except IndexError:
+                print("???:", repr(x.kids[0].to_str()))
+                # input()
+                continue
+
             check(sub_path, x.kids)
             bit_map.append(0)
 
@@ -465,6 +478,7 @@ def test(xmls):
 
     for one in xmls:
         filename = os.path.join(config.xmlp5a_dir, one)
+        print("\n"*2)
         print("xml:", filename)
         file = open(filename, "r")
 
@@ -474,9 +488,56 @@ def test(xmls):
         tei = xml.root
         text = tei.find_kids("text")[0]
         body = text.find_kids("body")[0]
-
         body = filter_(body)
         check([], body.kids)
+
+
+def test_xl(xmls):
+    import difflib
+
+    xmls2 = []
+    filter_xmls = ["B25n0144.xml", "D41n8904.xml", "N64n0031.xm", "T25n1509.xml"]
+    for xml in xmls:
+        in_it = False
+        for filter_xml in filter_xmls:
+            if filter_xml in xml:
+                in_it = True
+                break
+        if in_it:
+            pass
+        else:
+            xmls2.append(xml)
+
+    for one in xmls:
+
+        filename = os.path.join(config.xmlp5a_dir, one)
+        print("xml:", filename, end="")
+        file = open(filename, "r")
+        xmlstr = file.read()
+        file.close()
+
+        xml = xl.parse(xmlstr, do_strip=None)
+        xmlstr2 = xml.to_str()
+
+        xmlstr_noblank = xmlstr.replace(" ", "").replace("\t", "").replace("\n", "").replace("\r", "").replace("　", "")
+        xmlstr2_noblank = xmlstr2.replace(" ", "").replace("\t", "").replace("\n", "").replace("\r", "").replace("　", "")
+
+        print(", check:", end="")
+        if xmlstr == xmlstr2:
+            print("succeed")
+        else:
+            print("fail")
+            f = open("/mnt/data/t1.xml", "w")
+            f.write(xmlstr)
+            f.close()
+
+            f = open("/mnt/data/t2.xml", "w")
+            f.write(xmlstr2)
+            f.close()
+
+            for x in difflib.context_diff(xmlstr_noblank, xmlstr2_noblank):
+                print(x)
+            input()
 
 
 def all_n_xmls(dir_):
@@ -499,4 +560,4 @@ if __name__ == "__main__":
         else:
             raise Exception
 
-    test(no_prefix_xmls)
+    test_xl(no_prefix_xmls)

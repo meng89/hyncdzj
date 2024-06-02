@@ -1,11 +1,15 @@
 #!/usr/bin/env python3
 import os
 
-import re
 
-filename = "sn 1.22 保留"
+class A(object):
+    pass
 
 
-m = re.match(r"^([a-zA-Z]+) (\d+(?:\.\d+)?) (\S+)$", filename)
-if m:
-    print(m.group(1), m.group(2), m.group(3))
+class B(A):
+    pass
+
+
+b = B()
+
+print(type(b) is type(B))
