@@ -484,7 +484,7 @@ def test(xmls):
 
         xmlstr = file.read()
         file.close()
-        xml = xl.parse(xmlstr, do_strip=True)
+        xml = xl.parse(xmlstr, strip=True)
         tei = xml.root
         text = tei.find_kids("text")[0]
         body = text.find_kids("body")[0]
@@ -516,11 +516,13 @@ def test_xl(xmls):
         xmlstr = file.read()
         file.close()
 
-        xml = xl.parse(xmlstr, do_strip=None)
+        xml = xl.parse(xmlstr)
         xmlstr2 = xml.to_str()
 
-        xmlstr_noblank = xmlstr.replace(" ", "").replace("\t", "").replace("\n", "").replace("\r", "").replace("　", "")
-        xmlstr2_noblank = xmlstr2.replace(" ", "").replace("\t", "").replace("\n", "").replace("\r", "").replace("　", "")
+        xmlstr_noblank = (xmlstr.replace(" ", "").replace("\t", "")
+                          .replace("\n", "").replace("\r", "").replace("　", ""))
+        xmlstr2_noblank = (xmlstr2.replace(" ", "").replace("\t", "")
+                           .replace("\n", "").replace("\r", "").replace("　", ""))
 
         print(", check:", end="")
         if xmlstr == xmlstr2:
