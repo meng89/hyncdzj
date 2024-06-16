@@ -562,4 +562,5 @@ if __name__ == "__main__":
         else:
             raise Exception
 
-    test_xl(no_prefix_xmls)
+    # test_xl(no_prefix_xmls)
+    test(no_prefix_xmls)
