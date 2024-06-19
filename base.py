@@ -391,6 +391,9 @@ def filter_(term: xl.Element or str):
         elif isinstance(kid, str) and kid in ("\n", "\n\r"):
             pass
 
+        elif isinstance(kid, xl.Comment):
+            pass
+
         else:
             new_e.kids.append(filter_(kid))
 
@@ -435,10 +438,11 @@ def check(path: list, elements: list):
 
     have_head, have_tail, have_middle = xxx(bit_map)
 
-    if have_tail or have_middle:
-        print()
-        print("tail:", have_tail, "middle:", have_middle, )
+    if have_middle:
         print("    path:", path)
+        if have_middle:
+            print("        have middle")
+        print()
 
 
 def xxx(bit_map: list):
@@ -478,7 +482,7 @@ def test(xmls):
 
     for one in xmls:
         filename = os.path.join(config.xmlp5a_dir, one)
-        print("\n"*2)
+        # print("\n"*2)
         print("xml:", filename)
         file = open(filename, "r")
 
@@ -542,25 +546,32 @@ def test_xl(xmls):
             input()
 
 
-def all_n_xmls(dir_):
+def all_xmls(dir_=config.xmlp5a_dir):
     xmls = []
     for one in os.listdir(dir_, ):
         path = os.path.join(dir_, one)
         if os.path.isfile(path) and one.lower().endswith(".xml"):
             xmls.append(path)
         elif os.path.isdir(path):
-            xmls.extend(all_n_xmls(path))
+            xmls.extend(all_xmls(path))
 
+    return sorted(xmls)
+
+
+def n_xmls():
+    xmls = []
+    for x in all_xmls():
+        if "/N/" in x:
+            xmls.append(x)
     return xmls
 
 
 if __name__ == "__main__":
     no_prefix_xmls = []
-    for one2 in sorted(all_n_xmls(config.xmlp5a_dir)):
+    for one2 in sorted(all_xmls(config.xmlp5a_dir)):
         if one2.startswith(config.xmlp5a_dir):
             no_prefix_xmls.append(one2.removeprefix(config.xmlp5a_dir))
         else:
             raise Exception
 
-    # test_xl(no_prefix_xmls)
-    test(no_prefix_xmls)
+    test(n_xmls())
