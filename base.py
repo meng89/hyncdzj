@@ -431,49 +431,62 @@ def check(path: list, elements: list):
                 continue
 
             check(sub_path, x.kids)
-            bit_map.append(0)
+            bit_map.append((0, x))
 
         else:
-            bit_map.append(1)
+            bit_map.append((1, x))
 
-    have_head, have_tail, have_middle = xxx(bit_map)
+    (have_head, head), (have_middle, middle), (have_tail, tail) = xxx(bit_map)
 
     if have_middle:
-        print("    path:", path)
+        print("  path:", path)
         if have_middle:
-            print("        have middle")
+            print("    have middle:")
+            for x in middle:
+                if isinstance(x, xl.Element):
+                    print("      ", x.to_str())
+                else:
+                    print("      ", x)
         print()
 
 
 def xxx(bit_map: list):
     have_head = False
-    have_tail = False
+    head = []
+
     have_middle = False
+    middle = []
+
+    have_tail = False
+    tail = []
 
     new_bit_map = bit_map[:]
     while True:
-        if len(new_bit_map) > 0 and new_bit_map[0] == 1:
+        if len(new_bit_map) > 0 and new_bit_map[0][0] == 1:
+            head.append(new_bit_map[0][1])
             new_bit_map.pop(0)
             have_head = True
+
         else:
             break
 
     new_bit_map.reverse()
-
     while True:
-        if len(new_bit_map) > 0 and new_bit_map[0] == 1:
+        if len(new_bit_map) > 0 and new_bit_map[0][0] == 1:
+            tail.append(new_bit_map[0][1])
             new_bit_map.pop(0)
             have_tail = True
         else:
             break
 
     new_bit_map.reverse()
-
     for x in new_bit_map:
-        if x == 1:
+        # print(x)
+        if x[0] == 1:
             have_middle = True
+            middle.append(x[1])
 
-    return have_head, have_tail, have_middle
+    return (have_head, head), (have_middle, middle), (have_tail, tail)
 
 
 def test(xmls):
