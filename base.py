@@ -451,6 +451,48 @@ def check(path: list, elements: list):
         print()
 
 
+def check2(path: list, cb_div: xl.Element):
+    # print(path)
+    bit_map = []
+    for x in cb_div.kids:
+        if isinstance(x, xl.Element) and x.tag == "cb:div":
+            sub_path = path[:]
+            sub_path.append(x)
+            check2(sub_path, x)
+            bit_map.append((0, x))
+        else:
+            bit_map.append((1, x))
+
+    (have_head, head), (have_middle, middle), (have_tail, tail) = xxx(bit_map)
+
+    if have_middle:
+        print_path(path)
+        if have_middle:
+            print("    have middle:")
+            for x in middle:
+                if isinstance(x, xl.Element):
+                    print("      ", x.to_str())
+                else:
+                    print("      ", x)
+        print()
+
+
+def print_path(path: list, step=0):
+    if len(path) == 0:
+        return None
+
+    cb_div = path.pop(0)
+    for x in cb_div.kids:
+        print(" " * step, end=""),
+        if isinstance(x, xl.Element) and x.tag in ("cb:mulu", "head"):
+            print(x.to_str())
+        elif isinstance(x, str):
+            print(x)
+        break
+
+    print_path(path, step + 4)
+
+
 def xxx(bit_map: list):
     have_head = False
     head = []
@@ -507,7 +549,7 @@ def test(xmls):
         text = tei.find_kids("text")[0]
         body = text.find_kids("body")[0]
         body = filter_(body)
-        check([], body.kids)
+        check2([], body)
 
 
 def test_xl(xmls):
@@ -588,4 +630,4 @@ if __name__ == "__main__":
         else:
             raise Exception
 
-    test(all_xmls())
+    test(n_xmls())
