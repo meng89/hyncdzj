@@ -410,47 +410,6 @@ def eliminate_cbdiv(elements) -> list:
     return new_elements
 
 
-# 在div之后有与div平级的元素
-def check(path: list, elements: list):
-    # print(path)
-    bit_map = []
-    for x in elements:
-        if isinstance(x, xl.Element) and x.tag == "cb:div":
-            if len(x.kids) == 0:
-                print("空标签:", repr(x.to_str()))
-                continue
-            elif not isinstance(x.kids[0], xl.Element):
-                print("子元素非Element:", repr(x.to_str()))
-                continue
-
-            try:
-                sub_path = path + [x.kids[0].kids[0]]
-            except IndexError:
-                print("???:", repr(x.kids[0].to_str()))
-                # input()
-                continue
-
-            check(sub_path, x.kids)
-            bit_map.append((0, x))
-        elif isinstance(x, xl.Element) and x.tag in ("head", "cb:mulu", "cb:juan", "byline", "cb:docNumber"):
-            bit_map.append((0, x))
-        else:
-            bit_map.append((1, x))
-
-    (have_head, head), (have_middle, middle), (have_tail, tail) = xxx(bit_map)
-
-    if have_middle:
-        print("  path:", path)
-        if have_middle:
-            print("    have middle:")
-            for x in middle:
-                if isinstance(x, xl.Element):
-                    print("      ", x.to_str())
-                else:
-                    print("      ", x)
-        print()
-
-
 def check2(path: list, cb_div: xl.Element):
     # print(path)
     bit_map = []
@@ -460,6 +419,9 @@ def check2(path: list, cb_div: xl.Element):
             sub_path.append(x)
             check2(sub_path, x)
             bit_map.append((0, x))
+        # metadata
+        elif isinstance(x, xl.Element) and x.tag in ("cb:juan", "byline", "cb:mulu", "note"):
+            pass
         else:
             bit_map.append((1, x))
 
@@ -468,7 +430,7 @@ def check2(path: list, cb_div: xl.Element):
     if have_middle:
         print_path(path)
         if have_middle:
-            print("    have middle:")
+            print("  middles:")
             for x in middle:
                 if isinstance(x, xl.Element):
                     print("      ", x.to_str())
