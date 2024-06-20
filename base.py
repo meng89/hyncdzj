@@ -432,7 +432,8 @@ def check(path: list, elements: list):
 
             check(sub_path, x.kids)
             bit_map.append((0, x))
-
+        elif isinstance(x, xl.Element) and x.tag in ("head", "cb:mulu", "cb:juan", "byline", "cb:docNumber"):
+            bit_map.append((0, x))
         else:
             bit_map.append((1, x))
 
@@ -587,4 +588,4 @@ if __name__ == "__main__":
         else:
             raise Exception
 
-    test(n_xmls())
+    test(all_xmls())
