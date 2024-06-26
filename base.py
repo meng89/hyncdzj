@@ -57,6 +57,25 @@ class Book(object):
             entry.write(os.path.join(path, "entries"))
 
 
+class Dir(dict):
+    def __init__(self, path=None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if path is not None:
+            xml_path = os.path.join(path, "_.xml")
+
+        self._e = xl.Xml()
+        self._head
+
+    def head(self):
+        pass
+
+    def tail(self):
+        pass
+
+    def write(self, path):
+        pass
+
+
 class _Artcle(object):
     def _make_new_xml(self):
         self._xml = xl.Xml(root=xl.Element("root"))
@@ -107,7 +126,7 @@ class Artcle(_Artcle):
                 xmlstr = open(filepath).read()
                 self._xml = xl.parse(xmlstr)
 
-                # 非SN 1.1 这样的经文，可能是礼敬偈子，或串联
+                # 非SN 1.1 这样的经文，可能是礼敬偈子，或助记词
             else:
                 self._is_piece = True
 
