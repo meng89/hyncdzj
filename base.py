@@ -64,12 +64,15 @@ class Dir(dict):
             xml_path = os.path.join(path, "_.xml")
 
         self._e = xl.Xml()
-        self._head
+
 
     def head(self):
         pass
 
     def tail(self):
+        pass
+
+    def notes(self):
         pass
 
     def write(self, path):
@@ -214,7 +217,7 @@ def is_num_p(x):
     return False
 
 
-def load_from_xmlp5(xmls):
+def xmlp5a_to_book(xmls):
     book = Book()
     for one in xmls:
         filename = os.path.join(config.xmlp5a_dir, one)
@@ -232,6 +235,10 @@ def load_from_xmlp5(xmls):
             make_tree(book, cb_div)
 
     return book
+
+
+def book_to_simplexml(book: Book):
+    pass
 
 
 # <cb:mulu type="其他" level="1">有偈篇 (1-11)</cb:mulu><head>

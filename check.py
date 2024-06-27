@@ -19,14 +19,62 @@ def eliminate_cbdiv(elements) -> list:
     return new_elements
 
 
-def check2(path: list, cb_div: xl.Element):
+def check_head_and_mulu(path, e):
+    for x in e.kids:
+        if isinstance(x, xl.Element) and x.tag == "cb:div":
+            check_head_and_mulu_real(path, x)
+
+# 事实1：有的cbdiv下没有 head。
+# 事实2: 极少 cbdiv下没有 mulu 也没有head。似乎应该删除此cb:div标签包裹
+
+
+def check_head_and_mulu_real(path, cb_div):
+    heads = []
+    mulus = []
+    for x in cb_div.kids:
+        if isinstance(x, xl.Element) and x.tag == "cb:div":
+            sub_path = path[:]
+            sub_path.append(x)
+            check_head_and_mulu_real(sub_path, x)
+        elif isinstance(x, xl.Element) and x.tag == "head":
+            heads.append(x)
+
+        elif isinstance(x, xl.Element) and x.tag == "cb:mulu":
+            mulus.append(x)
+
+        else:
+            pass
+
+    if len(mulus) < 1: # and len(heads) != 1:
+        print("path:")
+        print_path(path)
+        print()
+    else:
+        return
+
+    if len(mulus) == 1:
+        pass
+    elif len(mulus) < 1:
+        print("  mulus < 1")
+    elif len(mulus) > 1:
+        print("  mulus > 1")
+
+    if len(heads) == 1:
+        pass
+    elif len(heads) < 1:
+        print("  heads < 1")
+    elif len(heads) > 1:
+        print("  heads > 1")
+
+
+def check_out_cbdiv_term(path: list, cb_div: xl.Element):
     # print(path)
     bit_map = []
     for x in cb_div.kids:
         if isinstance(x, xl.Element) and x.tag == "cb:div":
             sub_path = path[:]
             sub_path.append(x)
-            check2(sub_path, x)
+            check_out_cbdiv_term(sub_path, x)
             bit_map.append((0, x))
         # metadata
         elif isinstance(x, xl.Element) and x.tag in ("cb:juan", "byline", "cb:mulu", "note"):
@@ -103,7 +151,7 @@ def xxx(bit_map: list):
     return (have_head, head), (have_middle, middle), (have_tail, tail)
 
 
-def test(xmls):
+def check(xmls, fun):
     # import xmlp5a_to_dir_sn
     # xmls = xmlp5a_to_dir_sn.xmls
 
@@ -120,7 +168,7 @@ def test(xmls):
         text = tei.find_kids("text")[0]
         body = text.find_kids("body")[0]
         body = filter_(body)
-        check2([], body)
+        fun([], body)
 
 
 def test_xl(xmls):
@@ -180,8 +228,7 @@ def main():
             no_prefix_xmls.append(one2.removeprefix(config.xmlp5a_dir))
         else:
             raise Exception
-    test(n_xmls())
-    test(all_xmls())
+    check(n_xmls(), check_head_and_mulu)
 
 
 if __name__ == "__main__":
