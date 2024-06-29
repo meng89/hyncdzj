@@ -44,8 +44,10 @@ def check_head_and_mulu_real(path, cb_div):
 
         else:
             pass
-
-    if len(mulus) < 1: # and len(heads) != 1:
+    # if len(mulus) > 1:
+    # if len(mulus) < 1:
+    # if len(heads) > 1:
+    if len(heads) < 1:
         print("path:")
         print_path(path)
         print()
