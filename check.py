@@ -6,7 +6,7 @@ sys.path.append("/mnt/data/projects/xl")
 
 import xl
 import config
-from base import all_xmls, n_xmls, filter_
+import base
 
 
 def eliminate_cbdiv(elements) -> list:
@@ -19,23 +19,27 @@ def eliminate_cbdiv(elements) -> list:
     return new_elements
 
 
-def check_head_and_mulu(path, e):
+def check_head_and_mulu(e, body):
+    result = []
     for x in e.kids:
         if isinstance(x, xl.Element) and x.tag == "cb:div":
-            check_head_and_mulu_real(path, x)
+            result.extend(check_head_and_mulu_real(x, body))
+
+    for lb in result:
+        print(lb.to_str())
+    print()
 
 # 事实1：有的cbdiv下没有 head。
 # 事实2: 极少 cbdiv下没有 mulu 也没有head。似乎应该删除此cb:div标签包裹
 
 
-def check_head_and_mulu_real(path, cb_div):
+def check_head_and_mulu_real(cb_div, body) -> list:
     heads = []
     mulus = []
+    result = []
     for x in cb_div.kids:
         if isinstance(x, xl.Element) and x.tag == "cb:div":
-            sub_path = path[:]
-            sub_path.append(x)
-            check_head_and_mulu_real(sub_path, x)
+            result.extend(check_head_and_mulu_real(x, body))
         elif isinstance(x, xl.Element) and x.tag == "head":
             heads.append(x)
 
@@ -48,25 +52,10 @@ def check_head_and_mulu_real(path, cb_div):
     # if len(mulus) < 1:
     # if len(heads) > 1:
     if len(heads) < 1:
-        print("path:")
-        print_path(path)
-        print()
-    else:
-        return
+        lb = base.find_lb(body, cb_div)
+        result.append(lb)
 
-    if len(mulus) == 1:
-        pass
-    elif len(mulus) < 1:
-        print("  mulus < 1")
-    elif len(mulus) > 1:
-        print("  mulus > 1")
-
-    if len(heads) == 1:
-        pass
-    elif len(heads) < 1:
-        print("  heads < 1")
-    elif len(heads) > 1:
-        print("  heads > 1")
+    return result
 
 
 def check_out_cbdiv_term(path: list, cb_div: xl.Element):
@@ -169,8 +158,8 @@ def check(xmls, fun):
         tei = xml.root
         text = tei.find_kids("text")[0]
         body = text.find_kids("body")[0]
-        body = filter_(body)
-        fun([], body)
+        # body = base.filter_(body)
+        fun(body, body)
 
 
 def test_xl(xmls):
@@ -225,12 +214,12 @@ def test_xl(xmls):
 
 def main():
     no_prefix_xmls = []
-    for one2 in sorted(all_xmls(config.xmlp5a_dir)):
+    for one2 in sorted(base.all_xmls(config.xmlp5a_dir)):
         if one2.startswith(config.xmlp5a_dir):
             no_prefix_xmls.append(one2.removeprefix(config.xmlp5a_dir))
         else:
             raise Exception
-    check(n_xmls(), check_head_and_mulu)
+    check(base.n_xmls(), check_head_and_mulu)
 
 
 if __name__ == "__main__":
