@@ -34,28 +34,108 @@ def check_head_and_mulu(e, body):
 
 
 def check_head_and_mulu_real(cb_div, body) -> list:
-    heads = []
-    mulus = []
     result = []
+
+    mulus = []
+    heads = []
+
     for x in cb_div.kids:
         if isinstance(x, xl.Element) and x.tag == "cb:div":
             result.extend(check_head_and_mulu_real(x, body))
-        elif isinstance(x, xl.Element) and x.tag == "head":
-            heads.append(x)
-
         elif isinstance(x, xl.Element) and x.tag == "cb:mulu":
             mulus.append(x)
-
+        elif isinstance(x, xl.Element) and x.tag == "head":
+            heads.append(x)
         else:
             pass
-    # if len(mulus) > 1:
-    # if len(mulus) < 1:
-    # if len(heads) > 1:
-    if len(heads) < 1:
-        lb = base.find_lb(body, cb_div)
-        result.append(lb)
 
+    result.extend({cb_div, mulus, heads})
     return result
+
+
+def find_lb(e, e2):
+    lb, findit = find_lb2(e, e2)
+    assert lb is not None
+    assert findit is True
+    return lb
+
+
+def find_lb2(e, e2):
+    lb = None
+    findit = False
+
+    for x in e.kids:
+        if x is e2:
+            findit = True
+
+        elif isinstance(x, xl.Element) and x.tag == "lb":
+            lb = x
+
+        elif isinstance(x, xl.Element):
+            lb2, findit2 = find_lb2(x, e2)
+            findit = findit2 or findit
+            lb = lb2 or lb
+
+        if findit:
+            break
+
+    return lb, findit
+
+
+def check_no_head(body):
+    cb_divs = get_cb_divs(body)
+    for cb_div in cb_divs:
+        if len_heads(cb_div) < 1:
+            lb = find_lb(body, cb_div)
+            print(lb.to_str())
+
+
+def get_cb_divs(e):
+    cb_divs = []
+    for x in e.kids:
+        if isinstance(x, xl.Element) and x.tag == "cb:div":
+            cb_divs.append(x)
+            cb_divs.extend(get_cb_divs(x))
+
+    return cb_divs
+
+
+def len_mulus(cb_div) -> int:
+    length = 0
+    for x in cb_div.kids:
+        if isinstance(x, xl.Element) and x.tag == "cb:mulu":
+            length += 1
+    return length
+
+
+def len_heads(cb_div) -> int:
+    length = 0
+    for x in cb_div.kids:
+        if isinstance(x, xl.Element) and x.tag == "head":
+            length += 1
+    return length
+
+
+MULU = "MULU"
+HEAD = "HEAD"
+
+
+def first_type(cb_div) -> MULU or HEAD or None:
+    for x in cb_div.kids:
+        if isinstance(x, xl.Element):
+            if x.tag == "head":
+                return HEAD
+            elif x.tag == "cb:mulu":
+                return MULU
+
+
+def last_type(cb_div : xl.Element) -> MULU or HEAD or None:
+    for x in cb_div.kids.reverse():
+        if isinstance(x, xl.Element):
+            if x.tag == "head":
+                return HEAD
+            elif x.tag == "cb:mulu":
+                return MULU
 
 
 def check_out_cbdiv_term(path: list, cb_div: xl.Element):
@@ -142,23 +222,22 @@ def xxx(bit_map: list):
     return (have_head, head), (have_middle, middle), (have_tail, tail)
 
 
+def get_body(filename):
+
+    file = open(filename, "r")
+
+    xmlstr = file.read()
+    file.close()
+    xml = xl.parse(xmlstr, strip=True)
+    tei = xml.root
+    text = tei.find_kids("text")[0]
+    body = text.find_kids("body")[0]
+    return body
+
+
 def check(xmls, fun):
-    # import xmlp5a_to_dir_sn
-    # xmls = xmlp5a_to_dir_sn.xmls
-
     for one in xmls:
-        filename = os.path.join(config.xmlp5a_dir, one)
-        # print("\n"*2)
-        print("xml:", filename)
-        file = open(filename, "r")
-
-        xmlstr = file.read()
-        file.close()
-        xml = xl.parse(xmlstr, strip=True)
-        tei = xml.root
-        text = tei.find_kids("text")[0]
-        body = text.find_kids("body")[0]
-        # body = base.filter_(body)
+        body = get_body(one)
         fun(body, body)
 
 
@@ -219,7 +298,13 @@ def main():
             no_prefix_xmls.append(one2.removeprefix(config.xmlp5a_dir))
         else:
             raise Exception
-    check(base.n_xmls(), check_head_and_mulu)
+
+    for xml in base.n_xmls():
+        filename = os.path.join(config.xmlp5a_dir, xml)
+        # print("\n"*2)
+        print("xml:", filename)
+
+        check(base.n_xmls(), check_head_and_mulu)
 
 
 if __name__ == "__main__":

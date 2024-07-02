@@ -393,35 +393,6 @@ def change_dirname2(path, dir_, fun):
     return new_dir
 
 
-def find_lb(e, e2):
-    lb, findit = find_lb2(e, e2)
-    assert lb is not None
-    assert findit is True
-    return lb
-
-
-def find_lb2(e, e2):
-    lb = None
-    findit = False
-
-    for x in e.kids:
-        if x is e2:
-            findit = True
-
-        elif isinstance(x, xl.Element) and x.tag == "lb":
-            lb = x
-
-        elif isinstance(x, xl.Element):
-            lb2, findit2 = find_lb2(x, e2)
-            findit = findit2 or findit
-            lb = lb2 or lb
-
-        if findit:
-            break
-
-    return lb, findit
-
-
 def filter_(term: xl.Element or str):
     if isinstance(term, str):
         return term
