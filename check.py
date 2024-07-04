@@ -129,7 +129,7 @@ def first_type(cb_div) -> MULU or HEAD or None:
                 return MULU
 
 
-def last_type(cb_div : xl.Element) -> MULU or HEAD or None:
+def last_type(cb_div: xl.Element) -> MULU or HEAD or None:
     for x in cb_div.kids.reverse():
         if isinstance(x, xl.Element):
             if x.tag == "head":
@@ -153,7 +153,7 @@ def check_out_cbdiv_term(path: list, cb_div: xl.Element):
         else:
             bit_map.append((1, x))
 
-    (have_head, head), (have_middle, middle), (have_tail, tail) = xxx(bit_map)
+    (_have_head, _head), (have_middle, middle), (_have_tail, _tail) = xxx(bit_map)
 
     if have_middle:
         print_path(path)
