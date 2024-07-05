@@ -302,9 +302,12 @@ def main():
     for xml in base.n_xmls():
         filename = os.path.join(config.xmlp5a_dir, xml)
         # print("\n"*2)
-        print("xml:", filename)
+        print("xml:", xml.removeprefix(config.xmlp5a_dir))
 
-        check(base.n_xmls(), check_head_and_mulu)
+        body = get_body(filename)
+        check_no_head(body)
+
+        # check(base.n_xmls(), check_head_and_mulu)
 
 
 if __name__ == "__main__":
