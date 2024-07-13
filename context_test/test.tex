@@ -1,0 +1,26 @@
+\setuppapersize[A6]
+\setupnotes[footnote][split=verystrict,scope=page]
+\starttext
+
+\section{First}
+
+Way to \ConTeXt\footnote{First footnote.} is painful.
+
+\section{Second}
+
+But \ConTeXt\ is amazing.\footnote{Second footnote}
+
+{Complex Table\footnote{A table head footnote.}}
+test test test test test test test test test test test test test test test test test test test test test test test
+test test test test test test test test test test test test test test test test test test test test test test test
+test test test test test test test test test test test test test test test test test test test test test test test
+test\footnote{test note test note test note test note test note
+test note test note test note test note test note test note test note test note test note}
+
+\startlocalfootnotes
+
+{\placelocalfootnotes}
+\stoplocalfootnotes
+
+
+\stoptext
