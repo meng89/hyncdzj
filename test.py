@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
-import os
+
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import A5, A6, A8
 
 
-class A(object):
-    pass
+def hello(c):
+    c.drawString(100, 100, "Hello World")
 
 
-class B(A):
-    pass
+c = canvas.Canvas("hello.pdf", pagesize=A8)
 
-
-b = B()
-
-print(type(b) is type(B))
+hello(c)
+c.showPage()
+c.save()
