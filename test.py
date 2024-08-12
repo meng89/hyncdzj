@@ -1,15 +1,18 @@
 #!/usr/bin/env python3
-
+import reportlab.platypus.doctemplate
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A5, A6, A8
 
 
-def hello(c):
-    c.drawString(100, 100, "Hello World")
+class MyDoc(reportlab.platypus.doctemplate.BaseDocTemplate):
+    pass
 
 
-c = canvas.Canvas("hello.pdf", pagesize=A8)
+def main():
+    print(reportlab.platypus.doctemplate.BaseDocTemplate)
 
-hello(c)
-c.showPage()
-c.save()
+
+
+
+if __name__ == "__main__":
+    main()
