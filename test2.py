@@ -7,6 +7,7 @@ from reportlab.platypus.doctemplate import PageTemplate, BaseDocTemplate
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfbase.cidfonts import UnicodeCIDFont
+import reportlab.pdfbase.cidfonts
 from reportlab.platypus.frames import Frame
 from reportlab.lib.units import cm
 
@@ -42,8 +43,8 @@ def main(filename):
     path = "/mnt/data/projects/noto-cjk/Serif/OTF/SimplifiedChinese/NotoSerifCJKsc-Regular.otf"
     path = "/mnt/data/projects/note-cjk2/NotoSerifCJKjp-Regular.ttf"
     nscr = "nscr"
-    pdfmetrics.registerFont(TTFont(nscr, path))
-    pdfmetrics.registerFont(UnicodeCIDFont(path))
+    # pdfmetrics.registerFont(TTFont(nscr, path))
+    pdfmetrics.registerFont(UnicodeCIDFont(""))
 
     title = ParagraphStyle(name='Title',
                            # fontName='Noto Serif CJK SC Light',
