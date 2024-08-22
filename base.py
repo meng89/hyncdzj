@@ -236,7 +236,7 @@ def xmlp5a_to_book(xmls):
     return book
 
 
-def book_to_simplexml(book: Book):
+def book_to_simple_xml(book: Book):
     pass
 
 
