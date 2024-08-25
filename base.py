@@ -15,11 +15,18 @@ import config
 
 import xmlp5a_to_simplexml
 
+# SN/
+# SN/_meta.xml
+# SN/
+# SN/大篇/2 觉知相应/转轮品/SN 46.41
+# SN/大篇/2 觉知相应/觉知总摄品/SN. 46.51 食.xml
+#
 
-class Book(object):
-    def __init__(self, path=None):
+class Book(dict):
+    def __init__(self, path=None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         if path:
-            xmlstr = open(os.path.join(path, "sn.xml")).read()
+            xmlstr = open(os.path.join(path, "_meta.xml")).read()
             self._xml = xl.parse(xmlstr)
             self._entries = dir2entries(os.path.join(path, "entries"))
         else:
@@ -166,6 +173,21 @@ class Piece(_Artcle):
 
     def _get_filename(self):
         return self._serial
+
+
+########################################################################################################################
+
+def dir_to_book():
+    pass
+
+def book_to_dir():
+    pass
+
+def book_to_pdf():
+    pass
+
+def book_to_epub():
+    pass
 
 
 def dir2entries(path):
