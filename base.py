@@ -21,14 +21,64 @@ import xmlp5a_to_simplexml
 # SN/大篇/2 觉知相应/转轮品/SN 46.41
 # SN/大篇/2 觉知相应/觉知总摄品/SN 46.51 食.xml
 
+class _Dir(dict):
+    def __init__(self, path=None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if path is not None:
+            xml_path = os.path.join(path, "_.xml")
 
-class Book(dict):
+        self._e = xl.Xml()
+
+    def head(self):
+        pass
+
+    def tail(self):
+        pass
+
+    def notes(self):
+        pass
+
+    def write(self, path):
+        pass
+
+
+class Book(_Dir):
+
+    @staticmethod
+    def dir2entries(path: str):
+        entries = {}
+
+        have_num_prefix = True
+        for entry in os.listdir():
+            if not re.match(r"^\d+_", entry):
+                have_num_prefix = False
+                break
+
+        for entry in sorted(os.listdir()):
+
+            if have_num_prefix:
+                m = re.match(r"^\d+_(.*)$", entry)
+                no_prefix_entry = m.group(1)
+            else:
+                no_prefix_entry = entry
+
+            entry_path = os.path.join(path, entry)
+
+            if os.path.isdir(entry_path):
+                entries[no_prefix_entry] = __class__.dir2entries(entry_path)
+
+            elif os.path.isfile(entry_path):
+                if entry.lower().endswith(".xml"):
+                    entries[no_prefix_entry] = Artcle(entry_path)
+
+            return entries
+
     def __init__(self, path=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if path:
             xmlstr = open(os.path.join(path, "_meta.xml")).read()
             self._xml = xl.parse(xmlstr)
-            self._entries = dir2entries(os.path.join(path, "entries"))
+            self._entries = self.dir2entries(os.path.join(path, "entries"))
         else:
             self._xml = xl.Xml()
             self._entries = {}
@@ -60,29 +110,12 @@ class Book(dict):
         f.close()
 
         os.makedirs(os.path.join(path, "entries"), exist_ok=True)
-        for entry in self._entries:
-            entry.write(os.path.join(path, "entries"))
 
-
-class Dir(dict):
-    def __init__(self, path=None, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        if path is not None:
-            xml_path = os.path.join(path, "_.xml")
-
-        self._e = xl.Xml()
-
-    def head(self):
-        pass
-
-    def tail(self):
-        pass
-
-    def notes(self):
-        pass
-
-    def write(self, path):
-        pass
+        for k, v in self.items():
+            if isinstance(v, dict):
+                pass # todo
+            else:
+                entry.write(os.path.join(path, "entries"))
 
 
 class _Artcle(object):
@@ -190,7 +223,7 @@ def book_to_epub():
     pass
 
 
-def dir2entries(path):
+def dir2entries2(path):
     entries = {}
 
     have_num_prefix = True
@@ -210,7 +243,7 @@ def dir2entries(path):
         entry_path = os.path.join(path, entry)
 
         if os.path.isdir(entry_path):
-            entries[no_prefix_entry] = dir2entries(entry_path)
+            entries[no_prefix_entry] = dir2entries2(entry_path)
 
         elif os.path.isfile(entry_path):
             if entry.lower().endswith(".xml"):
