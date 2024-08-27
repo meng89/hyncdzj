@@ -15,12 +15,12 @@ import config
 
 import xmlp5a_to_simplexml
 
+
 # SN/
 # SN/_meta.xml
-# SN/
 # SN/大篇/2 觉知相应/转轮品/SN 46.41
-# SN/大篇/2 觉知相应/觉知总摄品/SN. 46.51 食.xml
-#
+# SN/大篇/2 觉知相应/觉知总摄品/SN 46.51 食.xml
+
 
 class Book(dict):
     def __init__(self, path=None, *args, **kwargs):
