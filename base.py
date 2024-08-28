@@ -42,7 +42,7 @@ class _Dir(dict):
         pass
 
 
-class Book(_Dir):
+class Book(dict):
 
     @staticmethod
     def dir2entries(path: str):
@@ -94,9 +94,6 @@ class Book(_Dir):
     def name_pali(self):
         return self._xml.root.find_kids("name_pali")[0]
 
-    @property
-    def entries(self):
-        return self._entries
 
     def write(self, path):
         os.makedirs(path, exist_ok=True)
