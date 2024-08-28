@@ -78,10 +78,9 @@ class Book(_Dir):
         if path:
             xmlstr = open(os.path.join(path, "_meta.xml")).read()
             self._xml = xl.parse(xmlstr)
-            self._entries = self.dir2entries(os.path.join(path, "entries"))
+            self.update(__class__.dir2entries(os.path.join(path, "entries")))
         else:
             self._xml = xl.Xml()
-            self._entries = {}
 
     @property
     def abbr(self):
@@ -221,35 +220,6 @@ def book_to_pdf():
 
 def book_to_epub():
     pass
-
-
-def dir2entries2(path):
-    entries = {}
-
-    have_num_prefix = True
-    for entry in os.listdir():
-        if not re.match(r"^\d+_", entry):
-            have_num_prefix = False
-            break
-
-    for entry in sorted(os.listdir()):
-
-        if have_num_prefix:
-            m = re.match(r"^\d+_(.*)$", entry)
-            no_prefix_entry = m.group(1)
-        else:
-            no_prefix_entry = entry
-
-        entry_path = os.path.join(path, entry)
-
-        if os.path.isdir(entry_path):
-            entries[no_prefix_entry] = dir2entries2(entry_path)
-
-        elif os.path.isfile(entry_path):
-            if entry.lower().endswith(".xml"):
-                entries[no_prefix_entry] = Artcle(entry_path)
-
-    return entries
 
 
 def is_pts_ref(x):
