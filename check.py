@@ -305,8 +305,8 @@ def main():
         print("xml:", xml.removeprefix(config.xmlp5a_dir))
 
         body = get_body(filename)
-        check_no_head(body)
-
+        # check_no_head(body)
+        check_out_cbdiv_term([], body)
         # check(base.n_xmls(), check_head_and_mulu)
 
 

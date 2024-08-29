@@ -21,31 +21,12 @@ import xmlp5a_to_simplexml
 # SN/大篇/2 觉知相应/转轮品/SN 46.41
 # SN/大篇/2 觉知相应/觉知总摄品/SN 46.51 食.xml
 
-class _Dir(dict):
-    def __init__(self, path=None, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        if path is not None:
-            xml_path = os.path.join(path, "_.xml")
-
-        self._e = xl.Xml()
-
-    def head(self):
-        pass
-
-    def tail(self):
-        pass
-
-    def notes(self):
-        pass
-
-    def write(self, path):
-        pass
 
 
 class Book(dict):
 
     @staticmethod
-    def dir2entries(path: str):
+    def read_from_dir(path: str):
         entries = {}
 
         have_num_prefix = True
@@ -65,13 +46,24 @@ class Book(dict):
             entry_path = os.path.join(path, entry)
 
             if os.path.isdir(entry_path):
-                entries[no_prefix_entry] = __class__.dir2entries(entry_path)
+                entries[no_prefix_entry] = __class__.read_from_dir(entry_path)
 
             elif os.path.isfile(entry_path):
                 if entry.lower().endswith(".xml"):
                     entries[no_prefix_entry] = Artcle(entry_path)
 
             return entries
+
+    @staticmethod
+    def write_to_dir(dict_, path):
+        os.makedirs(path, exist_ok=True)
+
+        for name, obj in dict_.items():
+            if isinstance(obj, dict):
+                __class__.write_to_dir.write(os.path.join(path, name))
+            elif isinstance(obj, (Artcle, Piece)):
+                obj.write()
+
 
     def __init__(self, path=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -98,20 +90,17 @@ class Book(dict):
     def write(self, path):
         os.makedirs(path, exist_ok=True)
 
-        filename = "x"
+        filename = "_"
         path = os.path.join(path, filename)
         xmlstr = self._xml.to_str()
         f = open(path, "w")
         f.write(xmlstr)
         f.close()
 
-        os.makedirs(os.path.join(path, "entries"), exist_ok=True)
+        self.write_to_dir(self, path)
 
-        for k, v in self.items():
-            if isinstance(v, dict):
-                pass # todo
-            else:
-                entry.write(os.path.join(path, "entries"))
+
+
 
 
 class _Artcle(object):
@@ -370,13 +359,13 @@ def make_tree2(book, elements):
             level = int(term.attrs["level"]),
             mulu_str = term.kids[0]
 
-            node = find_node(book.entries, 1, mulu_str, level)
+            node = find_node(book, 1, mulu_str, level)
             if node is None:
                 if does_it_have_sub_mulu2(elements, term) is True:
                     node = {}
                 else:
                     node = Artcle()
-                make_node(book.entries, 1, mulu, node, level)
+                make_node(book, 1, mulu, node, level)
 
         elif isinstance(term, xl.Element) and term.tag == "cb:div":
             make_tree2(book, term.kids)
