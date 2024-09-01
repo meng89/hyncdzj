@@ -21,6 +21,22 @@ import xmlp5a_to_simplexml
 # SN/大篇/2 觉知相应/转轮品/SN 46.41
 # SN/大篇/2 觉知相应/觉知总摄品/SN 46.51 食.xml
 
+class Dir(dict):
+    def __init__(self, path=None):
+        super().__init__()
+        if path is not None:
+            xml_path = os.path.join(path, "_.xml")
+            if os.path.exists(path):
+                meta = open(xml_path).read()
+                xml = xl.parse(meta)
+                root = xml.root
+                for kid in root.kids:
+                    if kid.tag == "artcle":
+                        pass;
+                    elif kid.tag == "piece":
+                        pass;
+                    elif kid.tag == "dir":
+                        pass #what?
 
 
 class Book(dict):
