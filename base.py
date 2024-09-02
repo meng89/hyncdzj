@@ -31,12 +31,31 @@ class Dir(dict):
                 xml = xl.parse(meta)
                 root = xml.root
                 for kid in root.kids:
-                    if kid.tag == "artcle":
-                        pass;
-                    elif kid.tag == "piece":
-                        pass;
+                    if kid.tag == "piece":
+                        Piece()
+                    elif kid.tag == "artcle":
+                        key = os.path.splitext(kid.kids[0])[0]
+                        self[key] = Artcle(os.path.join(path, kid.kids[0]))
                     elif kid.tag == "dir":
-                        pass #what?
+                        self[kid.kids[0]] = Dir(os.path.join(path, kid.kids[0]))
+            else:
+                for entry in os.listdir(path):
+                    entry_path = os.path.join(path, entry)
+                    if os.path.isdir(entry_path):
+                        self[entry] = Dir(entry_path)
+                    elif os.path.isfile(entry_path) and entry.lower().endswith(".xml"):
+                        key = os.path.splitext(entry)[0]
+                        self[key] = Artcle(entry_path)
+
+    def write(self, path):
+        have_piece_in_it = False
+        for v in self.values():
+            if isinstance(v, Piece):
+                have_piece_in_it = True
+                break
+
+        if have_piece_in_it:
+
 
 
 class Book(dict):
