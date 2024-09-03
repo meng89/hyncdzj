@@ -105,17 +105,6 @@ class Book(Dir):
 
             return entries
 
-    @staticmethod
-    def write_to_dir(dict_, path):
-        os.makedirs(path, exist_ok=True)
-
-        for name, obj in dict_.items():
-            if isinstance(obj, dict):
-                __class__.write_to_dir.write(os.path.join(path, name))
-            elif isinstance(obj, (Artcle, Piece)):
-                obj.write()
-
-
     def __init__(self, path=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if path:
@@ -139,27 +128,18 @@ class Book(Dir):
 
 
     def write(self, path):
-        os.makedirs(path, exist_ok=True)
-
-        filename = "_"
-        path = os.path.join(path, filename)
-        xmlstr = self._xml.to_str()
-        f = open(path, "w")
-        f.write(xmlstr)
-        f.close()
-
-        self.write_to_dir(self, path)
+        super().write(path)
 
 
-
-
-
-class _Artcle(object):
-    def _make_new_xml(self):
-        self._xml = xl.Xml(root=xl.Element("root"))
-        self._xml.root.kids.append(xl.Element("body"))
-        self._xml.root.kids.append(xl.Element("notes"))
-        self._xml.root.kids.append(xl.Element("ps"))
+class Artcle:
+    def __init__(self, path=None):
+        if path:
+            self._xml = xl.parse(open(path).read())
+        else:
+            self._xml = xl.Xml(root=xl.Element("root"))
+            self._xml.root.kids.append(xl.Element("body"))
+            self._xml.root.kids.append(xl.Element("notes"))
+            self._xml.root.kids.append(xl.Element("ps"))
 
     @property
     def body(self):
@@ -173,75 +153,21 @@ class _Artcle(object):
     def ps(self):
         return self._xml.root.find_kids("ps")[0]
 
-    @abc.abstractmethod
-    def _get_filename(self):
-        pass
-
-    def write(self, parentpath):
-        filename = self._get_filename()
-        path = os.path.join(parentpath, filename)
-        xmlstr = self._xml.to_str()
-        f = open(path, "w")
-        f.write(xmlstr)
-        f.close()
+    def write(self, path):
+        open(path, "w").write(self._xml.to_str())
 
 
-class Artcle(_Artcle):
-    def __init__(self, filepath=None, no_num_prefix_path=None, book_abbr=None, serial=None, title=None):
+class Piece(Artcle):
+    def __init__(self, element:xl.Element=None):
         super().__init__()
+        if element:
+            self._xml = xl.Xml(root=element)
 
-        if filepath:
-            filename = os.path.splitext(os.path.split(no_num_prefix_path)[1])[0]
-            m = re.match(r"^([a-z]+) (\d(?:\.\d)*) (.*)$", filename)
-            if m:
-                self._is_piece = False
+    def get_element(self):
+        return self._xml.root
 
-                serial = tuple([int(s) for s in m.group(2).split(".")])
-                self._book_abbr = m.group(1)
-                self._serial = serial
-                self._title = m.group(3)
-
-                xmlstr = open(filepath).read()
-                self._xml = xl.parse(xmlstr)
-
-                # 非SN 1.1 这样的经文，可能是礼敬偈子，或助记词
-            else:
-                self._is_piece = True
-
-                xmlstr = open(filepath).read()
-                self._xml = xl.parse(xmlstr)
-        else:
-            self._book_abbr = book_abbr
-            self._serial = serial
-            self._title = title
-            self._make_new_xml()
-
-    def _get_filename(self):
-        filename = " ".join([self._book_abbr,
-                             ".".join([str(x) for x in self._serial]),
-                             self._title]
-                            ) + ".xml"
-        return filename
-
-
-class Piece(_Artcle):
-    def __init__(self, filepath=None, serial=None):
-        super().__init__()
-        if filepath:
-            filename = os.path.splitext(os.path.split(filepath)[1])[0]
-            m = re.match(r"^(\d+)$", filename)
-            if m:
-                self._serial = m.group(1)
-                xmlstr = open(filepath).read()
-                self._xml = xl.parse(xmlstr)
-            else:
-                raise Exception("无法解析文件名")
-        else:
-            self._serial = serial
-            self._make_new_xml()
-
-    def _get_filename(self):
-        return self._serial
+    def write(self, *args, **kwargs):
+        raise AttributeError # 禁用父类write属性，防止误用
 
 
 ########################################################################################################################
