@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 import sys
 
+from xl import Element
+
 sys.path.append("/mnt/data/projects/xl")
 
 import abc
@@ -48,17 +50,31 @@ class Dir(dict):
                         self[key] = Artcle(entry_path)
 
     def write(self, path):
-        have_piece_in_it = False
-        for v in self.values():
-            if isinstance(v, Piece):
-                have_piece_in_it = True
-                break
+        os.makedirs(path, exist_ok=True)
 
-        if have_piece_in_it:
+        has_piece = False
+
+        root = xl.Element("x")
+        for k, v in self:
+            if isinstance(v, Dir):
+                v.write(os.path.join(path, k))
+                root.kids.append(Element("dir", kids=[k]))
+            elif isinstance(v, Artcle):
+                v.write(os.path.join(path, k))
+                root.kids.append(Element("artcle", kids=[k]))
+            elif isinstance(v, Piece):
+                root.kids.append(Element("piece", kids=[v]))
+                has_piece = True
+
+        if has_piece:
+            xml = xl.Xml(root=root)
+            open(path, "w").write(xml.to_str())
 
 
 
-class Book(dict):
+
+
+class Book(Dir):
 
     @staticmethod
     def read_from_dir(path: str):
