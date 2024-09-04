@@ -75,7 +75,7 @@ class Dir(dict):
     def write(self, path):
         os.makedirs(path, exist_ok=True)
         has_piece = False
-        enties = self._xml
+        enties = self._xml.root.find_kids("enties")[0]
 
         for k, v in self:
             if isinstance(v, Dir):
@@ -87,10 +87,13 @@ class Dir(dict):
             elif isinstance(v, Piece):
                 enties.kids.append(Element("piece", kids=[v]))
                 has_piece = True
-        has_meta =
-        if has_piece:
-            xml = xl.Xml(root=root)
-            open(path, "w").write(xml.to_str())
+
+        if not has_piece:
+            enties.kids.clear()
+
+        has_meta = bool(self._xml.root.find_kids("meta")[0].kids)
+        if has_meta:
+            open(os.path.join(path, "_.xml"), "w").write(self._xml.to_str())
 
 
 class Book(Dir):
