@@ -26,13 +26,16 @@ import xmlp5a_to_simplexml
 class Dir(dict):
     def __init__(self, path=None):
         super().__init__()
+        self._xml = xl.Xml()
+
         if path is not None:
             xml_path = os.path.join(path, "_.xml")
-            if os.path.exists(path):
-                meta = open(xml_path).read()
-                xml = xl.parse(meta)
-                root = xml.root
-                for kid in root.kids:
+            if os.path.exists(xml_path):
+                self._xml = xl.parse(open(xml_path).read())
+                root = self._xml.root
+                assert isinstance(root, xl.Element)
+                entries = root.find_kids("entries")
+                for kid in entries.kids:
                     if kid.tag == "piece":
                         Piece()
                     elif kid.tag == "artcle":
@@ -41,6 +44,11 @@ class Dir(dict):
                     elif kid.tag == "dir":
                         self[kid.kids[0]] = Dir(os.path.join(path, kid.kids[0]))
             else:
+                self._xml = xl.Xml()
+                root = xl.Element("dir")
+                root.ekid("meta")
+                root.ekid("entries")
+
                 for entry in os.listdir(path):
                     entry_path = os.path.join(path, entry)
                     if os.path.isdir(entry_path):
@@ -49,86 +57,64 @@ class Dir(dict):
                         key = os.path.splitext(entry)[0]
                         self[key] = Artcle(entry_path)
 
+    def get_meta(self, key):
+        meta = self._xml.root.find_kids("meta")[0]
+        try:
+            return meta.find_kids(key)[0].kids[0]
+        except IndexError:
+            return None
+
+    def set_meta(self, key, value):
+        meta = self._xml.root.find_kids("meta")[0]
+        try:
+            key_e = meta.find_kids(key)[0]
+        except IndexError:
+            key_e = meta.ekid(key)
+        key_e.kids[:] = value
+
     def write(self, path):
         os.makedirs(path, exist_ok=True)
-
         has_piece = False
+        enties = self._xml
 
-        root = xl.Element("x")
         for k, v in self:
             if isinstance(v, Dir):
                 v.write(os.path.join(path, k))
-                root.kids.append(Element("dir", kids=[k]))
+                enties.kids.append(Element("dir", kids=[k]))
             elif isinstance(v, Artcle):
                 v.write(os.path.join(path, k))
-                root.kids.append(Element("artcle", kids=[k]))
+                enties.kids.append(Element("artcle", kids=[k]))
             elif isinstance(v, Piece):
-                root.kids.append(Element("piece", kids=[v]))
+                enties.kids.append(Element("piece", kids=[v]))
                 has_piece = True
-
+        has_meta =
         if has_piece:
             xml = xl.Xml(root=root)
             open(path, "w").write(xml.to_str())
 
 
-
-
-
 class Book(Dir):
-
-    @staticmethod
-    def read_from_dir(path: str):
-        entries = {}
-
-        have_num_prefix = True
-        for entry in os.listdir():
-            if not re.match(r"^\d+_", entry):
-                have_num_prefix = False
-                break
-
-        for entry in sorted(os.listdir()):
-
-            if have_num_prefix:
-                m = re.match(r"^\d+_(.*)$", entry)
-                no_prefix_entry = m.group(1)
-            else:
-                no_prefix_entry = entry
-
-            entry_path = os.path.join(path, entry)
-
-            if os.path.isdir(entry_path):
-                entries[no_prefix_entry] = __class__.read_from_dir(entry_path)
-
-            elif os.path.isfile(entry_path):
-                if entry.lower().endswith(".xml"):
-                    entries[no_prefix_entry] = Artcle(entry_path)
-
-            return entries
-
-    def __init__(self, path=None, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        if path:
-            xmlstr = open(os.path.join(path, "_meta.xml")).read()
-            self._xml = xl.parse(xmlstr)
-            self.update(__class__.dir2entries(os.path.join(path, "entries")))
-        else:
-            self._xml = xl.Xml()
 
     @property
     def abbr(self):
-        return self._xml.root.find_kids("abbr")[0]
+        return self.get_meta("abbr")
+    @abbr.setattr
+    def abbr(self, value):
+        self.set_meta("abbr", value)
 
     @property
     def name_hant(self):
-        return self._xml.root.find_kids("name_hant")[0]
+        return self.get_meta("name_hant")
+    @name_hant.setattr
+    def abbr(self, value):
+        self.set_meta("name_hant", value)
 
     @property
     def name_pali(self):
-        return self._xml.root.find_kids("name_pali")[0]
-
-
-    def write(self, path):
-        super().write(path)
+        return self.get_meta("name_pali")
+    @name_pali.setattr
+    def abbr(self, value):
+        self.set_meta("name_pali", value)
 
 
 class Artcle:
