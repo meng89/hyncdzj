@@ -229,7 +229,7 @@ def does_it_have_sub_mulu(cb_div: xl.Element) -> bool:
     return False
 
 
-def does_it_have_sub_mulu2(elements: list, term: xl.Element) -> bool:
+def has_sub_mulu(elements: list, term: xl.Element) -> bool:
     level = int(term.attrs["level"])
     for x in elements:
         if x == term:
@@ -259,31 +259,35 @@ def get_mulu(cb_div: xl.Element) -> str: return get_lmh(cb_div)[1]
 def get_head(cb_div: xl.Element) -> str: return get_lmh(cb_div)[2]
 
 
-def find_node(data: dict, data_level, key, level):
-    keys = list(data.keys())
-    if data_level == level:
+def find_dire(dire: dict, dire_level, key, level):
+    keys = list(dire.keys())
+    if dire_level == level:
         if key in keys:
             if key == keys[-1]:
                 input("重复的key: {}, 回车继续运行".format(repr(key)))
-                return data[key]
+                return dire[key]
             else:
                 raise Exception("非切割同级目录出现")
         else:
             return None
+
     else:
-        sub = data[keys[-1]],
-        if isinstance(sub, dict):
-            return find_node(sub, level, key, data_level + 1)
+        sub = dire[keys[-1]],
+        if isinstance(sub, Dir):
+            return find_dire(sub, level, key, dire_level + 1)
         else:
             return None
 
 
-def make_node(data: dict, data_level, key, node: Artcle or dict, level):
-    if data_level == level:
-        data[key] = node
+def set_entry(dire: dict, dire_level, key, entry: Dir or Artcle or Piece, level):
+    if dire_level == level:
+        dire[key] = entry
+
     else:
-        keys = list(data.keys())
-        make_node(data[keys[-1]], data_level + 1, key, node, level)
+        keys = list(dire.keys())
+        set_entry(dire[keys[-1]], dire_level + 1, key, entry, level)
+
+
 
 
 def make_tree(book, cb_div: xl.Element):
@@ -291,13 +295,13 @@ def make_tree(book, cb_div: xl.Element):
     mulu = get_mulu(cb_div)
     head = get_head(cb_div)
 
-    node = find_node(book.entries, 1, mulu, level)
-    if node is None:
+    dire = find_dire(book, 1, mulu, level)
+    if dire is None:
         if does_it_have_sub_mulu(cb_div) is True:
-            node = {}
+            dire = {}
         else:
-            node = Artcle()
-        make_node(book.entries, 1, mulu, node, level)
+            dire = Artcle()
+        set_entry(book, 1, mulu, dire, level)
 
     note_index = 1
     notes = []
@@ -314,8 +318,8 @@ def make_tree(book, cb_div: xl.Element):
             else:
                 new_elements, new_notes, note_index = xmlp5a_to_simplexml.trans_element(kid, note_index)
                 notes.extend(new_notes)
-                node.body.kids.extend(new_elements)
-                node.notes.kids.extend(notes)
+                dire.body.kids.extend(new_elements)
+                dire.notes.kids.extend(notes)
 
 
 def make_tree2(book, elements):
@@ -325,20 +329,22 @@ def make_tree2(book, elements):
             level = int(term.attrs["level"]),
             mulu_str = term.kids[0]
 
-            node = find_node(book, 1, mulu_str, level)
-            if node is None:
-                if does_it_have_sub_mulu2(elements, term) is True:
-                    node = {}
+            entry = find_dire(book, 1, mulu_str, level)
+            if entry is None:
+                #  does_it
+                if has_sub_mulu(elements, term) is True:
+                    entry = Dir()
                 else:
-                    node = Artcle()
-                make_node(book, 1, mulu, node, level)
+                    entry = Artcle()
+                set_entry(book, 1, mulu_str, entry, level)
 
         elif isinstance(term, xl.Element) and term.tag == "cb:div":
             make_tree2(book, term.kids)
 
         else:
-            node = get_node()
-            attach(node, x)
+            dire = find_dire(book, 1, )
+            if dire:
+            attach(entry, x)
 
 
 def feed(book, mulu_element: xl.Element):
