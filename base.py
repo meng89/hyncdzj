@@ -229,13 +229,29 @@ def does_it_have_sub_mulu(cb_div: xl.Element) -> bool:
     return False
 
 
-def has_sub_mulu(elements: list, term: xl.Element) -> bool:
-    level = int(term.attrs["level"])
-    for x in elements:
-        if x == term:
-            pass
-        # todo
+def has_sub_mulu(elements: list, level: int) -> bool:
+    return bool(has_sub_mulu_(elements, level))
 
+def has_sub_mulu_(elements, level) -> bool or None:
+    for x in elements:
+        if isinstance(x, xl.Element) and x.tag == "cb:div":
+            match has_sub_mulu_(x.kids, level):
+                case True:
+                   return True
+                case False:
+                    return False
+                case None:
+                    pass
+
+        elif isinstance(x, xl.Element) and x.tag == "cb:mulu":
+            x_level = int(x.attrs["level"])
+            if level > x_level:
+                return True
+            else:
+                return False
+        else:
+            pass
+    return None
 
 # get level, mulu, head
 def get_lmh(cb_div: xl.Element) -> tuple:
@@ -332,7 +348,7 @@ def make_tree2(book, elements):
             entry = find_dire(book, 1, mulu_str, level)
             if entry is None:
                 #  does_it
-                if has_sub_mulu(elements, term) is True:
+                if has_sub_mulu(elements, level) is True:
                     entry = Dir()
                 else:
                     entry = Artcle()
