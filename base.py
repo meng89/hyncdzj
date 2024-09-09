@@ -342,7 +342,7 @@ def make_tree2(book, elements):
     for term in elements:
         if isinstance(term, xl.Element) and term.tag == "cb:mulu":
             assert len(term.kids) == 1
-            level = int(term.attrs["level"]),
+            level = int(term.attrs["level"])
             mulu_str = term.kids[0]
 
             entry = find_dire(book, 1, mulu_str, level)
@@ -358,9 +358,9 @@ def make_tree2(book, elements):
             make_tree2(book, term.kids)
 
         else:
-            dire = find_dire(book, 1, )
+            dire = find_dire(book, 1, x)
             if dire:
-            attach(entry, x)
+                pass
 
 
 def feed(book, mulu_element: xl.Element):
