@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import sys
 
+from check import last_type
 from xl import Element
 
 sys.path.append("/mnt/data/projects/xl")
@@ -274,36 +275,44 @@ def get_mulu(cb_div: xl.Element) -> str: return get_lmh(cb_div)[1]
 
 def get_head(cb_div: xl.Element) -> str: return get_lmh(cb_div)[2]
 
+########################################################################################################################
 
-def find_dire(dire: dict, dire_level, key, level):
-    keys = list(dire.keys())
-    if dire_level == level:
-        if key in keys:
-            if key == keys[-1]:
-                input("重复的key: {}, 回车继续运行".format(repr(key)))
-                return dire[key]
-            else:
-                raise Exception("非切割同级目录出现")
-        else:
-            return None
+def find_entry_from_last_branch(book, level):
+    return find_entry_from_last_branch2(book, 0, level)
 
+def find_entry_from_last_branch2(directory: dict, directory_level: int, level: int):
+    if directory_level == level:
+        return directory
     else:
-        sub = dire[keys[-1]],
-        if isinstance(sub, Dir):
-            return find_dire(sub, level, key, dire_level + 1)
-        else:
-            return None
+        last_item = directory[list(directory.keys())[-1]]
+        return find_entry_from_last_branch2(last_item, directory_level + 1, level)
 
+########################################################################################################################
 
-def set_entry(dire: dict, dire_level, key, entry: Dir or Artcle or Piece, level):
+def find_last_entry(book):
+    return find_last_entry2(book)
+
+def find_last_entry2(directory):
+    if isinstance(directory, dict):
+        keys = list(directory.keys())
+        return find_last_entry2(directory[keys[-1]])
+    else:
+        return directory
+
+########################################################################################################################
+
+def set_entry(book, level, key, entry):
+    set_entry2(book, 1, level, key, entry)
+
+def set_entry2(dire: dict, dire_level, key, entry: Dir or Artcle or Piece, level):
     if dire_level == level:
         dire[key] = entry
 
     else:
         keys = list(dire.keys())
-        set_entry(dire[keys[-1]], dire_level + 1, key, entry, level)
+        set_entry2(dire[keys[-1]], dire_level + 1, key, entry, level)
 
-
+########################################################################################################################
 
 
 def make_tree(book, cb_div: xl.Element):
@@ -311,7 +320,7 @@ def make_tree(book, cb_div: xl.Element):
     mulu = get_mulu(cb_div)
     head = get_head(cb_div)
 
-    dire = find_dire(book, 1, mulu, level)
+    dire = find_entry_from_last_branch(book, level)
     if dire is None:
         if does_it_have_sub_mulu(cb_div) is True:
             dire = {}
@@ -345,22 +354,28 @@ def make_tree2(book, elements):
             level = int(term.attrs["level"])
             mulu_str = term.kids[0]
 
-            entry = find_dire(book, 1, mulu_str, level)
+            entry = find_entry_from_last_branch(book, level)
+
             if entry is None:
-                #  does_it
                 if has_sub_mulu(elements, level) is True:
-                    entry = Dir()
+                    new_entry = Dir()
                 else:
-                    entry = Artcle()
-                set_entry(book, 1, mulu_str, entry, level)
+                    new_entry = Artcle()
+
+                set_entry(book, level, mulu_str, new_entry)
+
+            else:
+                raise Exception
 
         elif isinstance(term, xl.Element) and term.tag == "cb:div":
             make_tree2(book, term.kids)
 
         else:
-            dire = find_dire(book, 1, x)
-            if dire:
-                pass
+            entry = find_last_entry(book)
+            if not isinstance(entry, (Artcle, Piece)):
+                raise Exception
+
+            entry.attach(term)
 
 
 def feed(book, mulu_element: xl.Element):
