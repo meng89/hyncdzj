@@ -16,7 +16,7 @@ import epubpacker
 import xl
 import config
 
-import xmlp5a_to_simplexml
+import xmlp5a_to_simple_xml
 
 
 # SN/
@@ -132,16 +132,29 @@ class Artcle:
             self._xml.root.kids.append(xl.Element("ps"))
 
     @property
-    def body(self):
+    def body(self) -> xl.Element:
         return self._xml.root.find_kids("body")[0]
 
     @property
-    def notes(self):
+    def notes(self) -> xl.Element:
         return self._xml.root.find_kids("notes")[0]
 
     @property
-    def ps(self):
+    def ps(self) -> xl.Element:
         return self._xml.root.find_kids("ps")[0]
+
+    def append_note_from_text(self, string: str) -> int:
+        index = len(self.notes.kids) + 1
+        note = xl.Element("note", attrs={"n": str(index)})
+        self.notes.kids.append(note)
+        return index
+
+    def get_note_text_by_index(self, index: int) -> str:
+        for note  in self.notes.kids:
+            note: xl.Element
+            if int(note.attrs["n"]) == index:
+                return note.kids[0]
+
 
     def write(self, path):
         open(path, "w").write(self._xml.to_str())
@@ -341,7 +354,7 @@ def make_tree(book, cb_div: xl.Element):
                 print("debug")
                 print(type(kid))
             else:
-                new_elements, new_notes, note_index = xmlp5a_to_simplexml.trans_element(kid, note_index)
+                new_elements, new_notes, note_index = xmlp5a_to_simple_xml.trans_element(kid, note_index)
                 notes.extend(new_notes)
                 dire.body.kids.extend(new_elements)
                 dire.notes.kids.extend(notes)
