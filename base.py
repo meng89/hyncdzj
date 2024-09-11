@@ -16,7 +16,7 @@ import epubpacker
 import xl
 import config
 
-import xmlp5a_to_simple_xml
+import p5a_to_simple
 
 
 # SN/
@@ -146,14 +146,18 @@ class Artcle:
     def append_note_from_text(self, string: str) -> int:
         index = len(self.notes.kids) + 1
         note = xl.Element("note", attrs={"n": str(index)})
+        note.kids.append(string)
         self.notes.kids.append(note)
         return index
 
     def get_note_text_by_index(self, index: int) -> str:
-        for note  in self.notes.kids:
+        for note in self.notes.kids:
             note: xl.Element
             if int(note.attrs["n"]) == index:
                 return note.kids[0]
+
+    def get_new_note_index(self) -> int:
+        return len(self.notes.kids) + 1
 
 
     def write(self, path):
@@ -327,40 +331,7 @@ def set_entry2(dire: dict, dire_level, key, entry: Dir or Artcle or Piece, level
 
 ########################################################################################################################
 
-
-def make_tree(book, cb_div: xl.Element):
-    level = get_level(cb_div)
-    mulu = get_mulu(cb_div)
-    head = get_head(cb_div)
-
-    dire = find_entry_from_last_branch(book, level)
-    if dire is None:
-        if does_it_have_sub_mulu(cb_div) is True:
-            dire = {}
-        else:
-            dire = Artcle()
-        set_entry(book, 1, mulu, dire, level)
-
-    note_index = 1
-    notes = []
-    for kid in cb_div.kids[2:]:
-        if isinstance(kid, xl.Element) and kid.tag == "cb:div":
-            make_tree(book, kid)
-
-        else:
-            # 如果不是底层, 这些片段属于目录
-            if does_it_have_sub_mulu(cb_div) is True:
-
-                print("debug")
-                print(type(kid))
-            else:
-                new_elements, new_notes, note_index = xmlp5a_to_simple_xml.trans_element(kid, note_index)
-                notes.extend(new_notes)
-                dire.body.kids.extend(new_elements)
-                dire.notes.kids.extend(notes)
-
-
-def make_tree2(book, elements):
+def make_tree(book, elements):
     for term in elements:
         if isinstance(term, xl.Element) and term.tag == "cb:mulu":
             assert len(term.kids) == 1
@@ -381,14 +352,18 @@ def make_tree2(book, elements):
                 raise Exception
 
         elif isinstance(term, xl.Element) and term.tag == "cb:div":
-            make_tree2(book, term.kids)
+            make_tree(book, term.kids)
 
         else:
             entry = find_last_entry(book)
             if not isinstance(entry, (Artcle, Piece)):
                 raise Exception
 
-            entry.attach(term)
+            new_note_index = entry.get_new_note_index()
+
+            new_elements, new_notes, new_note_index = xmlp5a_to_simple_xml.trans_element(term, new_note_index)
+            entry.body.kids.extend(new_elements)
+            entry.notes.kids.extend(new_notes)
 
 
 def feed(book, mulu_element: xl.Element):

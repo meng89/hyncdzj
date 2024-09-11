@@ -58,23 +58,22 @@ def string(e, note_index):
 
 # <note n="0062a1201" resp="CBETA" type="add" note_key="N13.0062a12.03">國【CB】，王【南傳】</note>
 
-def note(e, note_index):
+def note(e, new_note_index):
     if isinstance(e, xl.Element) and e.tag == "note":
 
         if len(e.kids) == 0:
-            return [], [], note_index
+            return [], [], new_note_index
 
         elif len(e.kids) == 1 and isinstance(e.kids[0], xl.Element) and e.kids[0].tag == "space":
-            return [], [], note_index
+            return [], [], new_note_index
 
         elif "【CB】" in e.kids[0] and "【南傳】" in e.kids[0]:
-            return [], [], note_index
+            return [], [], new_note_index
 
         elif "add" in e.attrs.keys():
-            return [], [], note_index
+            return [], [], new_note_index
 
         else:
-            new_note_index = note_index + 1
             twn = xl.Element(tag="twn",
                              attrs={"n": str(new_note_index)},
                              kids=["[{}]".format(new_note_index)])
@@ -83,7 +82,7 @@ def note(e, note_index):
                                attrs={"n": str(new_note_index)},
                                kids=e.kids[:])
 
-            return [twn], [note_], new_note_index
+            return [twn], [note_], new_note_index + 1
 
     else:
         return None
@@ -96,18 +95,18 @@ def note(e, note_index):
 #   <rdg wit="【南傳】">眼</rdg>
 # </app>
 # 、懶惰
-def app(e, note_index):
+def app(e, new_note_index):
     if isinstance(e, xl.Element) and e.tag == "app":
         lem = e.kids[0]
-        return trans_elements(lem.kids, note_index)
+        return trans_elements(lem.kids, new_note_index)
     else:
         return None
 
 
-def space(e, note_index):
+def space(e, new_note_index):
     if isinstance(e, xl.Element) and e.tag == "space":
         quantity = int(e.attrs["quantity"])
-        return [" " * quantity], [], note_index
+        return [" " * quantity], [], new_note_index
 
     else:
         return None
@@ -118,9 +117,9 @@ def space(e, note_index):
 # 〔二〕解脫
 ####
 #
-def ref(e, note_index):
+def ref(e, new_note_index):
     if isinstance(e, xl.Element) and e.tag == "ref":
-        return [e], [], note_index
+        return [e], [], new_note_index
     else:
         return None
 
@@ -146,9 +145,8 @@ def ref(e, note_index):
 # </lg>
 ####
 # 偈子
-def lg(e, note_index):
+def lg(e, new_note_index):
     notes = []
-    new_note_index = note_index
     if isinstance(e, xl.Element) and e.tag == "lg":
         person = None
         sentences = []
@@ -171,7 +169,7 @@ def lg(e, note_index):
                     continue
 
                 else:
-                    es, notes2, new_note_index = trans_element(_lkid, note_index)
+                    es, notes2, new_note_index = trans_element(_lkid, new_note_index)
                     sentence.extend(es)
                     notes.append(notes2)
 
@@ -201,19 +199,19 @@ g_map = {
 }
 
 
-def g(e, note_index):
+def g(e, new_note_index):
     if isinstance(e, xl.Element) and e.tag == "g":
         s = g_map[e.attrs["ref"]]
-        return [s], [], note_index
+        return [s], [], new_note_index
     else:
         return None
 
 
 # 普通句子
-def p(e, note_index):
+def p(e, new_note_index):
     element = xl.Element("p")
     if isinstance(e, xl.Element) and e.tag == "p":
-        kids, notes, new_note_index = trans_elements(e.kids, note_index)
+        kids, notes, new_note_index = trans_elements(e.kids, new_note_index)
         element.kids[:] = kids
         return [element], notes, new_note_index
     else:
