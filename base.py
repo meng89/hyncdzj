@@ -231,10 +231,6 @@ def xmlp5a_to_book(xmls):
     return book
 
 
-def book_to_simple_xml(book: Book):
-    pass
-
-
 # <cb:mulu type="其他" level="1">有偈篇 (1-11)</cb:mulu><head>
 def does_it_have_sub_mulu(cb_div: xl.Element) -> bool:
     level = get_level(cb_div)
@@ -361,13 +357,9 @@ def make_tree(book, elements):
 
             new_note_index = entry.get_new_note_index()
 
-            new_elements, new_notes, new_note_index = xmlp5a_to_simple_xml.trans_element(term, new_note_index)
+            new_elements, new_notes, new_note_index = p5a_to_simple.trans_element(term, new_note_index)
             entry.body.kids.extend(new_elements)
             entry.notes.kids.extend(new_notes)
-
-
-def feed(book, mulu_element: xl.Element):
-    level = int(mulu_element.attrs["level"])
 
 
 def get_last_parent_dir(dir_, level):

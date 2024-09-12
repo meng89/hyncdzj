@@ -1,5 +1,6 @@
 import re
 
+import base
 import xl
 
 
@@ -216,3 +217,7 @@ def p(e, new_note_index):
         return [element], notes, new_note_index
     else:
         return None
+
+
+def load(xmls: list) -> base.Book:
+    pass
