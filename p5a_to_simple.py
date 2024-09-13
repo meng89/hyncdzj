@@ -219,5 +219,5 @@ def p(e, new_note_index):
         return None
 
 
-def load(xmls: list) -> base.Book:
+def load_from_p5a(xmls: list) -> base.Book:
     pass
