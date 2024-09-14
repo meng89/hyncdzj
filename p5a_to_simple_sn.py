@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 import re
+import sys
 
-import base
+sys.path.append("/mnt/data/projects/xl")
+
+import p5a_to_simple
 
 
 xmls = [
@@ -136,9 +139,8 @@ def change_pin_mulu_fun(mulu: str):
 
 
 def main():
-    book = base.load_from_xmlp5(xmls)
+    book = p5a_to_simple.load_from_p5a(xmls)
 
 
 if __name__ == "__main__":
-
     main()

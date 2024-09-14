@@ -1,7 +1,10 @@
 import re
+import os
+
+import xl
 
 import base
-import xl
+import config
 
 
 def trans_elements(elements, note_index) -> tuple:
@@ -218,6 +221,31 @@ def p(e, new_note_index):
     else:
         return None
 
+########################################################################################################################
+
+def get_body(filename) -> xl.Element:
+
+    file = open(filename, "r")
+
+    xmlstr = file.read()
+    file.close()
+    xml = xl.parse(xmlstr, strip=True)
+    tei = xml.root
+    text = tei.find_kids("text")[0]
+    body = text.find_kids("body")[0]
+    return body
+
 
 def load_from_p5a(xmls: list) -> base.Book:
-    pass
+    book = base.Book()
+    for xml in xmls:
+        filename = os.path.join(config.xmlp5a_dir, xml)
+        # print("\n"*2)
+        print("xml:", xml.removeprefix(config.xmlp5a_dir))
+
+        body = get_body(filename)
+        filtered_body = base.filter_(body)
+        # check_no_head(body)
+        base.make_tree(book, filtered_body.kids)
+
+    return book

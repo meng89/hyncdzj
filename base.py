@@ -102,22 +102,22 @@ class Book(Dir):
     @property
     def abbr(self):
         return self.get_meta("abbr")
-    @abbr.setattr
+    @abbr.setter
     def abbr(self, value):
         self.set_meta("abbr", value)
 
     @property
     def name_hant(self):
         return self.get_meta("name_hant")
-    @name_hant.setattr
-    def abbr(self, value):
+    @name_hant.setter
+    def name_hant(self, value):
         self.set_meta("name_hant", value)
 
     @property
     def name_pali(self):
         return self.get_meta("name_pali")
-    @name_pali.setattr
-    def abbr(self, value):
+    @name_pali.setter
+    def name_pali(self, value):
         self.set_meta("name_pali", value)
 
 
@@ -297,7 +297,11 @@ def find_entry_from_last_branch2(directory: dict, directory_level: int, level: i
     if directory_level == level:
         return directory
     else:
-        last_item = directory[list(directory.keys())[-1]]
+        keys = list(directory.keys())
+        if len(keys) > 0:
+            last_item = directory[keys[-1]]
+        else:
+            return None
         return find_entry_from_last_branch2(last_item, directory_level + 1, level)
 
 ########################################################################################################################
@@ -314,11 +318,12 @@ def find_last_entry2(directory):
 
 ########################################################################################################################
 
-def set_entry(book, level, key, entry):
-    set_entry2(book, 1, level, key, entry)
+def set_entry(book, key, entry, level):
+    set_entry2(book, 0, key, entry, level)
 
 def set_entry2(dire: dict, dire_level, key, entry: Dir or Artcle or Piece, level):
-    if dire_level == level:
+    if dire_level == level - 1:
+        assert key not in dire.keys()
         dire[key] = entry
 
     else:
@@ -329,6 +334,8 @@ def set_entry2(dire: dict, dire_level, key, entry: Dir or Artcle or Piece, level
 
 def make_tree(book, elements):
     for term in elements:
+        print(term.to_str())
+        print()
         if isinstance(term, xl.Element) and term.tag == "cb:mulu":
             assert len(term.kids) == 1
             level = int(term.attrs["level"])
@@ -342,7 +349,7 @@ def make_tree(book, elements):
                 else:
                     new_entry = Artcle()
 
-                set_entry(book, level, mulu_str, new_entry)
+                set_entry(book, mulu_str, new_entry, level)
 
             else:
                 raise Exception
