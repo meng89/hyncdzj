@@ -10,6 +10,7 @@ import abc
 import datetime
 import re
 import os
+from uuid import uuid4
 from typing import List
 
 import epubpacker
@@ -57,6 +58,13 @@ class Dir(dict):
                     elif os.path.isfile(entry_path) and entry.lower().endswith(".xml"):
                         key = os.path.splitext(entry)[0]
                         self[key] = Artcle(entry_path)
+
+    def append_piece(self, piece):
+        while True:
+            key = uuid4()
+            if key not in self.keys():
+                break
+        self[key] = piece
 
     def get_meta(self, key):
         meta = self._xml.root.find_kids("meta")[0]
@@ -156,7 +164,7 @@ class Artcle:
             if int(note.attrs["n"]) == index:
                 return note.kids[0]
 
-    def get_new_note_index(self) -> int:
+    def get_next_note_index(self) -> int:
         return len(self.notes.kids) + 1
 
 
@@ -211,30 +219,10 @@ def is_num_p(x):
     return False
 
 
-def xmlp5a_to_book(xmls):
-    book = Book()
-    for one in xmls:
-        filename = os.path.join(config.xmlp5a_dir, one)
-        file = open(filename, "r")
-
-        xmlstr = file.read()
-        file.close()
-        xml = xl.parse(xmlstr)
-        tei = xml.root
-        text = tei.find_kids("text")[0]
-        body = text.find_kids("body")[0]
-
-        body = filter_(body)
-        for cb_div in body.find_kids("cb:div"):
-            make_tree(book, cb_div)
-
-    return book
-
-
 # <cb:mulu type="其他" level="1">有偈篇 (1-11)</cb:mulu><head>
-def does_it_have_sub_mulu(cb_div: xl.Element) -> bool:
-    level = get_level(cb_div)
-    for kid in cb_div.kids[2:]:
+def does_it_have_sub_mulu(elements: xl.Element) -> bool:
+    level = get_level(elements)
+    for kid in elements.kids[2:]:
         if isinstance(kid, xl.Element) and kid.tag == "cb:div":
             if get_level(kid) > level:
                 return True
@@ -243,15 +231,12 @@ def does_it_have_sub_mulu(cb_div: xl.Element) -> bool:
     return False
 
 
-def has_sub_mulu(elements: list, level: int) -> bool:
-    return bool(has_sub_mulu_(elements, level))
-
-def has_sub_mulu_(elements, level) -> bool or None:
-    for x in elements:
+def has_sub_mulu(e: xl.Element, next_index: int, level) -> bool or None:
+    for x in e.kids[next_index: ]:
         if isinstance(x, xl.Element) and x.tag == "cb:div":
-            match has_sub_mulu_(x.kids, level):
+            match has_sub_mulu(x, 0, level):
                 case True:
-                   return True
+                    return True
                 case False:
                     return False
                 case None:
@@ -259,13 +244,13 @@ def has_sub_mulu_(elements, level) -> bool or None:
 
         elif isinstance(x, xl.Element) and x.tag == "cb:mulu":
             x_level = int(x.attrs["level"])
-            if level > x_level:
+            if level < x_level:
                 return True
             else:
                 return False
-        else:
-            pass
+
     return None
+
 
 # get level, mulu, head
 def get_lmh(cb_div: xl.Element) -> tuple:
@@ -290,31 +275,31 @@ def get_head(cb_div: xl.Element) -> str: return get_lmh(cb_div)[2]
 
 ########################################################################################################################
 
-def find_entry_from_last_branch(book, level):
-    return find_entry_from_last_branch2(book, 0, level)
+def find_parent_dir(book, level):
+    return find_parent_dir2(book, 0, level)
 
-def find_entry_from_last_branch2(directory: dict, directory_level: int, level: int):
-    if directory_level == level:
-        return directory
-    else:
-        keys = list(directory.keys())
-        if len(keys) > 0:
-            last_item = directory[keys[-1]]
+def find_parent_dir2(dir_like: Dir | Artcle, dir_like_level: int, level: int):
+    if isinstance(dir_like, Dir):
+        if dir_like_level + 1 == level:
+            return dir_like
         else:
-            return None
-        return find_entry_from_last_branch2(last_item, directory_level + 1, level)
+            keys = list(dir_like.keys())
+            if len(keys) > 0:
+                last_item = dir_like[keys[-1]]
+                return find_parent_dir2(last_item, dir_like_level + 1, level)
+            else:
+                raise Exception
+    else:
+        raise Exception
 
 ########################################################################################################################
 
-def find_last_entry(book):
-    return find_last_entry2(book)
-
-def find_last_entry2(directory):
-    if isinstance(directory, dict):
-        keys = list(directory.keys())
-        return find_last_entry2(directory[keys[-1]])
+def find_last_entry(entry: Book or Artcle or Piece or Dir):
+    keys = list(entry.keys())
+    if isinstance(entry, dict) and keys:
+        return find_last_entry(entry[keys[-1]])
     else:
-        return directory
+        return entry
 
 ########################################################################################################################
 
@@ -322,8 +307,12 @@ def set_entry(book, key, entry, level):
     set_entry2(book, 0, key, entry, level)
 
 def set_entry2(dire: dict, dire_level, key, entry: Dir or Artcle or Piece, level):
-    if dire_level == level - 1:
+    if dire_level + 1 == level:
+        if isinstance(dire, Artcle):
+            print(dire.body.to_str())
+
         assert key not in dire.keys()
+
         dire[key] = entry
 
     else:
@@ -332,41 +321,54 @@ def set_entry2(dire: dict, dire_level, key, entry: Dir or Artcle or Piece, level
 
 ########################################################################################################################
 
-def make_tree(book, elements):
-    for term in elements:
-        print(term.to_str())
-        print()
+def make_tree(book, e: xl.Element):
+    my_has_new_entry = False
+    current_entry = None
+
+    current_dir = None
+    current_piece = None
+    current_artcle = None
+
+    for index, term in enumerate(e.kids):
         if isinstance(term, xl.Element) and term.tag == "cb:mulu":
             assert len(term.kids) == 1
             level = int(term.attrs["level"])
             mulu_str = term.kids[0]
 
-            entry = find_entry_from_last_branch(book, level)
+            # 检查用途
+            parent_dir = find_parent_dir(book, level)
 
-            if entry is None:
-                if has_sub_mulu(elements, level) is True:
-                    new_entry = Dir()
-                else:
-                    new_entry = Artcle()
-
-                set_entry(book, mulu_str, new_entry, level)
-
+            if has_sub_mulu(e, index + 1, level) is True:
+                current_dir = Dir()
+                _entry = current_dir
             else:
-                raise Exception
+                current_artcle = Artcle()
+                _entry = current_artcle
+
+            set_entry(book, mulu_str, _entry, level)
+            my_has_new_entry = True
 
         elif isinstance(term, xl.Element) and term.tag == "cb:div":
-            make_tree(book, term.kids)
+            has_new_entry = make_tree(book, term)
+            if has_new_entry is True:
+                current_artcle = None
+                current_piece = None
 
         else:
-            entry = find_last_entry(book)
-            if not isinstance(entry, (Artcle, Piece)):
-                raise Exception
+            if current_piece is None and current_artcle is None:
+                _piece = Piece()
+                current_dir.append_piece(_piece)
+                current_piece = _piece
 
-            new_note_index = entry.get_new_note_index()
+            _piece_like = current_artcle or current_piece
+
+            new_note_index = _piece_like.get_next_note_index()
 
             new_elements, new_notes, new_note_index = p5a_to_simple.trans_element(term, new_note_index)
-            entry.body.kids.extend(new_elements)
-            entry.notes.kids.extend(new_notes)
+            _piece_like.body.kids.extend(new_elements)
+            _piece_like.notes.kids.extend(new_notes)
+
+    return my_has_new_entry
 
 
 def get_last_parent_dir(dir_, level):

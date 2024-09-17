@@ -236,16 +236,22 @@ def get_body(filename) -> xl.Element:
     return body
 
 
-def load_from_p5a(xmls: list) -> base.Book:
+def load_from_p5a(xmls) -> base.Book:
     book = base.Book()
     for xml in xmls:
         filename = os.path.join(config.xmlp5a_dir, xml)
-        # print("\n"*2)
         print("xml:", xml.removeprefix(config.xmlp5a_dir))
+        file = open(filename, "r")
 
-        body = get_body(filename)
-        filtered_body = base.filter_(body)
-        # check_no_head(body)
-        base.make_tree(book, filtered_body.kids)
+        xmlstr = file.read()
+        file.close()
+        xml = xl.parse(xmlstr)
+        tei = xml.root
+        text = tei.find_kids("text")[0]
+        body = text.find_kids("body")[0]
+
+        body = base.filter_(body)
+        for cb_div in body.find_kids("cb:div"):
+            base.make_tree(book, cb_div)
 
     return book
