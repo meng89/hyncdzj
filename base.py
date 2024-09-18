@@ -24,6 +24,10 @@ def piece_key():
     from uuid import uuid4
     return str(uuid4())
 
+
+
+dont_do_tags = ["dir", "h1", "s", "p"]
+
 # SN/
 # SN/_meta.xml
 # SN/大篇/2 觉知相应/转轮品/SN 46.41
@@ -34,7 +38,8 @@ class Dir(dict):
         super().__init__()
 
         def _make_empty_xml():
-            root = xl.Element("dir")
+            root = xl.Element("root")
+            prolog = xl.Prolog()
             self._xml = xl.Xml(root=root)
             root.ekid("meta")
             root.ekid("entries")
@@ -111,7 +116,7 @@ class Dir(dict):
                 entries.kids.append(Element("dir", kids=[k]))
 
             elif type(v) == Artcle:
-                v.write(os.path.join(path, k))
+                v.write(os.path.join(path, k) + ".xml")
                 entries.kids.append(Element("artcle", kids=[k]))
 
             elif type(v) == Piece:
@@ -124,7 +129,7 @@ class Dir(dict):
         has_meta = bool(self._xml.root.find_kids("meta")[0].kids)
         # 没有 meta 和 piece 的话最简单，_.xml 都不用写
         if has_meta or has_piece:
-            open(os.path.join(path, "_.xml"), "w").write(self._xml.to_str())
+            open(os.path.join(path, "_.xml"), "w").write(self._xml.to_str(do_pretty=True, dont_do_tags=dont_do_tags))
 
 
 class Book(Dir):
@@ -151,6 +156,7 @@ class Book(Dir):
         self.set_meta("name_pali", value)
 
 
+artcle_dont_do_tags = ["p", "s", "note",  "h1"]
 class Artcle:
     def __init__(self, path=None):
         if path:
@@ -191,18 +197,14 @@ class Artcle:
 
 
     def write(self, path):
-        try:
-            open(path, "w").write(self._xml.to_str())
-        except TypeError as e:
-            for x in self._xml.root.kids:
-                print("hehe: ", x.tag)
-            raise e
+        open(path, "w").write(self._xml.to_str(do_pretty=True, dont_do_tags=artcle_dont_do_tags))
 
 
 
 class Piece(Artcle):
     def __init__(self, element:xl.Element=None):
         super().__init__()
+        self._xml.root.tag = "piece"
         if element:
             self._xml = xl.Xml(root=element)
 
@@ -393,10 +395,12 @@ def make_tree(book, e: xl.Element):
             new_note_index = _piece_like.get_next_note_index()
 
             new_elements, new_notes, new_note_index = p5a_to_simple.trans_element(term, new_note_index)
-            _piece_like.body.kids.extend(new_elements)
 
-            if new_notes:
-                input(("new_notes:", new_notes[0][0].to_str()))
+            if len(new_notes) > 0 and isinstance(new_notes[0], list):
+                print(new_notes[0][0].to_str())
+                exit()
+
+            _piece_like.body.kids.extend(new_elements)
 
             _piece_like.notes.kids.extend(new_notes)
 
@@ -449,6 +453,9 @@ def filter_(term: xl.Element or str):
 
         elif isinstance(kid, str) and kid in ("\n", "\n\r"):
             pass
+
+        elif isinstance(kid, str):
+            new_e.kids.append(kid.strip())
 
         elif isinstance(kid, xl.Comment):
             pass

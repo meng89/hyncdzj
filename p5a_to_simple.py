@@ -157,8 +157,13 @@ def lg(e, new_note_index):
 
         for le in e.find_kids("l"):
             sentence = []
+
             for _lkid in le.kids:
                 if isinstance(_lkid, str):
+                    # 〔世尊：〕他醒於五眠
+                    #          他眠於五醒
+                    #          染塵依於五
+                    #          依五而得清
                     m = re.match(r"^〔(.+)：〕(.+)$", _lkid)
                     if m:
                         assert person is None  # 预估每个偈子仅有一位咏颂人
@@ -175,9 +180,9 @@ def lg(e, new_note_index):
                 else:
                     es, notes2, new_note_index = trans_element(_lkid, new_note_index)
                     sentence.extend(es)
-                    notes.append(notes2)
+                    notes.extend(notes2)
 
-                sentences.append(sentence)
+            sentences.append(sentence)
 
         j = xl.Element("j")
         if person:
