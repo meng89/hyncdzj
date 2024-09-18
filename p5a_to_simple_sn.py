@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import os.path
 import re
 import sys
 
@@ -140,6 +141,10 @@ def change_pin_mulu_fun(mulu: str):
 
 def main():
     book = p5a_to_simple.load_from_p5a(xmls)
+    import tempfile
+
+    book.write(os.path.join(tempfile.gettempdir(), "sn"))
+
 
 
 if __name__ == "__main__":

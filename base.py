@@ -10,7 +10,7 @@ import abc
 import datetime
 import re
 import os
-from uuid import uuid4
+
 from typing import List
 
 import epubpacker
@@ -20,6 +20,10 @@ import config
 import p5a_to_simple
 
 
+def piece_key():
+    from uuid import uuid4
+    return str(uuid4())
+
 # SN/
 # SN/_meta.xml
 # SN/大篇/2 觉知相应/转轮品/SN 46.41
@@ -28,40 +32,55 @@ import p5a_to_simple
 class Dir(dict):
     def __init__(self, path=None):
         super().__init__()
-        self._xml = xl.Xml()
 
-        if path is not None:
+        def _make_empty_xml():
+            root = xl.Element("dir")
+            self._xml = xl.Xml(root=root)
+            root.ekid("meta")
+            root.ekid("entries")
+
+        # 空 Dir
+        if path is None:
+            _make_empty_xml()
+        else:
             xml_path = os.path.join(path, "_.xml")
-            if os.path.exists(xml_path):
+            # 载入非空 Dir, 目录中有 _.xml 文件
+            if xml_path:
                 self._xml = xl.parse(open(xml_path).read())
-                root = self._xml.root
-                assert isinstance(root, xl.Element)
-                entries = root.find_kids("entries")
-                for kid in entries.kids:
-                    if kid.tag == "piece":
-                        Piece()
-                    elif kid.tag == "artcle":
-                        key = os.path.splitext(kid.kids[0])[0]
-                        self[key] = Artcle(os.path.join(path, kid.kids[0]))
-                    elif kid.tag == "dir":
-                        self[kid.kids[0]] = Dir(os.path.join(path, kid.kids[0]))
+            # 目录中没有 _.xml
             else:
-                self._xml = xl.Xml()
-                root = xl.Element("dir")
-                root.ekid("meta")
-                root.ekid("entries")
+                _make_empty_xml()
 
-                for entry in os.listdir(path):
-                    entry_path = os.path.join(path, entry)
-                    if os.path.isdir(entry_path):
-                        self[entry] = Dir(entry_path)
-                    elif os.path.isfile(entry_path) and entry.lower().endswith(".xml"):
-                        key = os.path.splitext(entry)[0]
-                        self[key] = Artcle(entry_path)
+        entries = self._xml.root.find_kids("entries")[0]
+        if len(entries.kids) > 0:
+            for kid in entries.kids:
+                if kid.tag == "piece":
+                    while True:
+                        key = piece_key()
+                        if key not in self.keys():
+                            break
+                    self[key] = Piece(kid)
+
+                elif kid.tag == "artcle":
+                    key = os.path.splitext(kid.kids[0])[0]
+                    self[key] = Artcle(os.path.join(path, kid.kids[0]))
+
+                elif kid.tag == "dir":
+                    self[kid.kids[0]] = Dir(os.path.join(path, kid.kids[0]))
+
+        elif path is not None:
+            for entry in os.listdir(path):
+                entry_path = os.path.join(path, entry)
+                if os.path.isdir(entry_path):
+                    self[entry] = Dir(entry_path)
+                elif os.path.isfile(entry_path) and entry.lower().endswith(".xml"):
+                    key = os.path.splitext(entry)[0]
+                    self[key] = Artcle(entry_path)
+
 
     def append_piece(self, piece):
         while True:
-            key = uuid4()
+            key = piece_key()
             if key not in self.keys():
                 break
         self[key] = piece
@@ -84,24 +103,27 @@ class Dir(dict):
     def write(self, path):
         os.makedirs(path, exist_ok=True)
         has_piece = False
-        enties = self._xml.root.find_kids("enties")[0]
+        entries = self._xml.root.find_kids("entries")[0]
 
-        for k, v in self:
+        for k, v in self.items():
             if isinstance(v, Dir):
                 v.write(os.path.join(path, k))
-                enties.kids.append(Element("dir", kids=[k]))
-            elif isinstance(v, Artcle):
+                entries.kids.append(Element("dir", kids=[k]))
+
+            elif type(v) == Artcle:
                 v.write(os.path.join(path, k))
-                enties.kids.append(Element("artcle", kids=[k]))
-            elif isinstance(v, Piece):
-                enties.kids.append(Element("piece", kids=[v]))
+                entries.kids.append(Element("artcle", kids=[k]))
+
+            elif type(v) == Piece:
+                entries.kids.append(v.get_element())
                 has_piece = True
 
         if not has_piece:
-            enties.kids.clear()
+            entries.kids.clear()
 
         has_meta = bool(self._xml.root.find_kids("meta")[0].kids)
-        if has_meta:
+        # 没有 meta 和 piece 的话最简单，_.xml 都不用写
+        if has_meta or has_piece:
             open(os.path.join(path, "_.xml"), "w").write(self._xml.to_str())
 
 
@@ -134,7 +156,7 @@ class Artcle:
         if path:
             self._xml = xl.parse(open(path).read())
         else:
-            self._xml = xl.Xml(root=xl.Element("root"))
+            self._xml = xl.Xml(root=xl.Element("artcle"))
             self._xml.root.kids.append(xl.Element("body"))
             self._xml.root.kids.append(xl.Element("notes"))
             self._xml.root.kids.append(xl.Element("ps"))
@@ -169,7 +191,13 @@ class Artcle:
 
 
     def write(self, path):
-        open(path, "w").write(self._xml.to_str())
+        try:
+            open(path, "w").write(self._xml.to_str())
+        except TypeError as e:
+            for x in self._xml.root.kids:
+                print("hehe: ", x.tag)
+            raise e
+
 
 
 class Piece(Artcle):
@@ -366,6 +394,10 @@ def make_tree(book, e: xl.Element):
 
             new_elements, new_notes, new_note_index = p5a_to_simple.trans_element(term, new_note_index)
             _piece_like.body.kids.extend(new_elements)
+
+            if new_notes:
+                input(("new_notes:", new_notes[0][0].to_str()))
+
             _piece_like.notes.kids.extend(new_notes)
 
     return my_has_new_entry
