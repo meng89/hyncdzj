@@ -1,5 +1,8 @@
 import re
 import os
+import sys
+
+sys.path.append("/mnt/data/projects/xl")
 
 import xl
 
@@ -7,17 +10,21 @@ import base
 import config
 
 
-def trans_elements(elements) -> list:
+def transform_elements(elements) -> list:
     new_elements = []
     for e in elements:
-        new_es = trans_element(e)
-        new_elements.extend(new_es)
-
+        if isinstance(e, xl.Element):
+            new_es = transform_element(e)
+            new_elements.extend(new_es)
+        elif isinstance(e, str):
+            new_elements.append(e)
+        else:
+            raise Exception
     return new_elements
 
 
-def trans_element(element):
-    for fun in (head, string, lg, p, note, app, space, ref, g):
+def transform_element(element):
+    for fun in (body_fun, cbdiv_fun, cbmulu_fun, head_fun, string_fun, lg_fun, p_fun, note_fun, app_fun, space_fun, ref_fun, g_fun):
         result = fun(element)
         if result is not None:
             return result
@@ -28,17 +35,51 @@ def trans_element(element):
     raise Exception
 
 
-# pass
-def head(e):
-    if isinstance(e, xl.Element) and e.tag == "head":
-        es = trans_elements(e.kids)
-        h1 = xl.Element("h1", kids=es)
-        return [h1]
-    else:
+def body_fun(e):
+    if not (isinstance(e, xl.Element) and e.tag == "body"):
         return None
 
+    es = transform_elements(e.kids)
+    body = xl.Element("body", attrs=e.attrs, kids=es)
+    return [body]
 
-def string(e):
+
+def cbdiv_fun(e):
+    if not (isinstance(e, xl.Element) and e.tag == "cb:div"):
+        return None
+
+    es = transform_elements(e.kids)
+    cbdiv = xl.Element("cb:div", attrs=e.attrs, kids=es)
+    return [cbdiv]
+
+
+def cbmulu_fun(e):
+    if not (isinstance(e, xl.Element) and e.tag == "cb:mulu"):
+        return None
+
+    es = transform_elements(e.kids)
+    cbmulu = xl.Element("cb:mulu", attrs=e.attrs, kids=es)
+    return [cbmulu]
+
+
+def head_fun(e):
+    if not (isinstance(e, xl.Element) and e.tag == "head"):
+        return None
+
+    es = transform_elements(e.kids)
+    head = xl.Element("head", attrs=e.attrs, kids=es)
+
+    try:
+        [cbmulu] = head.find_kids("cb:mulu")
+    except ValueError:
+        return [head]
+    else:
+        index = head.kids.index(cbmulu)
+        head.kids.pop(index)
+        return [cbmulu, head]
+
+
+def string_fun(e):
     if isinstance(e, str):
         return [e]
     else:
@@ -59,7 +100,7 @@ def string(e):
 
 # <note n="0062a1201" resp="CBETA" type="add" note_key="N13.0062a12.03">國【CB】，王【南傳】</note>
 
-def note(e):
+def note_fun(e):
     if isinstance(e, xl.Element) and e.tag == "note":
         if len(e.kids) == 0:
             return []
@@ -90,15 +131,15 @@ def note(e):
 #   <rdg wit="【南傳】">眼</rdg>
 # </app>
 # 、懶惰
-def app(e):
+def app_fun(e):
     if isinstance(e, xl.Element) and e.tag == "app":
         lem = e.kids[0]
-        return trans_elements(lem.kids)
+        return transform_elements(lem.kids)
     else:
         return None
 
 
-def space(e):
+def space_fun(e):
     if isinstance(e, xl.Element) and e.tag == "space":
         quantity = int(e.attrs["quantity"])
         return [" " * quantity]
@@ -112,7 +153,7 @@ def space(e):
 # 〔二〕解脫
 ####
 #
-def ref(e):
+def ref_fun(e):
     if isinstance(e, xl.Element) and e.tag == "ref":
         return [e]
     else:
@@ -140,7 +181,7 @@ def ref(e):
 # </lg>
 ####
 # 偈子
-def lg(e):
+def lg_fun(e):
     if isinstance(e, xl.Element) and e.tag == "lg":
         person = None
         sentences = []
@@ -168,7 +209,7 @@ def lg(e):
                     continue
 
                 else:
-                    es = trans_element(_lkid)
+                    es = transform_element(_lkid)
                     sentence.extend(es)
 
             sentences.append(sentence)
@@ -193,11 +234,14 @@ def lg(e):
 ####
 # 不在 Unicode 里的生僻字
 g_map = {
-    "#CB03020": "婬"
+    "#CB03020": "婬",
+    "#CB00416": "箒",
+    "#CB00819": "塔", # potanaṃ 地名音译中之 ta
+    "#CB00597": "糠", # 谷物的外壳，庄春江译为糠
 }
 
 
-def g(e):
+def g_fun(e):
     if isinstance(e, xl.Element) and e.tag == "g":
         s = g_map[e.attrs["ref"]]
         return [s]
@@ -206,10 +250,10 @@ def g(e):
 
 
 # 普通句子
-def p(e):
+def p_fun(e):
     element = xl.Element("p")
     if isinstance(e, xl.Element) and e.tag == "p":
-        kids = trans_elements(e.kids)
+        kids = transform_elements(e.kids)
         element.kids[:] = kids
         return [element]
     else:
@@ -245,7 +289,7 @@ def load_from_p5a(xmls) -> base.Book:
         body = text.find_kids("body")[0]
 
         body = base.filter_(body)
-        for cb_div in body.find_kids("cb:div"):
-            base.make_tree(book, cb_div)
+        [body] = transform_element(body)
+        base.make_tree(book, body)
 
     return book

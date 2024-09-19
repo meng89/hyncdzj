@@ -67,9 +67,9 @@ class Dir(dict):
                             break
                     self[key] = Piece(kid)
 
-                elif kid.tag == "artcle":
+                elif kid.tag == "doc":
                     key = os.path.splitext(kid.kids[0])[0]
-                    self[key] = Artcle(os.path.join(path, kid.kids[0]))
+                    self[key] = Doc(os.path.join(path, kid.kids[0]))
 
                 elif kid.tag == "dir":
                     self[kid.kids[0]] = Dir(os.path.join(path, kid.kids[0]))
@@ -81,7 +81,7 @@ class Dir(dict):
                     self[entry] = Dir(entry_path)
                 elif os.path.isfile(entry_path) and entry.lower().endswith(".xml"):
                     key = os.path.splitext(entry)[0]
-                    self[key] = Artcle(entry_path)
+                    self[key] = Doc(entry_path)
 
 
     def append_piece(self, piece):
@@ -116,9 +116,9 @@ class Dir(dict):
                 v.write(os.path.join(path, k))
                 entries.kids.append(Element("dir", kids=[k]))
 
-            elif type(v) == Artcle:
+            elif type(v) == Doc:
                 v.write(os.path.join(path, k) + ".xml")
-                entries.kids.append(Element("artcle", kids=[k]))
+                entries.kids.append(Element("doc", kids=[k]))
 
             elif type(v) == Piece:
                 entries.kids.append(v.get_element())
@@ -157,13 +157,13 @@ class Book(Dir):
         self.set_meta("name_pali", value)
 
 
-artcle_dont_do_tags = ["p", "s", "note",  "h1"]
-class Artcle:
+doc_dont_do_tags = ["p", "s", "note", "h1"]
+class Doc:
     def __init__(self, path=None):
         if path:
             self._xml = xl.parse(open(path).read())
         else:
-            self._xml = xl.Xml(root=xl.Element("artcle"))
+            self._xml = xl.Xml(root=xl.Element("doc"))
             self._xml.root.kids.append(xl.Element("body"))
             self._xml.root.kids.append(xl.Element("notes"))
             self._xml.root.kids.append(xl.Element("ps"))
@@ -195,11 +195,12 @@ class Artcle:
 
     def write(self, path):
         simple_xml = self._get_simple_xml()
-        open(path, "w").write(simple_xml.to_str(do_pretty=True, dont_do_tags=artcle_dont_do_tags))
+        open(path, "w").write(simple_xml.to_str(do_pretty=True, dont_do_tags=doc_dont_do_tags))
 
 # 原始转Python Object
 def trans_ewn_to_simple(body:xl.Element) -> tuple:
-    new_body, notes, _ = trans_ewn_to_simple2(body, 1)
+    new_body, notes_kids, _ = trans_ewn_to_simple2(body, 1)
+    notes = xl.Element("notes", kids=notes_kids)
 
     return new_body, notes
 
@@ -264,7 +265,7 @@ def trans_simple_to_ewn2(e, notes):
     else:
         return [e]
 
-class Piece(Artcle):
+class Piece(Doc):
     def __init__(self, element:xl.Element=None):
         super().__init__()
         self._xml.root.tag = "piece"
@@ -371,7 +372,7 @@ def get_head(cb_div: xl.Element) -> str: return get_lmh(cb_div)[2]
 def find_parent_dir(book, level):
     return find_parent_dir2(book, 0, level)
 
-def find_parent_dir2(dir_like: Dir | Artcle, dir_like_level: int, level: int):
+def find_parent_dir2(dir_like: Dir | Doc, dir_like_level: int, level: int):
     if isinstance(dir_like, Dir):
         if dir_like_level + 1 == level:
             return dir_like
@@ -387,7 +388,7 @@ def find_parent_dir2(dir_like: Dir | Artcle, dir_like_level: int, level: int):
 
 ########################################################################################################################
 
-def find_last_entry(entry: Book or Artcle or Piece or Dir):
+def find_last_entry(entry: Book or Doc or Piece or Dir):
     keys = list(entry.keys())
     if isinstance(entry, dict) and keys:
         return find_last_entry(entry[keys[-1]])
@@ -399,9 +400,9 @@ def find_last_entry(entry: Book or Artcle or Piece or Dir):
 def set_entry(book, key, entry, level):
     set_entry2(book, 0, key, entry, level)
 
-def set_entry2(dire: dict, dire_level, key, entry: Dir or Artcle or Piece, level):
+def set_entry2(dire: dict, dire_level, key, entry: Dir or Doc or Piece, level):
     if dire_level + 1 == level:
-        if isinstance(dire, Artcle):
+        if isinstance(dire, Doc):
             print(dire.body.to_str())
 
         assert key not in dire.keys()
@@ -420,7 +421,7 @@ def make_tree(book, e: xl.Element):
 
     current_dir = None
     current_piece = None
-    current_artcle = None
+    current_doc = None
 
     for index, term in enumerate(e.kids):
         if isinstance(term, xl.Element) and term.tag == "cb:mulu":
@@ -435,8 +436,8 @@ def make_tree(book, e: xl.Element):
                 current_dir = Dir()
                 _entry = current_dir
             else:
-                current_artcle = Artcle()
-                _entry = current_artcle
+                current_doc = Doc()
+                _entry = current_doc
 
             set_entry(book, mulu_str, _entry, level)
             my_has_new_entry = True
@@ -444,20 +445,20 @@ def make_tree(book, e: xl.Element):
         elif isinstance(term, xl.Element) and term.tag == "cb:div":
             has_new_entry = make_tree(book, term)
             if has_new_entry is True:
-                current_artcle = None
+                current_doc = None
                 current_piece = None
 
         else:
-            if current_piece is None and current_artcle is None:
+            if current_piece is None and current_doc is None:
                 _piece = Piece()
                 current_dir.append_piece(_piece)
                 current_piece = _piece
 
-            _piece_like = current_artcle or current_piece
+            _piece_like = current_doc or current_piece
 
-            new_elements = p5a_to_simple.trans_element(term)
-
-            _piece_like.body.kids.extend(new_elements)
+            # new_elements = p5a_to_simple.trans_element(term)
+            # _piece_like.body.kids.extend(new_elements)
+            _piece_like.body.kids.append(term)
 
     return my_has_new_entry
 
