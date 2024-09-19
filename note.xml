@@ -1,0 +1,24 @@
+<root>
+    <yuanshi>
+        <!--原始note-->
+        测试<note>测试注解</note>
+    </yuanshi>
+
+    <python-obj>
+        <!--内存中的xml，方便程序使用，不方便手工编辑-->
+        测试1<ewn><a/><note>测试1注解</note></ewn>
+        <ewn><a>测试2</a><note>测试2注解</note></ewn>
+    </python-obj>
+
+    <simple-xml>
+        <!--修改过的简单的xml，方便手工编辑，不方便程序直接使用-->
+        <body>
+            测试1<a n="1"/>
+            <a n="2">测试2</a>
+        </body>
+        <notes>
+            <note n="1">测试1注解</note>
+            <note n="2">测试2注解</note>
+        </notes>
+    </simple-xml>
+</root>

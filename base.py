@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import copy
 import sys
 
 from check import last_type
@@ -179,27 +180,89 @@ class Artcle:
     def ps(self) -> xl.Element:
         return self._xml.root.find_kids("ps")[0]
 
-    def append_note_from_text(self, string: str) -> int:
-        index = len(self.notes.kids) + 1
-        note = xl.Element("note", attrs={"n": str(index)})
-        note.kids.append(string)
-        self.notes.kids.append(note)
-        return index
-
-    def get_note_text_by_index(self, index: int) -> str:
-        for note in self.notes.kids:
-            note: xl.Element
-            if int(note.attrs["n"]) == index:
-                return note.kids[0]
-
-    def get_next_note_index(self) -> int:
-        return len(self.notes.kids) + 1
+    def _get_simple_xml(self):
+        new_xml = copy.copy(self._xml)
+        root = new_xml.root
+        body = root.find_kids("body")[0]
+        new_body, notes = trans_ewn_to_simple(body)
+        body.kids[:] = new_body.kids
+        index = root.kids.index(body)
+        root.kids.pop(index)
+        root.kids.insert(index, new_body)
+        root.kids.append(notes)
+        return new_xml
 
 
     def write(self, path):
-        open(path, "w").write(self._xml.to_str(do_pretty=True, dont_do_tags=artcle_dont_do_tags))
+        simple_xml = self._get_simple_xml()
+        open(path, "w").write(simple_xml.to_str(do_pretty=True, dont_do_tags=artcle_dont_do_tags))
+
+# 原始转Python Object
+def trans_ewn_to_simple(body:xl.Element) -> tuple:
+    new_body, notes, _ = trans_ewn_to_simple2(body, 1)
+
+    return new_body, notes
+
+def trans_ewn_to_simple2(e:xl.Element, note_index:int) -> tuple:
+    if isinstance(e, xl.Element) and e.tag == "ewn":
+        a = xl.Element("a")
+        a.attrs["n"] = str(note_index)
+        a.kids.extend(e.kids[0].kids)
+
+        note = xl.Element("note")
+        note.attrs["n"] = str(note_index)
+        note.kids.extend(e.kids[1].kids)
+
+        note_index += 1
+        return a, [note], note_index
+
+    elif isinstance(e, xl.Element):
+        notes = []
+        new_e = xl.Element(e.tag, e.attrs)
+        for kid in e.kids:
+            new_kid, new_notes, note_index = trans_ewn_to_simple2(kid, note_index)
+            new_e.kids.append(new_kid)
+            notes.extend(new_notes)
+
+        return new_e, notes, note_index
+
+    else:
+        return e, [], note_index
 
 
+def hit_note(notes, num):
+    for note in notes:
+        if note.attrs["n"] == num:
+            new_note = xl.Element("note")
+            new_note.kids.extend(note.kids)
+            return new_note
+    raise Exception
+
+def trans_simple_to_ewn(body, notes):
+    [new_body] = trans_simple_to_ewn2(body, notes)
+    return new_body
+
+def trans_simple_to_ewn2(e, notes):
+    if isinstance(e, xl.Element) and e.tag == "a" and "n" in e.attrs.keys():
+        num = e.attrs["n"]
+
+        ewn = xl.Element("ewn")
+        a = ewn.ekid("a")
+        a.attrs["n"] = num
+
+        note = hit_note(notes, num)
+        ewn.kids.append(note)
+
+        return [ewn]
+
+    elif isinstance(e, xl.Element):
+        new_e = xl.Element(e.tag, e.attrs)
+        for kid in e.kids:
+            new_kids = trans_simple_to_ewn2(kid, notes)
+            new_e.kids.extend(new_kids)
+        return [new_e]
+    else:
+        return [e]
 
 class Piece(Artcle):
     def __init__(self, element:xl.Element=None):
@@ -392,17 +455,9 @@ def make_tree(book, e: xl.Element):
 
             _piece_like = current_artcle or current_piece
 
-            new_note_index = _piece_like.get_next_note_index()
-
-            new_elements, new_notes, new_note_index = p5a_to_simple.trans_element(term, new_note_index)
-
-            if len(new_notes) > 0 and isinstance(new_notes[0], list):
-                print(new_notes[0][0].to_str())
-                exit()
+            new_elements = p5a_to_simple.trans_element(term)
 
             _piece_like.body.kids.extend(new_elements)
-
-            _piece_like.notes.kids.extend(new_notes)
 
     return my_has_new_entry
 
