@@ -417,11 +417,13 @@ def set_entry2(dire: dict, dire_level, key, entry: Dir or Doc or Piece, level):
 
 def make_tree(book, e: xl.Element):
     my_has_new_entry = False
-    current_entry = None
 
     current_dir = None
     current_piece = None
     current_doc = None
+
+    if e.tag == "body":
+        current_dir = book
 
     for index, term in enumerate(e.kids):
         if isinstance(term, xl.Element) and term.tag == "cb:mulu":
@@ -456,8 +458,6 @@ def make_tree(book, e: xl.Element):
 
             _piece_like = current_doc or current_piece
 
-            # new_elements = p5a_to_simple.trans_element(term)
-            # _piece_like.body.kids.extend(new_elements)
             _piece_like.body.kids.append(term)
 
     return my_has_new_entry
