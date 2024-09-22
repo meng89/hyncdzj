@@ -1,6 +1,9 @@
 import re
 import os
 import sys
+from copy import deepcopy
+
+from base import find_parent_dir, has_sub_mulu
 
 sys.path.append("/mnt/data/projects/xl")
 
@@ -24,7 +27,8 @@ def transform_elements(elements) -> list:
 
 
 def transform_element(element):
-    for fun in (body_fun, cbdiv_fun, cbmulu_fun, head_fun, string_fun, lg_fun, p_fun, note_fun, app_fun, space_fun, ref_fun, g_fun):
+    for fun in (body_fun, cbdiv_fun, cbmulu_fun, head_fun, string_fun, lg_fun, p_fun, note_fun, app_fun, space_fun, ref_fun, g_fun,
+                label_fun, list_fun, item_fun):
         result = fun(element)
         if result is not None:
             return result
@@ -33,6 +37,41 @@ def transform_element(element):
 
     print("cannot handle this element:", element.to_str())
     raise Exception
+
+
+def list_fun(e):
+    if not (isinstance(e, xl.Element) and e.tag == "list"):
+            # and "rend" in e.attrs.keys() and e.attr["rand"] == "mo-marker"):
+        return None
+
+    new_list = xl.Element("list")
+    new_list.kids.extend(transform_elements(e.kids))
+
+    return [new_list]
+
+def item_fun(e):
+    if not (isinstance(e, xl.Element) and e.tag == "item"):
+        return None
+
+    new_item = xl.Element("item")
+    for x in transform_elements(e.kids):
+        if isinstance(x, xl.Element) and x.tag == "p":
+            new_item.kids.extend(x.kids)
+        else:
+            new_item.kids.append(x)
+
+    return [new_item]
+
+
+# 意义不明
+#<label type="translation-mark">a</label>
+#「行」者，以〔男〕相對〔女〕相，以生支〔入其〕生支，即使入一胡麻
+
+def label_fun(e):
+    if not (isinstance(e, xl.Element) and e.tag == "label"):
+        return None
+
+    return []
 
 
 def body_fun(e):
@@ -238,6 +277,8 @@ g_map = {
     "#CB00416": "箒",
     "#CB00819": "塔", # potanaṃ 地名音译中之 ta
     "#CB00597": "糠", # 谷物的外壳，庄春江译为糠
+    "#CB00595": "麨",
+    "#CB00144": "㝹",
 }
 
 
@@ -274,8 +315,171 @@ def get_body(filename) -> xl.Element:
     return body
 
 
-def load_from_p5a(xmls) -> base.Book:
-    book = base.Book()
+def get_head_string(e):
+    s = ""
+    for x in e.kids:
+        if isinstance(x, str):
+            s += x
+        else:
+            pass
+    return s
+
+########################################################################################################################
+# 1
+# 删除没有mulu和head的div；添加缺失的mulu或head，使mulu和head成为一对
+def unfold_meanless_div(body:xl.Element):
+    new_kids = []
+    passed_mulu = False
+    mulu = None
+    mulu_index = None
+
+    passed_head = False
+    head = None
+    head_index = None
+
+    for index, term in enumerate(body.kids):
+        if isinstance(term, xl.Element) and term.tag == "cb:div":
+            es = unfold_meanless_div(term)
+            new_kids.extend(es)
+        elif isinstance(term, xl.Element) and term.tag == "cb:mulu":
+            new_kids.append(term)
+            mulu = term
+            passed_mulu = True
+            mulu_index = index
+        elif isinstance(term, xl.Element) and term.tag == "head":
+            new_kids.append(term)
+            head = term
+            passed_head = True
+            head_index = index
+
+        else:
+            new_kids.append(term)
+
+    if passed_head and not passed_mulu:
+        assert head_index == 0
+        mulu = xl.Element("cb:mulu")
+        mulu.skid(get_head_string(head))
+        new_kids.insert(0, mulu)
+
+    elif passed_mulu and not passed_head:
+        assert mulu_index == 0
+        head = xl.Element("head")
+        head.kids.extend(mulu.kids)
+        new_kids.insert(1, head)
+
+    # unflod
+    elif passed_mulu is None and passed_head is None:
+        return new_kids
+
+    else:
+        div = xl.Element("cb:div")
+        div.kids.extend(new_kids)
+        return [div]
+
+########################################################################################################################
+# 2
+# 使每个mulu都有div包裹它
+def add_missed_cbdiv(div):
+    new_es = []
+    i = 0
+    while i < len(div.kids):
+        if isinstance(div.kids[i], xl.Element) and div.kids[i].tag == "cb:div":
+            new_es.append(add_missed_cbdiv(div.kids[i]))
+            i += 1
+            continue
+
+        if isinstance(div.kids[i], xl.Element) and div.kids[i].tag == "cb:mulu":
+            new_kid_div = xl.Element("cb:div")
+            new_mulu = new_kid_div.ekid("cb:mulu")
+            new_mulu.attrs.update(div.kids[i].attrs)
+            i += 1
+            sub_terms, i = read_till_next_mulu_or_div(div.kids, i)
+            new_kid_div.kids.extend(sub_terms)
+            new_es.append(new_kid_div)
+        else:
+            new_es.append(div.kids[i])
+            i += 1
+
+    return new_es
+
+def read_till_next_mulu_or_div(kids, i):
+    terms = []
+    while i < len(kids):
+        kid = kids[0]
+        i += 1
+        if isinstance(kid, xl.Element) and kid.tag.lower() in ("cb:div", "cb:mulu"):
+            break
+        else:
+            terms.append(kid)
+
+    return terms, i
+
+########################################################################################################################
+# 3
+# 让 cbdiv 按照 mulu level 值回到正确的地方
+def move_place_by_level(body):
+    new_body = xl.Element("body")
+
+    for term in body.kids:
+        if isinstance(term, xl.Element) and term.tag == "cb:div":
+            move_place_by_level2(new_body, term.kids)
+        else:
+            new_body.kids.append(term)
+
+    return new_body
+
+def move_place_by_level2(new_book, div):
+    mulu_level = int(div.kids[0].attrs["level"])
+    parent_div = find_parent_dir(new_book, mulu_level)
+    new_div = xl.Element("cb:div")
+    parent_div.kids.append(new_div)
+
+    for term in div.kids:
+        if isinstance(term, xl.Element) and term.tag == "cb:div":
+            move_place_by_level2(new_book, term)
+        else:
+            new_div.kids.append(deepcopy(term))
+
+
+########################################################################################################################
+# 4
+# 让游离元素有 div 和目录包裹
+#
+def pack_piece_in_div(div): # book = div
+    if has_sub_dir_simple(div) is False:
+        return div
+
+    new_kids = [div.kids[0], div.kids[1]]
+
+    i = 2 # 越过 mulu 和 head
+    while i < len(div.kids):
+        if isinstance(div.kids[i], xl.Element) and div.kids[i].tag == "cb:div":
+            new_kids.append(pack_piece_in_div(div.kids[i]))
+            i += 1
+        else:
+            pieces, i = read_till_next_mulu_or_div(div.kids, i)
+            sub_div = xl.Element("cb:div")
+            sub_div.ekid("cb:mulu")
+            sub_div.ekid("head")
+            sub_div.kids.extend(pieces)
+            new_kids.append(sub_div)
+            i += 1
+    div.kids = new_kids
+    return div
+
+
+def has_sub_dir_simple(div):
+    for x in div.kids:
+        if isinstance(x, xl.Element) and x.tag == "cb:div":
+            return True
+    return False
+
+########################################################################################################################
+
+
+
+def load_from_p5a(xmls) -> base.Dir:
+    book = base.Dir()
     for xml in xmls:
         filename = os.path.join(config.xmlp5a_dir, xml)
         print("xml:", xml.removeprefix(config.xmlp5a_dir))
@@ -290,6 +494,7 @@ def load_from_p5a(xmls) -> base.Book:
 
         body = base.filter_(body)
         [body] = transform_element(body)
+        body = fix(body)
         base.make_tree(book, body)
 
     return book

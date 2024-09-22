@@ -1,16 +1,35 @@
 #!/usr/bin/env python3
-import reportlab.platypus.doctemplate
-from reportlab.pdfgen import canvas
-from reportlab.lib.pagesizes import A5, A6, A8
 
-from reportlab.pdfbase.cidfonts import UnicodeCIDFont
+import re
 
-class MyDoc(reportlab.platypus.doctemplate.BaseDocTemplate):
-    pass
+
+def match(name):
+    return re.match(r"^(\d+.?\d*) *(\S*)$", name)
+
+
+def filter_fun(name):
+    if match(name):
+        return True
+
+
+def split_float(name):
+    m = match(name)
+    if m:
+        return float(m.group(1))
+    else:
+        return -9
 
 
 def main():
-    print(reportlab.platypus.doctemplate.BaseDocTemplate)
+    import os
+
+    a = os.listdir("/mnt/data/tmp/新建文件夹/")
+    a.sort()
+
+    a = list(filter(filter_fun, a))
+
+    a.sort(key=split_float)
+    print(a)
 
 
 

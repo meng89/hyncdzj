@@ -34,127 +34,106 @@ dont_do_tags = ["dir", "h1", "s", "p"]
 # SN/大篇/2 觉知相应/转轮品/SN 46.41
 # SN/大篇/2 觉知相应/觉知总摄品/SN 46.51 食.xml
 
-class Dir(dict):
+
+class Metadata:
+    def __init__(self, term=None):
+        if isinstance(term, str):
+            xml = xl.parse(term)
+            self._meta = xml.root
+        elif isinstance(term, xl.Element):
+            self._meta = term
+        else:
+            self._meta = xl.Element("meta")
+
+    def __bool__(self):
+        return bool(self._meta.kids)
+
+    def get_element(self):
+        return self._meta
+
+    def to_str(self, *args, **kwargs):
+        return self._meta.to_str(*args, **kwargs)
+
+
+def match(name):
+    return re.match(r"^(\d+.?\d*) *(\S*)$", name)
+
+
+def filter_fun(name):
+    if match(name):
+        return True
+
+def split_name(name):
+    return match(name).group(2)
+
+def split_xml_name(name):
+    return match(name).group(2).removesuffix(".xml")
+
+def split_float(name):
+    return float(match(name).group(1))
+
+
+class Dir:
     def __init__(self, path=None):
         super().__init__()
 
-        def _make_empty_xml():
-            root = xl.Element("root")
-            prolog = xl.Prolog()
-            self._xml = xl.Xml(root=root)
-            root.ekid("meta")
-            root.ekid("entries")
-
         # 空 Dir
         if path is None:
-            _make_empty_xml()
+            self._metadata = Metadata()
+            self.list = []
         else:
             xml_path = os.path.join(path, "_.xml")
             # 载入非空 Dir, 目录中有 _.xml 文件
             if xml_path:
-                self._xml = xl.parse(open(xml_path).read())
+                self._metadata = Metadata(open(xml_path).read())
             # 目录中没有 _.xml
             else:
-                _make_empty_xml()
+                self._metadata = Metadata()
 
-        entries = self._xml.root.find_kids("entries")[0]
-        if len(entries.kids) > 0:
-            for kid in entries.kids:
-                if kid.tag == "piece":
-                    while True:
-                        key = piece_key()
-                        if key not in self.keys():
-                            break
-                    self[key] = Piece(kid)
+            self.list = []
 
-                elif kid.tag == "doc":
-                    key = os.path.splitext(kid.kids[0])[0]
-                    self[key] = Doc(os.path.join(path, kid.kids[0]))
+            entries = list(filter(filter_fun, os.listdir(path)))
+            entries.sort(key=split_float)
 
-                elif kid.tag == "dir":
-                    self[kid.kids[0]] = Dir(os.path.join(path, kid.kids[0]))
-
-        elif path is not None:
-            for entry in os.listdir(path):
+            for entry in entries:
                 entry_path = os.path.join(path, entry)
                 if os.path.isdir(entry_path):
-                    self[entry] = Dir(entry_path)
+                    key = split_name(entry)
+                    value = Dir(entry_path)
                 elif os.path.isfile(entry_path) and entry.lower().endswith(".xml"):
-                    key = os.path.splitext(entry)[0]
-                    self[key] = Doc(entry_path)
+                    key = os.path.splitext(split_name(entry))[0]
+                    value = Doc(entry_path)
+                else:
+                    continue
+
+                self.list.append((key, value))
 
 
-    def append_piece(self, piece):
-        while True:
-            key = piece_key()
-            if key not in self.keys():
-                break
-        self[key] = piece
+    def append_piece_term(self, term):
+        no_name_doc = None
+        for k, v in self.list:
+            if k == "" and isinstance(v, Doc):
+                no_name_doc = v
 
-    def get_meta(self, key):
-        meta = self._xml.root.find_kids("meta")[0]
-        try:
-            return meta.find_kids(key)[0].kids[0]
-        except IndexError:
-            return None
+        if not no_name_doc:
+            no_name_doc = Doc()
 
-    def set_meta(self, key, value):
-        meta = self._xml.root.find_kids("meta")[0]
-        try:
-            key_e = meta.find_kids(key)[0]
-        except IndexError:
-            key_e = meta.ekid(key)
-        key_e.kids[:] = value
+        no_name_doc.append_term(term)
+        self.list.append(("", no_name_doc))
+
 
     def write(self, path):
         os.makedirs(path, exist_ok=True)
-        has_piece = False
-        entries = self._xml.root.find_kids("entries")[0]
+        if self._metadata:
+            filepath = os.path.join(path, "_.xml")
+            open(filepath, "w").write(self._metadata.to_str())
 
-        for k, v in self.items():
+        for index, (k, v) in enumerate(self.list):
             if isinstance(v, Dir):
-                v.write(os.path.join(path, k))
-                entries.kids.append(Element("dir", kids=[k]))
+                v.write(os.path.join(path, "{} {}".format(index + 1, k)))
 
-            elif type(v) == Doc:
-                v.write(os.path.join(path, k) + ".xml")
-                entries.kids.append(Element("doc", kids=[k]))
-
-            elif type(v) == Piece:
-                entries.kids.append(v.get_element())
-                has_piece = True
-
-        if not has_piece:
-            entries.kids.clear()
-
-        has_meta = bool(self._xml.root.find_kids("meta")[0].kids)
-        # 没有 meta 和 piece 的话最简单，_.xml 都不用写
-        if has_meta or has_piece:
-            open(os.path.join(path, "_.xml"), "w").write(self._xml.to_str(do_pretty=True, dont_do_tags=dont_do_tags))
-
-
-class Book(Dir):
-
-    @property
-    def abbr(self):
-        return self.get_meta("abbr")
-    @abbr.setter
-    def abbr(self, value):
-        self.set_meta("abbr", value)
-
-    @property
-    def name_hant(self):
-        return self.get_meta("name_hant")
-    @name_hant.setter
-    def name_hant(self, value):
-        self.set_meta("name_hant", value)
-
-    @property
-    def name_pali(self):
-        return self.get_meta("name_pali")
-    @name_pali.setter
-    def name_pali(self, value):
-        self.set_meta("name_pali", value)
+            elif isinstance(v, Doc):
+                v.write(os.path.join(path, "{} {}.xml".format(index + 1, k)))
 
 
 doc_dont_do_tags = ["p", "s", "note", "h1"]
@@ -162,11 +141,15 @@ class Doc:
     def __init__(self, path=None):
         if path:
             self._xml = xl.parse(open(path).read())
+            meta_e = self._xml.root.find_kids("meta")[0]
         else:
             self._xml = xl.Xml(root=xl.Element("doc"))
+            meta_e = self._xml.root.ekid("meta")
             self._xml.root.kids.append(xl.Element("body"))
             self._xml.root.kids.append(xl.Element("notes"))
             self._xml.root.kids.append(xl.Element("ps"))
+
+        self._meta = Metadata(meta_e)
 
     @property
     def body(self) -> xl.Element:
@@ -179,6 +162,10 @@ class Doc:
     @property
     def ps(self) -> xl.Element:
         return self._xml.root.find_kids("ps")[0]
+
+
+    def append_term(self, term):
+        self.body.kids.append(term)
 
     def _get_simple_xml(self):
         new_xml = copy.copy(self._xml)
@@ -369,26 +356,25 @@ def get_head(cb_div: xl.Element) -> str: return get_lmh(cb_div)[2]
 
 ########################################################################################################################
 
-def find_parent_dir(book, level):
-    return find_parent_dir2(book, 0, level)
 
-def find_parent_dir2(dir_like: Dir | Doc, dir_like_level: int, level: int):
-    if isinstance(dir_like, Dir):
-        if dir_like_level + 1 == level:
-            return dir_like
-        else:
-            keys = list(dir_like.keys())
-            if len(keys) > 0:
-                last_item = dir_like[keys[-1]]
-                return find_parent_dir2(last_item, dir_like_level + 1, level)
-            else:
-                raise Exception
-    else:
+def find_parent_dir(dir_, level):
+    return find_parent_dir2(dir_, 0, level)
+
+def find_parent_dir2(dir_: Dir, dir_level, level):
+    if dir_level + 1 == level:
+        return dir_
+    last_dir = None
+    for (k, v) in dir_.list:
+        if isinstance(v, Dir):
+            last_dir = v
+    if last_dir is None:
         raise Exception
+    find_parent_dir2(last_dir, dir_level + 1, level)
+
 
 ########################################################################################################################
 
-def find_last_entry(entry: Book or Doc or Piece or Dir):
+def find_last_entry(entry: Dir or Doc):
     keys = list(entry.keys())
     if isinstance(entry, dict) and keys:
         return find_last_entry(entry[keys[-1]])
@@ -400,12 +386,13 @@ def find_last_entry(entry: Book or Doc or Piece or Dir):
 def set_entry(book, key, entry, level):
     set_entry2(book, 0, key, entry, level)
 
-def set_entry2(dire: dict, dire_level, key, entry: Dir or Doc or Piece, level):
+def set_entry2(dire: Dir, dire_level, key, entry: Dir or Doc, level):
     if dire_level + 1 == level:
         if isinstance(dire, Doc):
             print(dire.body.to_str())
 
-        assert key not in dire.keys()
+        if key in dire.keys():
+            print("same key: ", repr(key))
 
         dire[key] = entry
 
@@ -415,7 +402,120 @@ def set_entry2(dire: dict, dire_level, key, entry: Dir or Doc or Piece, level):
 
 ########################################################################################################################
 
+def make_tree(book, div):
+    terms_list = []
+    terms = []
+
+    my_type = None
+
+    level = None
+    mulu_str = None
+
+    head = None
+
+    passed_mulu = False
+
+    for index, term in enumerate(div.kids):
+        if isinstance(term, xl.Element) and term.tag == "cb:mulu":
+            assert len(term.kids) == 1
+            level = int(term.attrs["level"])
+            mulu_str = term.kids[0]
+
+            if has_sub_mulu(term, index + 1, level) is True:
+                current = Dir()
+            else:
+                current = Doc()
+
+            parent_dir = find_parent_dir(book, level)
+            parent_dir.list.append( (mulu_str, current) )
+            passed_mulu = True
+
+        elif isinstance(term, xl.Element) and term.tag == "head":
+            if passed_mulu is False:
+                parent_dir = find_last_dir(book)
+
+            if has_sub_mulu(term, index + 1, level) is True:
+                current = Dir()
+            else:
+                current = Doc()
+
+            parent_dir = 
+
+
+        elif isinstance(term, xl.Element) and term.tag == "cb:div":
+            make_tree(book, term)
+
+        else:
+            x = mulu_str or head
+            if mulu_str is None:
+                if head is None:
+                    my_type = "dir"
+
+
+
+
 def make_tree(book, e: xl.Element):
+    my_has_new_entry = False
+
+    current_dir = None
+    current_doc = None
+
+    parent_dir = None
+
+
+
+    level = None
+    mulu_str = None
+    parent_dir = find_parent_dir(book, level)
+
+
+
+    if e.tag == "body":
+        current_dir = book
+
+    for index, term in enumerate(e.kids):
+        if isinstance(term, xl.Element) and term.tag == "cb:mulu":
+            assert len(term.kids) == 1
+            level = int(term.attrs["level"])
+            mulu_str = term.kids[0]
+            parent_dir = find_parent_dir(book, level)
+
+            if has_sub_mulu(e, index + 1, level) is True:
+                current_dir = Dir()
+                _entry = current_dir
+            else:
+                current_doc = Doc()
+                _entry = current_doc
+
+            parent_dir.list.append((mulu_str, _entry))
+            # set_entry(book, mulu_str, _entry, level)
+            my_has_new_entry = True
+
+        elif isinstance(term, xl.Element) and term.tag == "cb:div":
+            has_new_entry = make_tree(book, term)
+
+            if has_new_entry is True:
+                current_doc = None
+
+        else:
+            if current_doc is None:
+                _piece = Piece()
+                try:
+                    current_dir.append_piece(_piece)
+                except AttributeError:
+                    print(term.to_str())
+                    print(e.to_str())
+                    exit()
+                current_piece = _piece
+
+            _piece_like = current_doc
+
+            _piece_like.body.kids.append(term)
+
+    return my_has_new_entry
+
+
+def make_tree_(book, e: xl.Element):
     my_has_new_entry = False
 
     current_dir = None
@@ -453,7 +553,12 @@ def make_tree(book, e: xl.Element):
         else:
             if current_piece is None and current_doc is None:
                 _piece = Piece()
-                current_dir.append_piece(_piece)
+                try:
+                    current_dir.append_piece(_piece)
+                except AttributeError:
+                    print(term.to_str())
+                    print(e.to_str())
+                    exit()
                 current_piece = _piece
 
             _piece_like = current_doc or current_piece
