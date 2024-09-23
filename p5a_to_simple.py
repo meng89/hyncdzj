@@ -324,8 +324,9 @@ def get_head_string(e):
             pass
     return s
 
+
 ########################################################################################################################
-# 1
+#
 # 删除没有mulu和head的div；添加缺失的mulu或head，使mulu和head成为一对
 def unfold_meanless_div(body:xl.Element):
     new_kids = []
@@ -377,7 +378,7 @@ def unfold_meanless_div(body:xl.Element):
         return [div]
 
 ########################################################################################################################
-# 2
+#
 # 使每个mulu都有div包裹它
 def add_missed_cbdiv(div):
     new_es = []
@@ -415,9 +416,13 @@ def read_till_next_mulu_or_div(kids, i):
     return terms, i
 
 ########################################################################################################################
-# 3
+#
 # 让 cbdiv 按照 mulu level 值回到正确的地方
-def move_place_by_level(body):
+def move_place_by_level(div:xl.Element, divs:dict):
+    mulu = div.kids[0]
+    level = mulu.attrs["level"]
+    divs[level] = div
+
     new_body = xl.Element("body")
 
     for term in body.kids:
@@ -442,7 +447,7 @@ def move_place_by_level2(new_book, div):
 
 
 ########################################################################################################################
-# 4
+#
 # 让游离元素有 div 和目录包裹
 #
 def pack_piece_in_div(div): # book = div
@@ -477,24 +482,27 @@ def has_sub_dir_simple(div):
 ########################################################################################################################
 
 
+def load_from_p5a(xmls, name) -> base.Dir:
+    book = xl.Element("cb:div")
+    mulu = book.ekid("cb:mulu")
+    mulu.attrs["level"] = "0"
+    mulu.kids.append(name)
+    head = book.ekid("head")
+    head.kids.append(name)
 
-def load_from_p5a(xmls) -> base.Dir:
-    book = base.Dir()
     for xml in xmls:
         filename = os.path.join(config.xmlp5a_dir, xml)
         print("xml:", xml.removeprefix(config.xmlp5a_dir))
         file = open(filename, "r")
-
         xmlstr = file.read()
         file.close()
         xml = xl.parse(xmlstr)
         tei = xml.root
         text = tei.find_kids("text")[0]
         body = text.find_kids("body")[0]
+        book.kids.extend(body.kids)
 
-        body = base.filter_(body)
-        [body] = transform_element(body)
-        body = fix(body)
-        base.make_tree(book, body)
 
-    return book
+
+
+    return
