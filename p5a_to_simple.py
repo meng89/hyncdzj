@@ -328,7 +328,33 @@ def get_head_string(e):
 ########################################################################################################################
 #
 # 删除没有mulu和head的div；添加缺失的mulu或head，使mulu和head成为一对
-def unfold_meanless_div(body:xl.Element):
+
+def unfold_meanless_div(div):
+    new_kids = []
+
+    first_div_index = None
+    first_mulu_index = None
+
+    for index, term in enumerate(div.kids):
+        if isinstance(term, xl.Element) and term.tag == "cb:div":
+            es = unfold_meanless_div(term)
+            new_kids.extend(es)
+            if first_div_index is None:
+                first_div_index = index
+
+        elif isinstance(term, xl.Element) and term.tag == "cb:mulu":
+            new_kids.append(term)
+            if first_div_index is None:
+                first_div_index = index
+
+        else:
+            new_kids.append(term)
+
+
+    if first_mulu_index is not None:
+
+
+def unfold_meanless_div(div:xl.Element, div_level=-1):
     new_kids = []
     passed_mulu = False
     mulu = None
@@ -338,9 +364,11 @@ def unfold_meanless_div(body:xl.Element):
     head = None
     head_index = None
 
-    for index, term in enumerate(body.kids):
+    my_level = None
+
+    for index, term in enumerate(div.kids):
         if isinstance(term, xl.Element) and term.tag == "cb:div":
-            es = unfold_meanless_div(term)
+            es = unfold_meanless_div(term, )
             new_kids.extend(es)
         elif isinstance(term, xl.Element) and term.tag == "cb:mulu":
             new_kids.append(term)
@@ -418,39 +446,34 @@ def read_till_next_mulu_or_div(kids, i):
 ########################################################################################################################
 #
 # 让 cbdiv 按照 mulu level 值回到正确的地方
-def move_place_by_level(div:xl.Element, divs:dict):
+
+def move_place_by_level(book_div):
+    move_place_by_level2(book_div, {})
+
+def move_place_by_level2(div:xl.Element, divs:dict):
     mulu = div.kids[0]
     level = mulu.attrs["level"]
+    parent_level = str(int(level) - 1)
+
+    if parent_level != -1:
+        parent = divs[parent_level]
+        parent.kids.append(div)
+
     divs[level] = div
+    kid_divs = div.kids[2:]
+    div.kids[2:] = []
 
-    new_body = xl.Element("body")
-
-    for term in body.kids:
-        if isinstance(term, xl.Element) and term.tag == "cb:div":
-            move_place_by_level2(new_body, term.kids)
-        else:
-            new_body.kids.append(term)
-
-    return new_body
-
-def move_place_by_level2(new_book, div):
-    mulu_level = int(div.kids[0].attrs["level"])
-    parent_div = find_parent_dir(new_book, mulu_level)
-    new_div = xl.Element("cb:div")
-    parent_div.kids.append(new_div)
-
-    for term in div.kids:
-        if isinstance(term, xl.Element) and term.tag == "cb:div":
-            move_place_by_level2(new_book, term)
-        else:
-            new_div.kids.append(deepcopy(term))
-
+    for term in kid_divs:
+        move_place_by_level2(term, divs)
 
 ########################################################################################################################
 #
-# 让游离元素有 div 和目录包裹
+# 让游离元素有 div、空mulu 和 空head
 #
 def pack_piece_in_div(div): # book = div
+    mulu = div.kids[0]
+    level = mulu.attrs["level"]
+
     if has_sub_dir_simple(div) is False:
         return div
 
@@ -464,7 +487,9 @@ def pack_piece_in_div(div): # book = div
         else:
             pieces, i = read_till_next_mulu_or_div(div.kids, i)
             sub_div = xl.Element("cb:div")
-            sub_div.ekid("cb:mulu")
+            mulu = sub_div.ekid("cb:mulu")
+            mulu.attrs["level"] = str(int(level) + 1)
+
             sub_div.ekid("head")
             sub_div.kids.extend(pieces)
             new_kids.append(sub_div)
