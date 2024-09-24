@@ -3,7 +3,7 @@ import os
 import sys
 from copy import deepcopy
 
-from base import find_parent_dir, has_sub_mulu
+from base import find_parent_dir, has_sub_mulu, make_tree
 
 sys.path.append("/mnt/data/projects/xl")
 
@@ -407,7 +407,7 @@ def unfold_meanless_div(div:xl.Element, div_level=-1):
 
 ########################################################################################################################
 #
-# 使每个mulu都有div包裹它
+# 添加缺失的div，使每个mulu都有div包裹它
 def add_missed_cbdiv(div):
     new_es = []
     i = 0
@@ -506,13 +506,16 @@ def has_sub_dir_simple(div):
 
 ########################################################################################################################
 
+# 1. 增加缺失的head，复制于mulu
+# 2. head里提取mulu
+# 3.
 
 def load_from_p5a(xmls, name) -> base.Dir:
-    book = xl.Element("cb:div")
-    mulu = book.ekid("cb:mulu")
+    book_div = xl.Element("cb:div")
+    mulu = book_div.ekid("cb:mulu")
     mulu.attrs["level"] = "0"
     mulu.kids.append(name)
-    head = book.ekid("head")
+    head = book_div.ekid("head")
     head.kids.append(name)
 
     for xml in xmls:
@@ -525,9 +528,9 @@ def load_from_p5a(xmls, name) -> base.Dir:
         tei = xml.root
         text = tei.find_kids("text")[0]
         body = text.find_kids("body")[0]
-        book.kids.extend(body.kids)
+        book_div.kids.extend(body.kids)
 
 
+    book = make_book(book_div)
 
-
-    return
+    return book
