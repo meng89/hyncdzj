@@ -506,8 +506,67 @@ def has_sub_dir_simple(div):
 
 ########################################################################################################################
 
-# 1. 增加缺失的head，复制于mulu
-# 2. head里提取mulu
+
+def is_head(x):
+    if isinstance(x, xl.Element) and x.tag == "head":
+        return True
+    else:
+        return False
+
+def is_mulu(x):
+    if isinstance(x, xl.Element) and x.tag == "cb:mulu":
+        return True
+    else:
+        return False
+
+def is_div(x):
+    if isinstance(x, xl.Element) and x.tag == "cb:div":
+        return True
+    else:
+        return False
+
+
+
+# 1. head里提取mulu
+def extract_mulu_from_head(div:xl.Element):
+    new_kids = []
+    for kid in div.kids:
+
+        if is_head(kid):
+            head_kids = []
+            for head_kid in kid.kids:
+                if is_mulu(head_kid):
+                    new_kids.append(head_kid)
+                else:
+                    head_kids.append(head_kid)
+            kid.kids = head_kids
+
+            new_kids.append(kid)
+
+        elif is_div(kid):
+            new_kids.append(extract_mulu_from_head(kid))
+
+        else:
+            new_kids.append(kid)
+    div.kids = new_kids
+
+    return div
+
+# 2. 增加缺失的head，复制于mulu
+def create_head_by_mulu(div:xl.Element):
+    insert_list = []
+    for index, kid in enumerate(div.kids):
+        if is_mulu(kid):
+            if not (index + 1 <= len(div.kids) and is_head(div.kids[index + 1])):
+                head = xl.Element("head", kids=kid.kids)
+                insert_list.append((kid, head))
+        elif is_div(kid):
+            create_head_by_mulu(kid)
+
+    for mulu, head in insert_list:
+        div.kids.insert(div.kids.index(mulu) + 1, head)
+
+
 # 3.
 
 def load_from_p5a(xmls, name) -> base.Dir:
