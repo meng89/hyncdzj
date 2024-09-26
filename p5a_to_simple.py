@@ -404,7 +404,7 @@ def move_out_mulu_from_head(div:xl.Element):
     return div
 
 # 2. 增加缺失的 head，复制于 mulu
-def create_head_by_mulu(div:xl.Element):
+def create_missing_head_by_mulu(div:xl.Element):
     insert_list = []
     for index, kid in enumerate(div.kids):
         if is_mulu(kid):
@@ -412,7 +412,7 @@ def create_head_by_mulu(div:xl.Element):
                 head = xl.Element("head", kids=kid.kids)
                 insert_list.append((kid, head))
         elif is_div(kid):
-            create_head_by_mulu(kid)
+            create_missing_head_by_mulu(kid)
 
     for mulu, head in insert_list:
         div.kids.insert(div.kids.index(mulu) + 1, head)
@@ -439,12 +439,12 @@ def remove_no_mulu_div2(div):
 
 
 # 4. 添加缺失的 div，使每个 mulu 都有 div 包含它
-def add_missed_cbdiv(book_div):
-    return add_missed_cbdiv2(book_div)[0]
+def add_missing_div(book_div):
+    return add_missed_cbdiv2(book_div)
 
 def add_missed_cbdiv2(div):
-    new_es = []
-    i = 0
+    new_es = div.kids[:2]
+    i = 2
     while i < len(div.kids):
         if is_div(div.kids[i]):
             new_es.append(add_missed_cbdiv2(div.kids[i]))
@@ -463,35 +463,36 @@ def add_missed_cbdiv2(div):
             new_es.append(div.kids[i])
             i += 1
 
-    return new_es
+    div.kids = new_es
+    return div
 
 def read_till_next_mulu_or_div(kids, i):
     terms = []
     while i < len(kids):
-        kid = kids[0]
-        i += 1
-        if isinstance(kid, xl.Element) and kid.tag.lower() in ("cb:div", "cb:mulu"):
+        kid = kids[i]
+        if is_mulu(kid) or is_div(kid):
             break
         else:
             terms.append(kid)
-
+            i += 1
     return terms, i
 
 # 5. 让游离元素有 div、空mulu 和 空head
-def pack_piece_in_div(div): # book = div
+def create_div_for_pieces(div): # book = div
     mulu = div.kids[0]
     level = mulu.attrs["level"]
 
     if has_sub_div(div) is False:
         return div
 
-    new_kids = [div.kids[0], div.kids[1]]
+    new_kids = div.kids[:2]
 
     i = 2 # 越过 mulu 和 head
     while i < len(div.kids):
-        if isinstance(div.kids[i], xl.Element) and div.kids[i].tag == "cb:div":
-            new_kids.append(pack_piece_in_div(div.kids[i]))
+        if is_div(div.kids[i]):
+            new_kids.append(create_div_for_pieces(div.kids[i]))
             i += 1
+
         else:
             pieces, i = read_till_next_mulu_or_div(div.kids, i)
             sub_div = xl.Element("cb:div")
@@ -501,7 +502,7 @@ def pack_piece_in_div(div): # book = div
             sub_div.ekid("head")
             sub_div.kids.extend(pieces)
             new_kids.append(sub_div)
-            i += 1
+
     div.kids = new_kids
     return div
 
@@ -514,7 +515,7 @@ def has_sub_div(div):
 
 
 # 6. 让 div 按照 mulu level 的值回到正确的地方
-def move_place_by_level(book_div):
+def reset_right_place_by_level(book_div):
     move_place_by_level2(book_div, {})
     return book_div
 
@@ -523,16 +524,17 @@ def move_place_by_level2(div:xl.Element, divs:dict):
     level = mulu.attrs["level"]
     parent_level = str(int(level) - 1)
 
-    if parent_level != -1:
+    if parent_level != "-1":
         parent = divs[parent_level]
         parent.kids.append(div)
 
-    divs[level] = div
-    kid_divs = div.kids[2:]
-    div.kids[2:] = []
+    if has_sub_div(div):
+        divs[level] = div
+        kid_divs = div.kids[2:]
+        div.kids[2:] = []
 
-    for term in kid_divs:
-        move_place_by_level2(term, divs)
+        for term in kid_divs:
+            move_place_by_level2(term, divs)
 
 ########################################################################################################################
 
@@ -557,6 +559,13 @@ def get_head_kids(div):
     return div.kids[1].kids
 
 ########################################################################################################################
+
+def write_div(div:xl.Element):
+    div.attrs["xmlns:cb"] = "cb"
+    f = open("/tmp/div.xml", "w")
+    f.write(div.to_str(do_pretty=True))
+    exit()
+
 def load_from_p5a(xmls, name) -> base.Dir:
     book_div = xl.Element("cb:div")
     mulu = book_div.ekid("cb:mulu")
@@ -575,15 +584,17 @@ def load_from_p5a(xmls, name) -> base.Dir:
         tei = xml.root
         text = tei.find_kids("text")[0]
         body = text.find_kids("body")[0]
+        body = filter_(body)
         book_div.kids.extend(body.kids)
 
-    book_div = move_out_mulu_from_head(book_div)
-    book_div = create_head_by_mulu(book_div)
-    book_div = remove_no_mulu_div(book_div)
-    book_div = add_missed_cbdiv(book_div)
-    book_div = pack_piece_in_div(book_div)
-    book_div = move_place_by_level(book_div)
 
+
+    book_div = move_out_mulu_from_head(book_div)
+    book_div = create_missing_head_by_mulu(book_div)
+    book_div = remove_no_mulu_div(book_div)
+    book_div = add_missing_div(book_div)
+    book_div = create_div_for_pieces(book_div)
+    book_div = reset_right_place_by_level(book_div)
 
     name, book = make_tree(book_div)
 
