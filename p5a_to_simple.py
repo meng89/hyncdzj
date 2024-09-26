@@ -1,9 +1,6 @@
 import re
 import os
 import sys
-from copy import deepcopy
-
-from base import find_parent_dir, has_sub_mulu, make_tree
 
 sys.path.append("/mnt/data/projects/xl")
 
@@ -11,6 +8,40 @@ import xl
 
 import base
 import config
+
+
+def filter_(term: xl.Element or str):
+    if isinstance(term, str):
+        return term
+
+    e = term
+    new_e = xl.Element(tag=e.tag)
+    new_e.attrs.update(e.attrs)
+    for kid in e.kids:
+        # if isinstance(kid, xl.Element):
+        #    print("debug:", kid.to_str())
+
+        if isinstance(kid, xl.Element) and kid.tag in ("lb", "pb", "milestone"):
+            pass
+
+        elif isinstance(kid, xl.Element) and kid.tag == "p" \
+                and len(kid.kids) == 1 and isinstance(kid.kids[0], str) and re.match(r"^[〇一二三四五六七八九十※～]+$",
+                                                                                     kid.kids[0]):
+            pass
+
+        elif isinstance(kid, str) and kid in ("\n", "\n\r"):
+            pass
+
+        elif isinstance(kid, str):
+            new_e.kids.append(kid.strip())
+
+        elif isinstance(kid, xl.Comment):
+            pass
+
+        else:
+            new_e.kids.append(filter_(kid))
+
+    return new_e
 
 
 def transform_elements(elements) -> list:
@@ -326,98 +357,101 @@ def get_head_string(e):
 
 
 ########################################################################################################################
-#
-# 删除没有mulu和head的div；添加缺失的mulu或head，使mulu和head成为一对
-
-def unfold_meanless_div(div):
-    new_kids = []
-
-    first_div_index = None
-    first_mulu_index = None
-
-    for index, term in enumerate(div.kids):
-        if isinstance(term, xl.Element) and term.tag == "cb:div":
-            es = unfold_meanless_div(term)
-            new_kids.extend(es)
-            if first_div_index is None:
-                first_div_index = index
-
-        elif isinstance(term, xl.Element) and term.tag == "cb:mulu":
-            new_kids.append(term)
-            if first_div_index is None:
-                first_div_index = index
-
-        else:
-            new_kids.append(term)
 
 
-    if first_mulu_index is not None:
-
-
-def unfold_meanless_div(div:xl.Element, div_level=-1):
-    new_kids = []
-    passed_mulu = False
-    mulu = None
-    mulu_index = None
-
-    passed_head = False
-    head = None
-    head_index = None
-
-    my_level = None
-
-    for index, term in enumerate(div.kids):
-        if isinstance(term, xl.Element) and term.tag == "cb:div":
-            es = unfold_meanless_div(term, )
-            new_kids.extend(es)
-        elif isinstance(term, xl.Element) and term.tag == "cb:mulu":
-            new_kids.append(term)
-            mulu = term
-            passed_mulu = True
-            mulu_index = index
-        elif isinstance(term, xl.Element) and term.tag == "head":
-            new_kids.append(term)
-            head = term
-            passed_head = True
-            head_index = index
-
-        else:
-            new_kids.append(term)
-
-    if passed_head and not passed_mulu:
-        assert head_index == 0
-        mulu = xl.Element("cb:mulu")
-        mulu.skid(get_head_string(head))
-        new_kids.insert(0, mulu)
-
-    elif passed_mulu and not passed_head:
-        assert mulu_index == 0
-        head = xl.Element("head")
-        head.kids.extend(mulu.kids)
-        new_kids.insert(1, head)
-
-    # unflod
-    elif passed_mulu is None and passed_head is None:
-        return new_kids
-
+def is_head(x):
+    if isinstance(x, xl.Element) and x.tag == "head":
+        return True
     else:
-        div = xl.Element("cb:div")
-        div.kids.extend(new_kids)
-        return [div]
+        return False
 
-########################################################################################################################
-#
-# 添加缺失的div，使每个mulu都有div包裹它
-def add_missed_cbdiv(div):
+def is_mulu(x):
+    if isinstance(x, xl.Element) and x.tag == "cb:mulu":
+        return True
+    else:
+        return False
+
+def is_div(x):
+    if isinstance(x, xl.Element) and x.tag == "cb:div":
+        return True
+    else:
+        return False
+
+
+# 1. head 里提取 mulu
+def move_out_mulu_from_head(div:xl.Element):
+    new_kids = []
+    for kid in div.kids:
+
+        if is_head(kid):
+            head_kids = []
+            for head_kid in kid.kids:
+                if is_mulu(head_kid):
+                    new_kids.append(head_kid)
+                else:
+                    head_kids.append(head_kid)
+            kid.kids = head_kids
+
+            new_kids.append(kid)
+
+        elif is_div(kid):
+            new_kids.append(move_out_mulu_from_head(kid))
+
+        else:
+            new_kids.append(kid)
+    div.kids = new_kids
+
+    return div
+
+# 2. 增加缺失的 head，复制于 mulu
+def create_head_by_mulu(div:xl.Element):
+    insert_list = []
+    for index, kid in enumerate(div.kids):
+        if is_mulu(kid):
+            if not (index + 1 <= len(div.kids) and is_head(div.kids[index + 1])):
+                head = xl.Element("head", kids=kid.kids)
+                insert_list.append((kid, head))
+        elif is_div(kid):
+            create_head_by_mulu(kid)
+
+    for mulu, head in insert_list:
+        div.kids.insert(div.kids.index(mulu) + 1, head)
+
+    return div
+
+
+# 3. 删除不包含 mulu 的 div:
+def remove_no_mulu_div(book_div):
+    return remove_no_mulu_div2(book_div)[0]
+
+def remove_no_mulu_div2(div):
+    terms = []
+    for kid in div.kids:
+        if is_mulu(kid):
+            return [div]
+        elif is_div(kid):
+            terms.extend(remove_no_mulu_div2(kid))
+        else:
+            terms.append(kid)
+
+    div.kids = terms
+    return [div]
+
+
+# 4. 添加缺失的 div，使每个 mulu 都有 div 包含它
+def add_missed_cbdiv(book_div):
+    return add_missed_cbdiv2(book_div)[0]
+
+def add_missed_cbdiv2(div):
     new_es = []
     i = 0
     while i < len(div.kids):
-        if isinstance(div.kids[i], xl.Element) and div.kids[i].tag == "cb:div":
-            new_es.append(add_missed_cbdiv(div.kids[i]))
+        if is_div(div.kids[i]):
+            new_es.append(add_missed_cbdiv2(div.kids[i]))
             i += 1
             continue
 
-        if isinstance(div.kids[i], xl.Element) and div.kids[i].tag == "cb:mulu":
+        if is_mulu(div.kids[i]):
             new_kid_div = xl.Element("cb:div")
             new_mulu = new_kid_div.ekid("cb:mulu")
             new_mulu.attrs.update(div.kids[i].attrs)
@@ -443,38 +477,12 @@ def read_till_next_mulu_or_div(kids, i):
 
     return terms, i
 
-########################################################################################################################
-#
-# 让 cbdiv 按照 mulu level 值回到正确的地方
-
-def move_place_by_level(book_div):
-    move_place_by_level2(book_div, {})
-
-def move_place_by_level2(div:xl.Element, divs:dict):
-    mulu = div.kids[0]
-    level = mulu.attrs["level"]
-    parent_level = str(int(level) - 1)
-
-    if parent_level != -1:
-        parent = divs[parent_level]
-        parent.kids.append(div)
-
-    divs[level] = div
-    kid_divs = div.kids[2:]
-    div.kids[2:] = []
-
-    for term in kid_divs:
-        move_place_by_level2(term, divs)
-
-########################################################################################################################
-#
-# 让游离元素有 div、空mulu 和 空head
-#
+# 5. 让游离元素有 div、空mulu 和 空head
 def pack_piece_in_div(div): # book = div
     mulu = div.kids[0]
     level = mulu.attrs["level"]
 
-    if has_sub_dir_simple(div) is False:
+    if has_sub_div(div) is False:
         return div
 
     new_kids = [div.kids[0], div.kids[1]]
@@ -498,77 +506,57 @@ def pack_piece_in_div(div): # book = div
     return div
 
 
-def has_sub_dir_simple(div):
+def has_sub_div(div):
     for x in div.kids:
-        if isinstance(x, xl.Element) and x.tag == "cb:div":
+        if is_div(x):
             return True
     return False
 
+
+# 6. 让 div 按照 mulu level 的值回到正确的地方
+def move_place_by_level(book_div):
+    move_place_by_level2(book_div, {})
+    return book_div
+
+def move_place_by_level2(div:xl.Element, divs:dict):
+    mulu = div.kids[0]
+    level = mulu.attrs["level"]
+    parent_level = str(int(level) - 1)
+
+    if parent_level != -1:
+        parent = divs[parent_level]
+        parent.kids.append(div)
+
+    divs[level] = div
+    kid_divs = div.kids[2:]
+    div.kids[2:] = []
+
+    for term in kid_divs:
+        move_place_by_level2(term, divs)
+
 ########################################################################################################################
 
-
-def is_head(x):
-    if isinstance(x, xl.Element) and x.tag == "head":
-        return True
+def make_tree(div: xl.Element):
+    if has_sub_div(div):
+        obj = base.Dir()
+        for kid in div.kids[2:]:
+            mulu, kid_obj = make_tree(kid)
+            obj.list.append((mulu, kid_obj))
     else:
-        return False
+        obj = base.Doc()
+        for kid in div.kids:
+            obj.body.kids.append(kid)
 
-def is_mulu(x):
-    if isinstance(x, xl.Element) and x.tag == "cb:mulu":
-        return True
-    else:
-        return False
-
-def is_div(x):
-    if isinstance(x, xl.Element) and x.tag == "cb:div":
-        return True
-    else:
-        return False
+    return get_mulu_str(div), obj
 
 
+def get_mulu_str(div):
+    return div.kids[0].kids[0]
 
-# 1. head里提取mulu
-def extract_mulu_from_head(div:xl.Element):
-    new_kids = []
-    for kid in div.kids:
+def get_head_kids(div):
+    return div.kids[1].kids
 
-        if is_head(kid):
-            head_kids = []
-            for head_kid in kid.kids:
-                if is_mulu(head_kid):
-                    new_kids.append(head_kid)
-                else:
-                    head_kids.append(head_kid)
-            kid.kids = head_kids
-
-            new_kids.append(kid)
-
-        elif is_div(kid):
-            new_kids.append(extract_mulu_from_head(kid))
-
-        else:
-            new_kids.append(kid)
-    div.kids = new_kids
-
-    return div
-
-# 2. 增加缺失的head，复制于mulu
-def create_head_by_mulu(div:xl.Element):
-    insert_list = []
-    for index, kid in enumerate(div.kids):
-        if is_mulu(kid):
-            if not (index + 1 <= len(div.kids) and is_head(div.kids[index + 1])):
-                head = xl.Element("head", kids=kid.kids)
-                insert_list.append((kid, head))
-        elif is_div(kid):
-            create_head_by_mulu(kid)
-
-    for mulu, head in insert_list:
-        div.kids.insert(div.kids.index(mulu) + 1, head)
-
-
-# 3.
-
+########################################################################################################################
 def load_from_p5a(xmls, name) -> base.Dir:
     book_div = xl.Element("cb:div")
     mulu = book_div.ekid("cb:mulu")
@@ -589,7 +577,14 @@ def load_from_p5a(xmls, name) -> base.Dir:
         body = text.find_kids("body")[0]
         book_div.kids.extend(body.kids)
 
+    book_div = move_out_mulu_from_head(book_div)
+    book_div = create_head_by_mulu(book_div)
+    book_div = remove_no_mulu_div(book_div)
+    book_div = add_missed_cbdiv(book_div)
+    book_div = pack_piece_in_div(book_div)
+    book_div = move_place_by_level(book_div)
 
-    book = make_book(book_div)
+
+    name, book = make_tree(book_div)
 
     return book

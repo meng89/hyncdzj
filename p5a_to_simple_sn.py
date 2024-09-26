@@ -140,7 +140,7 @@ def change_pin_mulu_fun(mulu: str):
 
 
 def main():
-    book = p5a_to_simple.load_from_p5a(xmls)
+    book = p5a_to_simple.load_from_p5a(xmls, "sn")
     import tempfile
 
     print(tempfile.gettempdir())
