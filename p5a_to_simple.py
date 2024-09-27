@@ -58,7 +58,7 @@ def transform_elements(elements) -> list:
 
 
 def transform_element(element):
-    for fun in (body_fun, cbdiv_fun, cbmulu_fun, head_fun, string_fun, lg_fun, p_fun, note_fun, app_fun, space_fun, ref_fun, g_fun,
+    for fun in (unclear_fun, cbdiv_fun, cbmulu_fun, head_fun, string_fun, lg_fun, p_fun, note_fun, app_fun, space_fun, ref_fun, g_fun,
                 label_fun, list_fun, item_fun):
         result = fun(element)
         if result is not None:
@@ -66,9 +66,14 @@ def transform_element(element):
         else:
             continue
 
-    print("cannot handle this element:", element.to_str())
-    raise Exception
+    raise Exception("Cannot handle this element:", element.to_str())
 
+def unclear_fun(e):
+    if not (isinstance(e, xl.Element) and e.tag == "unclear"):
+        return None
+    assert e.kids == []
+    assert e.attrs == {}
+    return [e]
 
 def list_fun(e):
     if not (isinstance(e, xl.Element) and e.tag == "list"):
@@ -310,6 +315,7 @@ g_map = {
     "#CB00597": "糠", # 谷物的外壳，庄春江译为糠
     "#CB00595": "麨",
     "#CB00144": "㝹",
+    "#CB05989": "䁆",
 }
 
 
@@ -420,6 +426,29 @@ def create_missing_head_by_mulu(div:xl.Element):
     return div
 
 
+# 2.5 增加缺失的 mulu, 复制于 head
+def create_missing_mulu_by_head(div, parent_level: int = None):
+    first_kid = div.kids[0]
+    if is_head(first_kid):
+        s = ""
+        for kid in first_kid.kids:
+            if isinstance(kid, str):
+                s += kid
+        mulu = xl.Element("cb:mulu")
+        mulu.attrs["level"] = str(parent_level + 1)
+        if s:
+            mulu.kids.append(s)
+        div.kids.insert(0, mulu)
+
+    mulu = div.kids[0]
+    parent_level = int(mulu.attrs["level"])
+    for kid in div.kids[2:]:
+        if is_div(kid):
+            create_missing_mulu_by_head(kid, parent_level)
+
+    return div
+
+
 # 3. 删除不包含 mulu 的 div:
 def remove_no_mulu_div(book_div):
     return remove_no_mulu_div2(book_div)[0]
@@ -427,16 +456,16 @@ def remove_no_mulu_div(book_div):
 def remove_no_mulu_div2(div):
     terms = []
     for kid in div.kids:
-        if is_mulu(kid):
-            return [div]
-        elif is_div(kid):
+        if is_div(kid):
             terms.extend(remove_no_mulu_div2(kid))
         else:
             terms.append(kid)
 
-    div.kids = terms
-    return [div]
-
+    if is_mulu(terms[0]):
+        div.kids = terms
+        return [div]
+    else:
+        return terms
 
 # 4. 添加缺失的 div，使每个 mulu 都有 div 包含它
 def add_missing_div(book_div):
@@ -477,9 +506,10 @@ def read_till_next_mulu_or_div(kids, i):
             i += 1
     return terms, i
 
-# 5. 让游离元素有 div、空mulu 和 空head
+# 5. 让游离元素有 div、空 mulu 和空 head
 def create_div_for_pieces(div): # book = div
     mulu = div.kids[0]
+    assert is_mulu(mulu)
     level = mulu.attrs["level"]
 
     if has_sub_div(div) is False:
@@ -546,14 +576,18 @@ def make_tree(div: xl.Element):
             obj.list.append((mulu, kid_obj))
     else:
         obj = base.Doc()
-        for kid in div.kids:
+        for kid in div.kids[1:]:
             obj.body.kids.append(kid)
 
     return get_mulu_str(div), obj
 
 
 def get_mulu_str(div):
-    return div.kids[0].kids[0]
+    assert is_mulu(div.kids[0])
+    try:
+        return div.kids[0].kids[0]
+    except IndexError:
+        return ""
 
 def get_head_kids(div):
     return div.kids[1].kids
@@ -566,13 +600,15 @@ def write_div(div:xl.Element):
     f.write(div.to_str(do_pretty=True))
     exit()
 
-def load_from_p5a(xmls, name) -> base.Dir:
+def load_from_p5a(xmls, name=None) -> base.Dir:
     book_div = xl.Element("cb:div")
     mulu = book_div.ekid("cb:mulu")
     mulu.attrs["level"] = "0"
-    mulu.kids.append(name)
+
     head = book_div.ekid("head")
-    head.kids.append(name)
+    if name:
+        mulu.kids.append(name)
+        head.kids.append(name)
 
     for xml in xmls:
         filename = os.path.join(config.xmlp5a_dir, xml)
@@ -587,11 +623,14 @@ def load_from_p5a(xmls, name) -> base.Dir:
         body = filter_(body)
         book_div.kids.extend(body.kids)
 
-
+    [book_div] = transform_element(book_div)
 
     book_div = move_out_mulu_from_head(book_div)
+    book_div = create_missing_mulu_by_head(book_div)
     book_div = create_missing_head_by_mulu(book_div)
-    book_div = remove_no_mulu_div(book_div)
+
+    book_div = remove_no_mulu_div(book_div) #;write_div(book_div)
+
     book_div = add_missing_div(book_div)
     book_div = create_div_for_pieces(book_div)
     book_div = reset_right_place_by_level(book_div)
