@@ -286,31 +286,3 @@ def is_num_p(x):
                 if re.match(r"^[〇一二三四五六七八九十※～]+$", x.kids[0]):
                     return True
     return False
-
-
-def all_xmls(dir_=config.xmlp5a_dir):
-    xmls = []
-    for one in os.listdir(dir_, ):
-        path = os.path.join(dir_, one)
-        if os.path.isfile(path) and one.lower().endswith(".xml"):
-            xmls.append(path)
-        elif os.path.isdir(path):
-            xmls.extend(all_xmls(path))
-
-    return sorted(xmls)
-
-
-def n_xmls():
-    xmls = []
-    for x in all_xmls():
-        if "/N/" in x:
-            xmls.append(x)
-    return xmls
-
-
-def main():
-    pass
-
-
-if __name__ == "__main__":
-    pass

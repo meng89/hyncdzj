@@ -1,6 +1,8 @@
 # 如果只是想自己制作电子书而不是开发此程序的话，需复制这个文件为 user_config.py，再修改复制后的文件。
-
+import sys
 import os.path
+
+sys.path.append("/mnt/data/projects/xl")
 
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 CACHE_DIR = os.path.join(PROJECT_ROOT, "cache")
