@@ -183,7 +183,7 @@ def note_fun(e):
         elif len(e.kids) == 1 and isinstance(e.kids[0], xl.Element) and e.kids[0].tag == "space":
             return []
 
-        elif "【CB】" in e.kids[0] and "【南傳】" in e.kids[0]:
+        elif isinstance(e.kids[0], str) and "【CB】" in e.kids[0] and "【南傳】" in e.kids[0]:
             return []
 
         elif "add" in e.attrs.keys():
@@ -316,6 +316,9 @@ g_map = {
     "#CB00595": "麨",
     "#CB00144": "㝹",
     "#CB05989": "䁆",
+    "#CB00551": "窻",
+    "#CB04775": "櫈",
+    "#CB22010": "癩",
 }
 
 
