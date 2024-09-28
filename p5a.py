@@ -33,8 +33,6 @@ def get_xmls_by_juan(juan):
             xmls.append(xml)
     return xmls
 
-class Juan:
-    
 
 
 if __name__ == "__main__":

@@ -1,8 +1,11 @@
+#!/usr/bin/env python
+
 import re
 import os
 import sys
+import tempfile
 
-sys.path.append("/mnt/data/projects/xl")
+import p5a
 
 import xl
 
@@ -631,13 +634,22 @@ def load_from_p5a(xmls, name=None) -> base.Dir:
     book_div = move_out_mulu_from_head(book_div)
     book_div = create_missing_mulu_by_head(book_div)
     book_div = create_missing_head_by_mulu(book_div)
-
     book_div = remove_no_mulu_div(book_div) #;write_div(book_div)
-
     book_div = add_missing_div(book_div)
     book_div = create_div_for_pieces(book_div)
     book_div = reset_right_place_by_level(book_div)
-
     name, book = make_tree(book_div)
-
     return book
+
+def write():
+    import sn
+
+    for m in (sn, ):
+        xmls = p5a.get_xmls_by_juan(m.info[0])
+        book = load_from_p5a(xmls)
+        book.write(os.path.join(tempfile.gettempdir(), "ncdzj", m.info[1]))
+
+
+
+if __name__ == '__main__':
+    write()
