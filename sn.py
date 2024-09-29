@@ -14,6 +14,8 @@ def ld_get(list_dict, key):
 
 # 原始 p5a 转换成的 simple, 调用此函数处理一下
 def change(book:base.Dir):
+
+    # 合并上下部，剪除所包含的相应的序号
     new_list = []
     for name, obj in book.list:
         m = re.match(r"(\S+篇)", name)
@@ -25,7 +27,12 @@ def change(book:base.Dir):
             new_list.append((key, obj))
 
     book.list = new_list
-    return book
+
+
+    for name, obj in book.list:
+        if isinstance(obj, base.Dir):
+            new_list = []
+
 
 #处理过后的
 def change2(book_div):

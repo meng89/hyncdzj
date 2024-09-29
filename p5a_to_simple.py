@@ -648,7 +648,8 @@ def write():
         xmls = p5a.get_xmls_by_juan(m.info[0])
         book = load_from_p5a(xmls)
 
-        # book = m.change(book)
+        if hasattr(m, "change"):
+            book = m.change(book)
 
         book.write(os.path.join(tempfile.gettempdir(), "ncdzj", m.info[1]))
 
