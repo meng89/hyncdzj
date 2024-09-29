@@ -642,11 +642,14 @@ def load_from_p5a(xmls, name=None) -> base.Dir:
     return book
 
 def write():
-    import sn
+    import sn, dn
 
-    for m in (sn, ):
+    for m in (sn, dn):
         xmls = p5a.get_xmls_by_juan(m.info[0])
         book = load_from_p5a(xmls)
+
+        # book = m.change(book)
+
         book.write(os.path.join(tempfile.gettempdir(), "ncdzj", m.info[1]))
 
 
