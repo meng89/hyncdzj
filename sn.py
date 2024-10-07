@@ -1,5 +1,7 @@
 import re
 
+import cn2an
+
 import base
 
 info = (6, "相應部", ("通妙", "雲庵"), "SN")
@@ -28,11 +30,132 @@ def change(book:base.Dir):
 
     book.list = new_list
 
+    xy_seril_map = []
+    doc_seril_map = []
 
-    for name, obj in book.list:
+    change_name(book, 1, xy_seril_map, doc_seril_map)
+
+    change_j_name(xy_seril_map, book, doc_seril_map)
+
+    return book
+
+
+def change_name(d: base.Dir, xy_index, xy_seril_map: list, j_seril_map: list):
+    new_list = []
+    for name, obj in d.list:
+        #print(repr(name))
         if isinstance(obj, base.Dir):
-            new_list = []
+            xy_index = change_name(obj, xy_index, xy_seril_map, j_seril_map)
 
+        if name == "":
+            new_name = name
+        elif name.endswith("篇"):
+            new_name = name
+        else:
+            m = re.match(r"^第[一二三四五六七八九十〇]+　(\S+)$", name)
+            if m:
+                new_name = m.group(1)
+                if new_name.endswith("相應"):
+                    xy_seril_map.append((obj, xy_index))
+                    new_name = str(xy_index) + " " + new_name
+                    xy_index += 1
+            elif re.match("〔[一二三四五六七八九十〇～、]+〕", name):
+
+                # '〔一〕瀑流'
+                m = re.match(r"^〔([一二三四五六七八九十〇]+)〕　?(\S+)?$", name)
+                if m:
+                    #print(repr(m.group(1)), repr(m.group(2)))
+                    start = end = cn2an.cn2an(m.group(1), "normal")
+                    new_name = m.group(2) or ""
+                    j_seril_map.append((obj, start, end))
+                else:
+                    # '〔二一〕第一\u3000依劍'
+                    # '〔一六八〕第四、五、六\u3000欲念（四、五、六）'
+                    # '〔一七四〕第廿二～廿四\u3000過去（四～六）'
+                    # '〔三〕第三\u3000舍利弗——拘絺羅\u3000第一（住者）'
+                    m = re.match(r"^〔([一二三四五六七八九十〇]+)〕"
+                                 r"第[一二三四五六七八九十〇、～廿卅]+　?(.+)?$", name)
+                    if m:
+                        #print(repr(m.group(1)), repr(m.group(2)))
+                        start = end = cn2an.cn2an(m.group(1), "normal")
+                        new_name = m.group(2) or ""
+                        j_seril_map.append((obj, start, end))
+                    else:
+                        #'〔七二～八〇〕第二～第十\u3000不知（之一）'
+                        #'〔二五～二六〕第三～四\u3000無常（一～二）'
+                        #'〔一一～二〇〕第十一\u3000布施利益（一）'
+                        #'〔五六、五七〕第四、第五\u3000諸漏（一～二）'
+                        m = m = re.match(r"^〔([一二三四五六七八九十〇]+)[～、]([一二三四五六七八九十〇]+)〕"
+                                         r"[第一二三四五六七八九十〇～、]+　?(\S+)?$", name)
+                                         # r"第[一二三四五六七八九十〇]+～第?[一二三四五六七八九十〇]+　?(\S+)?$", name)
+                        if m:
+                            start = cn2an.cn2an(m.group(1), "normal")
+                            end = cn2an.cn2an(m.group(2), "normal")
+                            new_name = m.group(3) or ""
+                            j_seril_map.append((obj, start, end))
+                        else:
+                            if name == "〔三八～四三〕第八　父、第九　兄弟、第十　姊妹、第十一　子、第十二　女、第十三　妻":
+                                start = 38
+                                end = 43
+                                new_name = "父、兄弟、姊妹、子、女、妻"
+                                j_seril_map.append((obj, start, end))
+                            else:
+                                raise Exception(repr(name))
+            else:
+                if "〔" in name:
+                    # print(repr(name))
+                    pass
+                new_name = name
+
+        new_list.append((new_name, obj))
+
+    d.list = new_list
+    return xy_index
+
+
+def change_j_name(xy_seril_map: list, d: base.Dir, j_seril_map: list):
+    new_list = []
+    for name, obj in d.list:
+        result = find_j_range(obj, j_seril_map)
+        if result is not None:
+            start, end = result
+            xy_index = find_xy_index(xy_seril_map, obj)
+            new_name = "SN {}.{}".format(xy_index, start)
+            if end != start:
+                new_name = new_name + "~" + str(end)
+            new_name += " " + name
+            new_list.append((new_name, obj))
+        else:
+            new_list.append((name, obj))
+
+        if isinstance(obj, base.Dir):
+            change_j_name(xy_seril_map, obj, j_seril_map)
+    d.list = new_list
+
+
+def find_j_range(obj, j_seril_map):
+    for j_obj, start, end in j_seril_map:
+        if j_obj == obj:
+            return start, end
+    return None
+
+def find_xy_index(xy_seril_map, obj):
+    for xy, index in xy_seril_map:
+        if is_contain(xy, obj):
+            return index
+    assert Exception
+
+def is_contain(obj: base.Dir, j: base.Dir):
+    for name, x in obj.list:
+        if x == j:
+            return True
+        elif isinstance(x, base.Dir):
+            result = is_contain(x, j)
+            if result is True:
+                return True
+            else:
+                continue
+    return False
 
 #处理过后的
 def change2(book_div):

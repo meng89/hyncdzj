@@ -641,18 +641,20 @@ def load_from_p5a(xmls, name=None) -> base.Dir:
     name, book = make_tree(book_div)
     return book
 
+
 def write():
     import sn, dn
+    import sv, kd
 
-    for m in (sn, dn):
+    for m in (sn, sv, kd):
         xmls = p5a.get_xmls_by_juan(m.info[0])
         book = load_from_p5a(xmls)
 
         if hasattr(m, "change"):
             book = m.change(book)
+            pass
 
         book.write(os.path.join(tempfile.gettempdir(), "ncdzj", m.info[1]))
-
 
 
 if __name__ == '__main__':

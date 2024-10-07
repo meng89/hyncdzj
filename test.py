@@ -3,35 +3,17 @@
 import re
 
 
-def match(name):
-    return re.match(r"^(\d+.?\d*) *(\S*)$", name)
-
-
-def filter_fun(name):
-    if match(name):
-        return True
-
-
-def split_float(name):
-    m = match(name)
-    if m:
-        return float(m.group(1))
-    else:
-        return -9
+def han_num_to_hindu_nume(s:str):
+    (s.replace("一", "1").replace("二", "2").replace("三", "3")
+     .replace("四", "4").replace("五"))
 
 
 def main():
-    import os
+    name = '〔七二～八〇〕第二～第十\u3000不知（之一）'
+    m = m = re.match(r"^〔([一二三四五六七八九十〇]+)〕～〔([一二三四五六七八九十〇]+)〕"
+                     r"第二+～第十+　(\S+)$", name)
 
-    a = os.listdir("/mnt/data/tmp/新建文件夹/")
-    a.sort()
-
-    a = list(filter(filter_fun, a))
-
-    a.sort(key=split_float)
-    print(a)
-
-
+    print(repr(m.group(1)), repr(m.group(2)), repr(m.group(3)))
 
 
 if __name__ == "__main__":
