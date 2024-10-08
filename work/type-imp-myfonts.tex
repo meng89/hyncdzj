@@ -1,0 +1,86 @@
+\enableregime[utf]
+
+\starttypescript [serif] [tcfont]
+
+\definefontsynonym[enserif][file:/mnt/data/software/fonts/noto-fonts/hinted/ttf/NotoSerif/NotoSerif-Light.ttf]
+\definefontsynonym[enserifbd][file:/mnt/data/software/fonts/noto-fonts/hinted/ttf/NotoSerif/NotoSerif-SemiBold.ttf]
+\definefontsynonym[enserifit][file:/mnt/data/software/fonts/noto-fonts/hinted/ttf/NotoSerif/NotoSerif-LightItalic.ttf]
+\definefontsynonym[enserifbi][file:/mnt/data/software/fonts/noto-fonts/hinted/ttf/NotoSerif/NotoSerif-SemiBoldItalic.ttf]
+
+\definefontfallback[nsecjkl][file:/mnt/data/software/fonts/noto-cjk/Serif/OTF/TraditionalChinese/NotoSerifCJKtc-Light.otf][0x00400-0x00eff, 0x01000-0x2FA1F]
+\definefontfallback[nsecjkl][file:/mnt/data/software/fonts/noto-fonts/hinted/ttf/NotoSerifTibetan/NotoSerifTibetan-Light.ttf][0x00f00-0x00fff]
+\definefontfallback[nsecjkb][file:/mnt/data/software/fonts/noto-cjk/Serif/OTF/TraditionalChinese/NotoSerifCJKtc-Medium.otf][0x00400-0x2FA1F]
+
+\definefontsynonym[Serif][enserif][fallbacks=nsecjkl]
+\definefontsynonym[SerifBold][enserifbd][fallbacks=nsecjkb]
+\definefontsynonym[SerifItalic][enserifit][fallbacks=nsecjkl]
+\definefontsynonym[SerifBoldItalic][enserifbi][fallbacks=nsecjkb]
+
+\stoptypescript
+
+
+
+\starttypescript [sans] [tcfont]
+
+\definefontsynonym[ensans][file:/mnt/data/software/fonts/noto-fonts/hinted/ttf/NotoSans/NotoSans-Light.ttf]
+\definefontsynonym[ensansbd][file:/mnt/data/software/fonts/noto-fonts/hinted/ttf/NotoSans/NotoSans-SemiBold.ttf]
+\definefontsynonym[ensansob][file:/mnt/data/software/fonts/noto-fonts/hinted/ttf/NotoSans/NotoSans-LightItalic.ttf]
+\definefontsynonym[ensansbo][file:/mnt/data/software/fonts/noto-fonts/hinted/ttf/NotoSans/NotoSans-SemiBoldItalic.ttf]
+
+\definefontfallback[nsacjkl][file:/mnt/data/software/fonts/noto-cjk/Sans/OTF/TraditionalChinese/NotoSansCJKtc-Light.otf][0x00400-0x00eff, 0x01000-0x2FA1F]
+\definefontfallback[nsacjkl][file:/mnt/data/software/fonts/noto-fonts/hinted/ttf/NotoSerifTibetan/NotoSerifTibetan-Light.ttf][0x00f00-0x00fff]
+\definefontfallback[nsacjkb][file:/mnt/data/software/fonts/noto-cjk/Sans/OTF/TraditionalChinese/NotoSansCJKtc-Medium.otf][0x00400-0x2FA1F]
+
+\definefontsynonym[Sans][ensans][fallbacks=nsacjkl]
+\definefontsynonym[SansBold][ensansbd][fallbacks=nsacjkb]
+\definefontsynonym[SansItalic][ensansob][fallbacks=nsacjkl]
+\definefontsynonym[SansBoldItalic][ensansbo][fallbacks=nsacjkb]
+
+\stoptypescript
+
+\starttypescript[tcfonts]
+\definetypeface [tcfonts] [rm] [serif] [tcfont]
+\definetypeface [tcfonts] [ss] [sans] [tcfont]
+\stoptypescript
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\starttypescript [serif] [scfont]
+
+\definefontsynonym[enserif][file:/mnt/data/software/fonts/noto-fonts/hinted/ttf/NotoSerif/NotoSerif-Light.ttf]
+\definefontsynonym[enserifbd][file:/mnt/data/software/fonts/noto-fonts/hinted/ttf/NotoSerif/NotoSerif-SemiBold.ttf]
+\definefontsynonym[enserifit][file:/mnt/data/software/fonts/noto-fonts/hinted/ttf/NotoSerif/NotoSerif-LightItalic.ttf]
+\definefontsynonym[enserifbi][file:/mnt/data/software/fonts/noto-fonts/hinted/ttf/NotoSerif/NotoSerif-SemiBoldItalic.ttf]
+
+\definefontfallback[nsecjkl][file:/mnt/data/software/fonts/noto-cjk/Serif/OTF/SimplifiedChinese/NotoSerifCJKsc-Light.otf][0x00400-0x2FA1F]
+\definefontfallback[nsecjkb][file:/mnt/data/software/fonts/noto-cjk/Serif/OTF/SimplifiedChinese/NotoSerifCJKsc-Medium.otf][0x00400-0x2FA1F]
+
+\definefontsynonym[Serif][enserif][fallbacks=nsecjkl]
+\definefontsynonym[SerifBold][enserifbd][fallbacks=nsecjkb]
+\definefontsynonym[SerifItalic][enserifit][fallbacks=nsecjkl]
+\definefontsynonym[SerifBoldItalic][enserifbi][fallbacks=nsecjkb]
+
+\stoptypescript
+
+
+
+\starttypescript [sans] [scfont]
+
+\definefontsynonym[ensans][file:/mnt/data/software/fonts/noto-fonts/hinted/ttf/NotoSans/NotoSans-Light.ttf]
+\definefontsynonym[ensansbd][file:/mnt/data/software/fonts/noto-fonts/hinted/ttf/NotoSans/NotoSans-SemiBold.ttf]
+\definefontsynonym[ensansob][file:/mnt/data/software/fonts/noto-fonts/hinted/ttf/NotoSans/NotoSans-LightItalic.ttf]
+\definefontsynonym[ensansbo][file:/mnt/data/software/fonts/noto-fonts/hinted/ttf/NotoSans/NotoSans-SemiBoldItalic.ttf]
+
+\definefontfallback[nsacjkl][file:/mnt/data/software/fonts/noto-cjk/Sans/OTF/SimplifiedChinese/NotoSansCJKsc-Light.otf][0x00400-0x2FA1F]
+\definefontfallback[nsacjkb][file:/mnt/data/software/fonts/noto-cjk/Sans/OTF/SimplifiedChinese/NotoSansCJKsc-Medium.otf][0x00400-0x2FA1F]
+
+\definefontsynonym[Sans][ensans][fallbacks=nsacjkl]
+\definefontsynonym[SansBold][ensansbd][fallbacks=nsacjkb]
+\definefontsynonym[SansItalic][ensansob][fallbacks=nsacjkl]
+\definefontsynonym[SansBoldItalic][ensansbo][fallbacks=nsacjkb]
+
+\stoptypescript
+\starttypescript[scfonts]
+\definetypeface [scfonts] [rm] [serif] [scfont]
+\definetypeface [scfonts] [ss] [sans] [scfont]
+\stoptypescript
