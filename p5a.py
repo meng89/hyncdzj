@@ -6,7 +6,7 @@ import re
 import config
 
 
-def all_xmls(dir_=config.xmlp5a_dir):
+def all_xmls(dir_=config.XMLP5A_DIR):
     xmls = []
     for one in os.listdir(dir_, ):
         path = os.path.join(dir_, one)

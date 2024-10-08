@@ -617,8 +617,8 @@ def load_from_p5a(xmls, name=None) -> base.Dir:
         head.kids.append(name)
 
     for xml in xmls:
-        filename = os.path.join(config.xmlp5a_dir, xml)
-        print("xml:", xml.removeprefix(config.xmlp5a_dir))
+        filename = os.path.join(config.XMLP5A_DIR, xml)
+        print("xml:", xml.removeprefix(config.XMLP5A_DIR))
         file = open(filename, "r")
         xmlstr = file.read()
         file.close()

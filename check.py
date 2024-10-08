@@ -259,7 +259,7 @@ def test_xl(xmls):
 
     for one in xmls:
 
-        filename = os.path.join(config.xmlp5a_dir, one)
+        filename = os.path.join(config.XMLP5A_DIR, one)
         print("xml:", filename, end="")
         file = open(filename, "r")
         xmlstr = file.read()
@@ -293,16 +293,16 @@ def test_xl(xmls):
 
 def main():
     no_prefix_xmls = []
-    for one2 in sorted(base.all_xmls(config.xmlp5a_dir)):
-        if one2.startswith(config.xmlp5a_dir):
-            no_prefix_xmls.append(one2.removeprefix(config.xmlp5a_dir))
+    for one2 in sorted(base.all_xmls(config.XMLP5A_DIR)):
+        if one2.startswith(config.XMLP5A_DIR):
+            no_prefix_xmls.append(one2.removeprefix(config.XMLP5A_DIR))
         else:
             raise Exception
 
     for xml in base.n_xmls():
-        filename = os.path.join(config.xmlp5a_dir, xml)
+        filename = os.path.join(config.XMLP5A_DIR, xml)
         # print("\n"*2)
-        print("xml:", xml.removeprefix(config.xmlp5a_dir))
+        print("xml:", xml.removeprefix(config.XMLP5A_DIR))
 
         body = get_body(filename)
         # check_no_head(body)
