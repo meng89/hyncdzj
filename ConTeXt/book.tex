@@ -12,6 +12,7 @@
   \usetypescript[tcfonts]
   \setupbodyfont[tcfonts,rm,12pt]
 \stopmode
+
 \startmode [sc]
   \usetypescript[scfonts]
   \setupbodyfont[scfonts,rm,12pt]
@@ -54,6 +55,7 @@
     keyword={南傳佛教,尼柯耶,經藏},
     creator={https://github.com/meng89/nikaya/tree/dev},
 ]
+
 \startmode [sc]
   \setupinteraction[
     title={相应部},
@@ -192,7 +194,7 @@
   \blank[18*big]
   \definedfont[Sans at 20pt] \setstrut \strut 莊春江 ~ \doifmodeelse{sc}{译}{譯}
   \blank[-2*small]
-  \definedfont[SansBold at 21pt] \setstrut \strut 2024-02-05
+  \definedfont[SansBold at 21pt] \setstrut \strut $date
   \vfill
 \stopstandardmakeup
 
@@ -209,12 +211,12 @@
 
 \vfill
 \blank[-25*big]
-對那位\twnr{世尊}{12.0}、\twnr{阿羅漢}{5.0}、\twnr{遍正覺者}{6.0}禮敬
+$homage
 \vfill
 \stopmakeup
 
 
-\input{suttas.tex}
+\input{$suttas}
 \page
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -239,8 +241,8 @@
                    \goto{https://agama.buddhason.org}[url(https://agama.buddhason.org)]}]
                  [{\tfa \it \pagenumber}]
 
-\input{localnotes.tex}
-\input{globalnotes.tex}
+\input{$localnotes}
+\input{$globalnotes}
 \page
 
 

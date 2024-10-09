@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import io
 import os
 import tempfile
 
@@ -48,7 +49,13 @@ def cover_to_sc(src, dst):
 
 
 def write2pdf(book, book_name, module):
-    pass
+    write_tree(book, f)
+
+
+def write_tree(d: base.Dir, f:io.TextIOWrapper):
+    for name, obj in d.list:
+        f.write("\\title{}{}".format(name))
+
 
 
 def write2epub(book, module):
