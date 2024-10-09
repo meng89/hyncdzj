@@ -49,12 +49,17 @@ def cover_to_sc(src, dst):
 
 
 def write2pdf(book, book_name, module):
-    write_tree(book, f)
+    write_tree(book, 1, f, module)
 
 
-def write_tree(d: base.Dir, f:io.TextIOWrapper):
+def write_tree(d: base.Dir, level, f:io.TextIOWrapper, module):
+
     for name, obj in d.list:
-        f.write("\\title{}{}".format(name))
+        bookmark_name = name
+        if hasattr(module, "pdf_bookmark_name"):
+            bookmark_name = module.pdf_bookmark_name(name, obj, d)
+
+        f.write("\\title{{}}{{}}".format(name, " "))
 
 
 
