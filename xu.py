@@ -43,7 +43,7 @@ def write_xu(ebook: epubpacker.Epub, xc):
 
     htmlstr = xl.Xml(root=html).to_str(do_pretty=True, dont_do_tags=["title", "p", "h1", "h2", "h3", "h4"])
     doc_path = "xu.xhtml"
-    ebook.root_toc.append(epubpacker.Toc("序", doc_path))
+    ebook.marks.append(epubpacker.Mark("序", doc_path))
     ebook.userfiles[doc_path] = htmlstr
     ebook.spine.append(doc_path)
 

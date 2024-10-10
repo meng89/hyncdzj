@@ -11,7 +11,7 @@ import epubpacker
 
 import base
 import config
-from p5a_to_simple import write
+import xl
 
 
 def load_from_dir(book_name):
@@ -66,20 +66,57 @@ def write_tree(d: base.Dir, level, f: io.TextIOWrapper, module):
 def write2epub(book, module):
     epub = epubpacker.Epub()
 
-def write2epub2(d: base.Dir, level, epub, tocs, parent_toc, module):
+def write2epub2(d: base.Dir, level, epub, marks, parent_mark, module):
     for name, obj in d.list:
         bookmark_name = name
         if hasattr(module, "bookmark_name"):
             bookmark_name = module.bookmark_name(name, obj, d)
-        toc = epubpacker.Toc(name)
+        toc = epubpacker.Mark(name)
 
         if isinstance(obj, base.Doc):
-
+            trans_epub_page(obj)
 
         elif isinstance(obj, base.Dir):
-            tocs.append(toc)
-            write2epub2(obj, level + 1, epub, tocs, toc, module)
+            marks.append(toc)
+            write2epub2(obj, level + 1, epub, marks, toc, module)
 
 
+def trans_epub_page(obj: base.Doc, lang):
+    html = xl.Element(
+        "html",
+        {
+            "xmlns:epub": "http://www.idpf.org/2007/ops",
+            "xmlns": "http://www.w3.org/1999/xhtml",
+            "xml:lang": lang,
+            "lang": lang
+         }
+    )
+    head = html.ekid("head")
+    body = html.ekid("body")
+
+    notes = write_(obj.body, body, [])
+
+    for index, note in notes:
+        body.ekid("aside", {"epub:type": "footnote", "id": "n" + str(index + 1)})
+
+    return html
+
+
+def write_(obj, e, notes):
+    for x in obj.kids:
+        if isinstance(x, str):
+            e.kids.append(x)
+        elif isinstance(x, xl.Element):
+            if x.tag == "ewn":
+                notes.append(x.kids[1])
+                count = str(len(notes))
+                a = e.ekid("a", {"epub:type": "noteref", "href" : "#n" + count})
+                a.kids.extend(x.kids[0].kids)
+                if not a.kids:
+                    a.attrs["class"] = "notext"
+                    a.kids.append(count)
+            else:
+                notes = write_(x, e, notes)
+    return notes
 
 # 短小的合并之类操作应该修改dir对象来完成
