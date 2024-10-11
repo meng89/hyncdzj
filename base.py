@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import copy
 import sys
+import dataclasses
 
 sys.path.append("/mnt/data/projects/xl")
 
@@ -256,17 +257,12 @@ class Piece(Doc):
 
 ########################################################################################################################
 
-def dir_to_book():
-    pass
-
-def book_to_dir():
-    pass
-
-def book_to_pdf():
-    pass
-
-def book_to_epub():
-    pass
+@dataclasses.dataclass
+class Info:
+    serial: int
+    name: str
+    authors: tuple[str, ...]
+    abbr: str
 
 
 def is_pts_ref(x):

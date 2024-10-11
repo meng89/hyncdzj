@@ -8,7 +8,6 @@ PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 CACHE_DIR = os.path.join(PROJECT_ROOT, "cache")
 os.makedirs(CACHE_DIR, exist_ok=True)
 
-
 # EPUBCheck 路径
 EPUBCHECK = "/mnt/data/software/epubcheck-4.2.6/epubcheck.jar"
 # EPUBCHECK = r"D:\epubcheck-4.2.6\epubcheck.jar"
@@ -19,7 +18,9 @@ BOOKS_DIR = os.path.join(PROJECT_ROOT, "_books")
 # xmlp5_dir = os.path.join(PROJECT_ROOT, "~/projects/xml-p5a")
 XMLP5A_DIR = "/mnt/data/projects/xml-p5a/"
 
-SIMPLE_DIR = os.path.join(PROJECT_ROOT, "source", "ncdzj")
+_SOURCES = os.path.join(os.path.join(PROJECT_ROOT, "simple_sources"))
+SIMPLE_DIR = os.path.join(_SOURCES, "ncdzj")
 os.makedirs(SIMPLE_DIR, exist_ok=True)
-OVERLAY_DIR = os.path.join(PROJECT_ROOT, "source", "overlay")
-os.makedirs(OVERLAY_DIR, exist_ok=True)
+
+OVERLAYS_DIR = os.path.join(_SOURCES, "overlays")
+os.makedirs(OVERLAYS_DIR, exist_ok=True)

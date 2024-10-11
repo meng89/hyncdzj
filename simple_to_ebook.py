@@ -6,20 +6,25 @@ import tempfile
 
 import opencc
 
+import config
+
 import epubpacker
 
-
 import base
-import config
+
 import xl
 
+def trans_sc(s: str) -> str:
+    c = opencc.OpenCC("t2s.json")
+    return c.convert(s)
 
-def load_from_dir(book_name):
+
+def load_book_from_dir(book_name):
     path = os.path.join(config.SIMPLE_DIR, book_name)
     book = base.Dir(path)
     return book
 
-def load_from_dir_sc(book_name):
+def load_sc_book_from_dir(book_name):
     src = os.path.join(config.SIMPLE_DIR, book_name)
     prefix = book_name + "_sc_"
     sc_dir = tempfile.TemporaryDirectory(prefix=prefix)
@@ -34,15 +39,15 @@ def load_from_dir_sc(book_name):
 def cover_to_sc(src, dst):
     for file in os.listdir(src):
         path = os.path.join(src, file)
-        c = opencc.OpenCC("t2s.json")
-        sc_path = os.path.join(dst, c.convert(path))
+
+        sc_path = os.path.join(dst, trans_sc(path))
 
         if os.path.isfile(path) and file.lower().endswith(".xml"):
             f = open(path, "r")
             xml_str = f.read()
             f.close()
             f = open(sc_path, "w")
-            f.write(c.convert(xml_str))
+            f.write(trans_sc(xml_str))
             f.close()
 
         elif os.path.isdir(path):
@@ -50,8 +55,8 @@ def cover_to_sc(src, dst):
             cover_to_sc(path, sc_path)
 
 
-def write2pdf(book, book_name, module):
-    write_tree(book, 1, f, module)
+def write_pdf(book, book_name, module, lang):
+    pass #todo
 
 
 def write_tree_(d: base.Dir, level, f: io.TextIOWrapper, module):
@@ -63,7 +68,8 @@ def write_tree_(d: base.Dir, level, f: io.TextIOWrapper, module):
         f.write("\\title{{}}{{}}".format(name, " "))
 
 
-def write2epub(path, book, module, lang):
+
+def write_epub(path, book, module, lang):
     epub = epubpacker.Epub()
     write_epub_tree(book, 0, epub, [], None, 0, module, lang)
     file_path = os.path.join(path, module.info[1])
@@ -130,3 +136,31 @@ def write_(obj, e, notes):
     return notes
 
 # 短小的合并之类操作应该修改dir对象来完成
+
+
+def main():
+    # zh-Hans: 简体中文
+    # zh-Hant: 传统中文
+    td = tempfile.TemporaryDirectory(prefix="ncdzj_")
+    import sn
+    for m in (sn, ):
+
+        book = load_book_from_dir(m.info.name)
+        path = os.path.join(td.name, "元_{}_TC.epub".format(m.info.name))
+        write_epub(path, book, m, "zh-Hant")
+
+        path = path.replace(".epub", ".pdf")
+        write_pdf(path, book, m, "zh-Hant")
+
+        ################################################################################################################
+
+        book = load_sc_book_from_dir(m.info.name)
+        path = os.path.join(td.name, "元_{}_SC.epub".format(trans_sc(m.info.name)))
+        write_epub(path, book, sn, "zh-Hans")
+
+        path = path.replace(".epub", ".pdf")
+        write_pdf(path, book, m, "zh-Hans")
+
+
+if __name__ == '__main__':
+    main()

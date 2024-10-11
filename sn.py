@@ -4,7 +4,7 @@ import cn2an
 
 import base
 
-info = (6, "相應部", ("通妙", "雲庵"), "SN")
+info = base.Info(6, "相應部", ("通妙", "雲庵"), "SN")
 
 
 

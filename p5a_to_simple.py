@@ -646,16 +646,16 @@ def write():
     import sn, dn
     import sv, kd
 
-    for m in (sn, sv, kd):
-        xmls = p5a.get_xmls_by_juan(m.info[0])
+    for m in (sn, ):
+        xmls = p5a.get_xmls_by_serial(m.info.serial)
         book = load_from_p5a(xmls)
 
         if hasattr(m, "change"):
             book = m.change(book)
             pass
 
-        book.write(os.path.join(tempfile.gettempdir(), "ncdzj", m.info[1]))
-
+        #book.write(os.path.join(tempfile.gettempdir(), "ncdzj", m.info[1]))
+        book.write(os.path.join(config.SIMPLE_DIR, m.info.name))
 
 if __name__ == '__main__':
     write()

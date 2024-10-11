@@ -25,7 +25,7 @@ def n_xmls():
             xmls.append(x)
     return xmls
 
-def get_xmls_by_juan(juan):
+def get_xmls_by_serial(juan):
     xmls = []
     for xml in n_xmls():
         m = re.match(r"^.*?(\d+)\.xml$", xml)
@@ -36,5 +36,5 @@ def get_xmls_by_juan(juan):
 
 
 if __name__ == "__main__":
-    print(get_xmls_by_juan(6))
+    print(get_xmls_by_serial(6))
 
