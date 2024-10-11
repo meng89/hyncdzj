@@ -54,7 +54,7 @@ def write2pdf(book, book_name, module):
     write_tree(book, 1, f, module)
 
 
-def write_tree(d: base.Dir, level, f: io.TextIOWrapper, module):
+def write_tree_(d: base.Dir, level, f: io.TextIOWrapper, module):
     for name, obj in d.list:
         bookmark_name = name
         if hasattr(module, "pdf_bookmark_name"):
@@ -63,10 +63,14 @@ def write_tree(d: base.Dir, level, f: io.TextIOWrapper, module):
         f.write("\\title{{}}{{}}".format(name, " "))
 
 
-def write2epub(book, module):
+def write2epub(path, book, module, lang):
     epub = epubpacker.Epub()
+    write_epub_tree(book, 0, epub, [], None, 0, module, lang)
+    file_path = os.path.join(path, module.info[1])
+    epub.write(file_path)
 
-def write2epub2(d: base.Dir, level, epub, marks, parent_mark, module):
+
+def write_epub_tree(d: base.Dir, level, epub, marks, parent_mark, doc_count, module, lang):
     for name, obj in d.list:
         bookmark_name = name
         if hasattr(module, "bookmark_name"):
@@ -74,11 +78,17 @@ def write2epub2(d: base.Dir, level, epub, marks, parent_mark, module):
         toc = epubpacker.Mark(name)
 
         if isinstance(obj, base.Doc):
-            trans_epub_page(obj)
+            html = trans_epub_page(obj, lang)
+            doc_count += 1
+            doc_path = str(doc_count) + ".xhtml"
+            htmlstr = xl.Xml(root=html).to_str(do_pretty=True, dont_do_tags=["title", "p", "h1", "h2", "h3", "h4"])
+
+            epub.userfiles[doc_path] = htmlstr
+            epub.spine.append(doc_path)
 
         elif isinstance(obj, base.Dir):
             marks.append(toc)
-            write2epub2(obj, level + 1, epub, marks, toc, module)
+            write_epub_tree(obj, level + 1, epub, marks, toc, doc_count, module, lang)
 
 
 def trans_epub_page(obj: base.Doc, lang):
