@@ -2,7 +2,7 @@
 import sys
 import os.path
 
-sys.path.append("/mnt/data/projects/xl")
+sys.path.extend(["/mnt/data/projects/xl", "/mnt/data/projects/epubpacker"])
 
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 CACHE_DIR = os.path.join(PROJECT_ROOT, "cache")

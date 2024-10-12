@@ -2,7 +2,7 @@
 import io
 import os
 import tempfile
-
+import subprocess
 
 import opencc
 
@@ -39,20 +39,19 @@ def load_sc_book_from_dir(book_name):
 def cover_to_sc(src, dst):
     for file in os.listdir(src):
         path = os.path.join(src, file)
-
-        sc_path = os.path.join(dst, trans_sc(path))
+        dst_path = os.path.join(dst, trans_sc(file))
 
         if os.path.isfile(path) and file.lower().endswith(".xml"):
             f = open(path, "r")
             xml_str = f.read()
             f.close()
-            f = open(sc_path, "w")
+            f = open(dst_path, "w")
             f.write(trans_sc(xml_str))
             f.close()
 
         elif os.path.isdir(path):
-            os.makedirs(sc_path)
-            cover_to_sc(path, sc_path)
+            os.makedirs(dst_path)
+            cover_to_sc(path, dst_path)
 
 
 def write_pdf(book, book_name, module, lang):
@@ -71,33 +70,41 @@ def write_tree_(d: base.Dir, level, f: io.TextIOWrapper, module):
 
 def write_epub(path, book, module, lang):
     epub = epubpacker.Epub()
-    write_epub_tree(book, 0, epub, [], None, 0, module, lang)
-    file_path = os.path.join(path, module.info[1])
-    epub.write(file_path)
+    epub.meta.languages.append(lang)
+    write_epub_tree(book, epub, [], epub.mark, 0, module, lang)
+    epub.write(path)
 
 
-def write_epub_tree(d: base.Dir, level, epub, marks, parent_mark, doc_count, module, lang):
+def write_epub_tree(d: base.Dir, epub, no_href_marks, parent_mark, doc_count, module, lang):
     for name, obj in d.list:
         bookmark_name = name
         if hasattr(module, "bookmark_name"):
             bookmark_name = module.bookmark_name(name, obj, d)
-        toc = epubpacker.Mark(name)
+
+        mark = epubpacker.Mark(name)
+        parent_mark.kids.append(mark)
 
         if isinstance(obj, base.Doc):
-            html = trans_epub_page(obj, lang)
+            html = create_page(obj, lang)
             doc_count += 1
             doc_path = str(doc_count) + ".xhtml"
             htmlstr = xl.Xml(root=html).to_str(do_pretty=True, dont_do_tags=["title", "p", "h1", "h2", "h3", "h4"])
 
             epub.userfiles[doc_path] = htmlstr
             epub.spine.append(doc_path)
+            mark.href = doc_path
+            for _mark in no_href_marks:
+                _mark.href = doc_path
+            no_href_marks = []
 
         elif isinstance(obj, base.Dir):
-            marks.append(toc)
-            write_epub_tree(obj, level + 1, epub, marks, toc, doc_count, module, lang)
+            no_href_marks.append(mark)
+            doc_count, no_href_marks = write_epub_tree(obj, epub, no_href_marks, mark, doc_count, module, lang)
+
+    return doc_count, no_href_marks
 
 
-def trans_epub_page(obj: base.Doc, lang):
+def create_page(obj: base.Doc, lang):
     html = xl.Element(
         "html",
         {
@@ -137,6 +144,31 @@ def write_(obj, e, notes):
 
 # 短小的合并之类操作应该修改dir对象来完成
 
+def check_epub(epub_path):
+    os.path.splitroot(epub_path)
+    stdout_file = open("{}_{}".format(epub_path, "stdout"), "w")
+    stderr_file = open("{}_{}".format(epub_path, "stderr"), "w")
+
+    def _run():
+        nonlocal check_result
+        compile_cmd = "java -jar {} {} -q".format(config.EPUBCHECK, epub_path)
+        cwd = os.path.split(epub_path)[0]
+        # print("运行:", compile_cmd, end=" ", flush=True)
+        print("检查:", os.path.split(epub_path)[1], end=" ", flush=True)
+        p = subprocess.Popen(compile_cmd, cwd=cwd, shell=True, stdout=stdout_file, stderr=stderr_file)
+        p.communicate()
+        if p.returncode != 0:
+            return False
+        else:
+            return True
+
+    check_result = _run()
+    if check_result:
+        print("Passed")
+    else:
+        print("Failed")
+    return check_result
+
 
 def main():
     # zh-Hans: 简体中文
@@ -148,6 +180,7 @@ def main():
         book = load_book_from_dir(m.info.name)
         path = os.path.join(td.name, "元_{}_TC.epub".format(m.info.name))
         write_epub(path, book, m, "zh-Hant")
+        check_epub(path)
 
         path = path.replace(".epub", ".pdf")
         write_pdf(path, book, m, "zh-Hant")
@@ -160,6 +193,8 @@ def main():
 
         path = path.replace(".epub", ".pdf")
         write_pdf(path, book, m, "zh-Hans")
+
+    input("Any key to exit:")
 
 
 if __name__ == '__main__':

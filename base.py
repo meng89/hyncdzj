@@ -2,6 +2,7 @@
 import copy
 import sys
 import dataclasses
+from operator import index
 
 sys.path.append("/mnt/data/projects/xl")
 
@@ -45,8 +46,8 @@ class Metadata:
 
 
 def match(name):
-    return re.match(r"^(\d+.?\d*) *(\S*)$", name)
-
+    m = re.match(r"^(\d+(?:\.\d+)?) (.*)$", name)
+    return m
 
 def filter_fun(name):
     if match(name):
@@ -64,23 +65,8 @@ def split_float(name):
 
 class Dir:
     def __init__(self, path=None):
-        super().__init__()
-
-        # 空 Dir
-        if path is None:
-            self._metadata = Metadata()
-            self.list = []
-        else:
-            xml_path = os.path.join(path, "_.xml")
-            # 载入非空 Dir, 目录中有 _.xml 文件
-            if xml_path:
-                self._metadata = Metadata(open(xml_path).read())
-            # 目录中没有 _.xml
-            else:
-                self._metadata = Metadata()
-
-            self.list = []
-
+        self.list = []
+        if path:
             entries = list(filter(filter_fun, os.listdir(path)))
             entries.sort(key=split_float)
 
@@ -90,7 +76,7 @@ class Dir:
                     key = split_name(entry)
                     value = Dir(entry_path)
                 elif os.path.isfile(entry_path) and entry.lower().endswith(".xml"):
-                    key = os.path.splitext(split_name(entry))[0]
+                    key = split_name(entry)[:-4]
                     value = Doc(entry_path)
                 else:
                     continue
@@ -113,9 +99,6 @@ class Dir:
 
     def write(self, path):
         os.makedirs(path, exist_ok=True)
-        if self._metadata:
-            filepath = os.path.join(path, "_.xml")
-            open(filepath, "w").write(self._metadata.to_str())
 
         for index, (k, v) in enumerate(self.list):
             if isinstance(v, Dir):
@@ -151,7 +134,6 @@ class Doc:
     @property
     def ps(self) -> xl.Element:
         return self._xml.root.find_kids("ps")[0]
-
 
     def append_term(self, term):
         self.body.kids.append(term)
@@ -282,3 +264,8 @@ def is_num_p(x):
                 if re.match(r"^[〇一二三四五六七八九十※～]+$", x.kids[0]):
                     return True
     return False
+
+
+def print_tree(d: Dir, ident=0):
+    for name, obj in d.list:
+        print("{}{}".format(" " * ident, name))
