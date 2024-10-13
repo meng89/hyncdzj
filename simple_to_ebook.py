@@ -3,6 +3,8 @@ import io
 import os
 import tempfile
 import subprocess
+import uuid
+import datetime
 
 import opencc
 
@@ -67,10 +69,24 @@ def write_tree_(d: base.Dir, level, f: io.TextIOWrapper, module):
         f.write("\\title{{}}{{}}".format(name, " "))
 
 
+def create_identifier(s):
+    return uuid.uuid5(uuid.NAMESPACE_URL, "https://github.com/meng89/ncdzj" + s)
+
 
 def write_epub(path, book, module, lang):
     epub = epubpacker.Epub()
+    identifier_string = "元亨寺南傳大藏經" + module.info.name + lang
+    title = "南傳大藏經·" + module.info.name
+    if lang == "zh-Hans":
+        identifier_string = trans_sc(identifier_string)
+        title = trans_sc(title)
+
+    epub.meta.identifier = identifier_string
+    epub.meta.titles = [title]
+    epub.meta.creators = module.info.authors
     epub.meta.languages.append(lang)
+    epub.meta.date = datetime.datetime.strftime(datetime.datetime.now(), "%Y-%m-%dT%H:%M:%SZ")
+
     write_epub_tree(book, epub, [], epub.mark, 0, module, lang)
     epub.write(path)
 
@@ -145,7 +161,6 @@ def write_(obj, e, notes):
 # 短小的合并之类操作应该修改dir对象来完成
 
 def check_epub(epub_path):
-    os.path.splitroot(epub_path)
     stdout_file = open("{}_{}".format(epub_path, "stdout"), "w")
     stderr_file = open("{}_{}".format(epub_path, "stderr"), "w")
 
@@ -154,7 +169,7 @@ def check_epub(epub_path):
         compile_cmd = "java -jar {} {} -q".format(config.EPUBCHECK, epub_path)
         cwd = os.path.split(epub_path)[0]
         # print("运行:", compile_cmd, end=" ", flush=True)
-        print("检查:", os.path.split(epub_path)[1], end=" ", flush=True)
+        print("检查", os.path.split(epub_path)[1], ": ", end="", flush=True)
         p = subprocess.Popen(compile_cmd, cwd=cwd, shell=True, stdout=stdout_file, stderr=stderr_file)
         p.communicate()
         if p.returncode != 0:
@@ -174,8 +189,8 @@ def main():
     # zh-Hans: 简体中文
     # zh-Hant: 传统中文
     td = tempfile.TemporaryDirectory(prefix="ncdzj_")
-    import sn
-    for m in (sn, ):
+    import sn, sv
+    for m in (sn, sv):
 
         book = load_book_from_dir(m.info.name)
         path = os.path.join(td.name, "元_{}_TC.epub".format(m.info.name))

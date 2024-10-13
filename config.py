@@ -9,7 +9,7 @@ CACHE_DIR = os.path.join(PROJECT_ROOT, "cache")
 os.makedirs(CACHE_DIR, exist_ok=True)
 
 # EPUBCheck 路径
-EPUBCHECK = "/mnt/data/software/epubcheck-4.2.6/epubcheck.jar"
+EPUBCHECK = "/mnt/data/software/epubcheck-5.1.0/epubcheck.jar"
 # EPUBCHECK = r"D:\epubcheck-4.2.6\epubcheck.jar"
 
 # 电子书存放目录

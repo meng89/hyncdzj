@@ -1,3 +1,3 @@
 # 律藏/经分别
-
-info = (1, "經分別", ("通妙", ), "SV")
+import base
+info = base.Info(1, "經分別", ("通妙", ), "SV")

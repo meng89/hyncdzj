@@ -646,7 +646,7 @@ def write():
     import sn, dn
     import sv, kd
 
-    for m in (sn, ):
+    for m in (sn, sv):
         xmls = p5a.get_xmls_by_serial(m.info.serial)
         book = load_from_p5a(xmls)
 
