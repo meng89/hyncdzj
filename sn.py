@@ -157,13 +157,130 @@ def is_contain(obj: base.Dir, j: base.Dir):
                 continue
     return False
 
-#处理过后的
-def change2(book_div):
-    return book_div
+
+def add_range_to_name(branch, d: base.Dir):
+    new_list = []
+    for name, obj in d.list:
+        if not isinstance(obj, base.Dir):
+            new_list.append((name, obj))
+            continue
+
+        new_branch = branch.append(name, obj)
+        new_obj = add_range_to_name(new_branch, obj)
+
+        obj_type = _type(branch, name)
+        if  obj_type == "PIAN":
+            xy_min, xy_max = get_xy_serial(obj)
+            new_name = "{}({}～{})".format(name, xy_min, xy_max)
+        elif obj_type == "PIN":
+            jing_min, jing_max = get_jing_serial(obj)
+            new_name = "{}({}～{})".format(name, jing_min, jing_max)
+        else:
+            new_name = name
+
+        new_list.append((new_name, new_obj))
+    d.list = new_list
+    return d
 
 
-def write2pdf(book_div):
+def _type(branch, name):
+    types = [_type2(s) for s in branch]
+    my_type = _type2(name)
+
+    if my_type == "PIAN" and "PIAN" not in types:
+        return "PIAN"
+    elif my_type == "XY" and "PIAN" in types and "XY" not in types:
+        return "XY"
+    elif my_type == "JING" and "PIAN" in types and "XY" in types and "JING" not in types:
+        return "JING"
+    elif my_type is None and "PIAN" in types and "XY" in types and "JING" not in types:
+        return "PIN"
+    elif my_type is None and "PIAN" in types and "XY" in types and "JING" in types:
+        return "SUB"
+
+def _type2(name):
+    if name.endswith("篇"):
+        return "PIAN"
+    elif re.match(r"^\d+ \S+相應$", name):
+        return "XY"
+    elif re.match(r"^SN \d+", name):
+        return "JING"
+    else:
+        return None
+
+def get_xy_serial(d: base.Dir):
+    serials = []
+    for name, obj in d.list:
+        m = re.match(r"^(\d+) \S+相應$", name)
+        if m:
+            serials.append(int(m.group(1)))
+        if isinstance(obj, base.Dir):
+            serials.extend(get_xy_serial(obj))
+    return min(serials), max(serials)
+
+
+def get_jing_serial(d: base.Dir):
+    serials = []
+    for name, obj in d.list:
+        m = re.match(r"^SN \d+\.(\d+)(?:～(\d+))?", name)
+        serials.append(int(m.group(1)))
+        if m.group(m.group(2)):
+            serials.append(int(m.group(2)))
+
+        if isinstance(obj, base.Dir):
+            serials.extend(get_jing_serial(obj))
+    return min(serials), max(serials)
+
+
+def add_range_xiangying(name, d: base.Dir):
+    for name, obj in d.list:
+        if isinstance(obj, base.Dir) and is_pin_kind(name, obj):
+
+
+def add_range_pin_kind(d: base.Dir):
     pass
 
-def write2epub(book_div):
+def is_pian(name, _obj):
+    return name.endswith("篇")
+
+
+
+def has_xiangying(d):
+    for name, obj in d.list:
+        if re.match("^\d+ \S+相應$", name):
+            return True
+        if isinstance(obj, base.Dir):
+            if has_xiangying(d) is True:
+                return True
+    return False
+
+
+def get_xiangying_serial(name):
+    serials = []
+    m = re.match("^\d+ \S+相應$", name)
+    return int(m.group(1))
+
+
+
+def is_pin_kind(name, obj) -> bool:
+    pass
+
+def get_pin_name(name, obj):
+    pass
+
+def get_sutta_range(d):
+    serials = []
+    for name, obj in d.list:
+        m = re.match("^[a-zA-z]+ (\d+)(?:\.(\d+))? ", name)
+        if m:
+            serials.append(int(m.group(1)))
+            if m.group(2):
+                serials.append(int(m.group(2)))
+        else:
+            if isinstance(obj, base.Dir):
+                serials.extend(get_sutta_range(d))
+    return min(serials), max(serials)
+
+
+def merge(d:base.Dir):
     pass
