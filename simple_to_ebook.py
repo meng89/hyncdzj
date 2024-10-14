@@ -193,6 +193,9 @@ def main():
     for m in (sn, sv):
 
         book = load_book_from_dir(m.info.name)
+        if hasattr(m, "change2"):
+            book = m.change2(book)
+
         path = os.path.join(td.name, "元_{}_TC.epub".format(m.info.name))
         write_epub(path, book, m, "zh-Hant")
         check_epub(path)

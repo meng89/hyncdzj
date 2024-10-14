@@ -7,7 +7,6 @@ import base
 info = base.Info(6, "相應部", ("通妙", "雲庵"), "SN")
 
 
-
 def ld_get(list_dict, key):
     for k, v in list_dict:
         if k == key:
@@ -33,19 +32,19 @@ def change(book:base.Dir):
     xy_seril_map = []
     doc_seril_map = []
 
-    change_name(book, 1, xy_seril_map, doc_seril_map)
+    _change_name(book, 1, xy_seril_map, doc_seril_map)
 
-    change_j_name(xy_seril_map, book, doc_seril_map)
+    _change_j_name(xy_seril_map, book, doc_seril_map)
 
     return book
 
 
-def change_name(d: base.Dir, xy_index, xy_seril_map: list, j_seril_map: list):
+def _change_name(d: base.Dir, xy_index, xy_seril_map: list, j_seril_map: list):
     new_list = []
     for name, obj in d.list:
         #print(repr(name))
         if isinstance(obj, base.Dir):
-            xy_index = change_name(obj, xy_index, xy_seril_map, j_seril_map)
+            xy_index = _change_name(obj, xy_index, xy_seril_map, j_seril_map)
 
         if name == "":
             new_name = name
@@ -85,9 +84,9 @@ def change_name(d: base.Dir, xy_index, xy_seril_map: list, j_seril_map: list):
                         #'〔二五～二六〕第三～四\u3000無常（一～二）'
                         #'〔一一～二〇〕第十一\u3000布施利益（一）'
                         #'〔五六、五七〕第四、第五\u3000諸漏（一～二）'
-                        m = m = re.match(r"^〔([一二三四五六七八九十〇]+)[～、]([一二三四五六七八九十〇]+)〕"
-                                         r"[第一二三四五六七八九十〇～、]+　?(\S+)?$", name)
-                                         # r"第[一二三四五六七八九十〇]+～第?[一二三四五六七八九十〇]+　?(\S+)?$", name)
+                        m = re.match(r"^〔([一二三四五六七八九十〇]+)[～、]([一二三四五六七八九十〇]+)〕"
+                                     r"[第一二三四五六七八九十〇～、]+　?(\S+)?$", name)
+                                     # r"第[一二三四五六七八九十〇]+～第?[一二三四五六七八九十〇]+　?(\S+)?$", name)
                         if m:
                             start = cn2an.cn2an(m.group(1), "normal")
                             end = cn2an.cn2an(m.group(2), "normal")
@@ -113,44 +112,44 @@ def change_name(d: base.Dir, xy_index, xy_seril_map: list, j_seril_map: list):
     return xy_index
 
 
-def change_j_name(xy_seril_map: list, d: base.Dir, j_seril_map: list):
+def _change_j_name(xy_seril_map: list, d: base.Dir, j_seril_map: list):
     new_list = []
     for name, obj in d.list:
-        result = find_j_range(obj, j_seril_map)
+        result = _find_j_range(obj, j_seril_map)
         if result is not None:
             start, end = result
-            xy_index = find_xy_index(xy_seril_map, obj)
+            xy_index = _find_xy_index(xy_seril_map, obj)
             new_name = "SN {}.{}".format(xy_index, start)
             if end != start:
-                new_name = new_name + "~" + str(end)
+                new_name = new_name + "～" + str(end)
             new_name += " " + name
             new_list.append((new_name, obj))
         else:
             new_list.append((name, obj))
 
         if isinstance(obj, base.Dir):
-            change_j_name(xy_seril_map, obj, j_seril_map)
+            _change_j_name(xy_seril_map, obj, j_seril_map)
     d.list = new_list
 
 
-def find_j_range(obj, j_seril_map):
+def _find_j_range(obj, j_seril_map):
     for j_obj, start, end in j_seril_map:
         if j_obj == obj:
             return start, end
     return None
 
-def find_xy_index(xy_seril_map, obj):
+def _find_xy_index(xy_seril_map, obj):
     for xy, index in xy_seril_map:
-        if is_contain(xy, obj):
+        if _is_contain(xy, obj):
             return index
     assert Exception
 
-def is_contain(obj: base.Dir, j: base.Dir):
+def _is_contain(obj: base.Dir, j: base.Dir):
     for name, x in obj.list:
         if x == j:
             return True
         elif isinstance(x, base.Dir):
-            result = is_contain(x, j)
+            result = _is_contain(x, j)
             if result is True:
                 return True
             else:
@@ -158,23 +157,31 @@ def is_contain(obj: base.Dir, j: base.Dir):
     return False
 
 
-def add_range_to_name(branch, d: base.Dir):
+def change2(d: base.Dir):
+    return add_range_to_name(d)
+
+# 写入range
+def add_range_to_name(d: base.Dir):
+    return _add_range_to_name([], d)
+
+def _add_range_to_name(branch: list, d: base.Dir):
     new_list = []
     for name, obj in d.list:
         if not isinstance(obj, base.Dir):
             new_list.append((name, obj))
             continue
 
-        new_branch = branch.append(name, obj)
-        new_obj = add_range_to_name(new_branch, obj)
+        new_branch = branch.copy()
+        new_branch.append(name)
+        new_obj = _add_range_to_name(new_branch, obj)
 
         obj_type = _type(branch, name)
         if  obj_type == "PIAN":
-            xy_min, xy_max = get_xy_serial(obj)
-            new_name = "{}({}～{})".format(name, xy_min, xy_max)
+            xy_serials = _get_xy_serials(obj)
+            new_name = "{}({}～{})".format(name, min(xy_serials), max(xy_serials))
         elif obj_type == "PIN":
-            jing_min, jing_max = get_jing_serial(obj)
-            new_name = "{}({}～{})".format(name, jing_min, jing_max)
+            jing_serials = _get_jing_serials(obj)
+            new_name = "{}({}～{})".format(name, min(jing_serials), max(jing_serials))
         else:
             new_name = name
 
@@ -208,79 +215,26 @@ def _type2(name):
     else:
         return None
 
-def get_xy_serial(d: base.Dir):
+def _get_xy_serials(d: base.Dir):
     serials = []
     for name, obj in d.list:
+        print(name)
         m = re.match(r"^(\d+) \S+相應$", name)
         if m:
             serials.append(int(m.group(1)))
         if isinstance(obj, base.Dir):
-            serials.extend(get_xy_serial(obj))
-    return min(serials), max(serials)
+            serials.extend(_get_xy_serials(obj))
+    return serials
 
 
-def get_jing_serial(d: base.Dir):
+def _get_jing_serials(d: base.Dir):
     serials = []
     for name, obj in d.list:
         m = re.match(r"^SN \d+\.(\d+)(?:～(\d+))?", name)
-        serials.append(int(m.group(1)))
-        if m.group(m.group(2)):
-            serials.append(int(m.group(2)))
-
-        if isinstance(obj, base.Dir):
-            serials.extend(get_jing_serial(obj))
-    return min(serials), max(serials)
-
-
-def add_range_xiangying(name, d: base.Dir):
-    for name, obj in d.list:
-        if isinstance(obj, base.Dir) and is_pin_kind(name, obj):
-
-
-def add_range_pin_kind(d: base.Dir):
-    pass
-
-def is_pian(name, _obj):
-    return name.endswith("篇")
-
-
-
-def has_xiangying(d):
-    for name, obj in d.list:
-        if re.match("^\d+ \S+相應$", name):
-            return True
-        if isinstance(obj, base.Dir):
-            if has_xiangying(d) is True:
-                return True
-    return False
-
-
-def get_xiangying_serial(name):
-    serials = []
-    m = re.match("^\d+ \S+相應$", name)
-    return int(m.group(1))
-
-
-
-def is_pin_kind(name, obj) -> bool:
-    pass
-
-def get_pin_name(name, obj):
-    pass
-
-def get_sutta_range(d):
-    serials = []
-    for name, obj in d.list:
-        m = re.match("^[a-zA-z]+ (\d+)(?:\.(\d+))? ", name)
         if m:
             serials.append(int(m.group(1)))
             if m.group(2):
                 serials.append(int(m.group(2)))
-        else:
-            if isinstance(obj, base.Dir):
-                serials.extend(get_sutta_range(d))
-    return min(serials), max(serials)
-
-
-def merge(d:base.Dir):
-    pass
+        if isinstance(obj, base.Dir):
+            serials.extend(_get_jing_serials(obj))
+    return serials
