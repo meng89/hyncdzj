@@ -238,3 +238,21 @@ def _get_jing_serials(d: base.Dir):
         if isinstance(obj, base.Dir):
             serials.extend(_get_jing_serials(obj))
     return serials
+
+
+def merge_jing_in_one_doc(d: base.Dir):
+    new_list = []
+    for name, obj in d.list:
+        if isinstance(obj, base.Dir):
+            if re.match("[a-zA-Z]+ \d", name):
+                new_obj = merge_jing_in_one_doc2(obj)
+            else:
+                new_obj = merge_jing_in_one_doc(obj)
+        else:
+            new_obj = obj
+        new_list.append((name, new_obj))
+    d.list = new_list
+    return d
+
+def merge_jing_in_one_doc2(d: base.Dir):
+    

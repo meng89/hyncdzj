@@ -33,4 +33,4 @@ def write_notice(epub: epubpacker.Epub, xc: book_public.XC):
     htmlstr = xl.Xml(root=html).to_str(do_pretty=True, dont_do_tags=["p"])
     epub.userfiles[doc_path] = htmlstr
     epub.spine.append(doc_path)
-    epub.marks.append(epubpacker.Mark(xc.c("说明"), doc_path))
+    epub.mark.append(epubpacker.Mark(xc.c("说明"), doc_path))

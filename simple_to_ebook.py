@@ -5,6 +5,7 @@ import tempfile
 import subprocess
 import uuid
 import datetime
+import re
 
 import opencc
 
@@ -93,12 +94,10 @@ def write_epub(path, book, module, lang):
 
 def write_epub_tree(d: base.Dir, epub, no_href_marks, parent_mark, doc_count, module, lang):
     for name, obj in d.list:
-        bookmark_name = name
-        if hasattr(module, "bookmark_name"):
-            bookmark_name = module.bookmark_name(name, obj, d)
-
         mark = epubpacker.Mark(name)
         parent_mark.kids.append(mark)
+
+
 
         if isinstance(obj, base.Doc):
             html = create_page(obj, lang)
