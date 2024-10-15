@@ -255,4 +255,5 @@ def merge_jing_in_one_doc(d: base.Dir):
     return d
 
 def merge_jing_in_one_doc2(d: base.Dir):
-    
+    new_doc = base.Doc()
+    for name, obj in d.list:

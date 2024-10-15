@@ -2,7 +2,6 @@
 import copy
 import sys
 import dataclasses
-from operator import index
 
 sys.path.append("/mnt/data/projects/xl")
 
@@ -96,16 +95,27 @@ class Dir:
         no_name_doc.append_term(term)
         self.list.append(("", no_name_doc))
 
+    def write_for_machine(self, path):
+        self._write("machine", path)
 
-    def write(self, path):
+    def write_for_human(self, path):
+        self._write("human", path)
+
+    def _write(self, fun_name, path):
         os.makedirs(path, exist_ok=True)
 
         for index, (k, v) in enumerate(self.list):
-            if isinstance(v, Dir):
-                v.write(os.path.join(path, "{} {}".format(index + 1, k)))
+            if fun_name == "machine":
+                fun = v.write_for_machine
+            elif fun_name == "human":
+                fun = v.write_for_human
+            else:
+                raise Exception
 
+            if isinstance(v, Dir):
+                fun(os.path.join(path, "{} {}".format(index + 1, k)))
             elif isinstance(v, Doc):
-                v.write(os.path.join(path, "{} {}.xml".format(index + 1, k)))
+                fun(os.path.join(path, "{} {}.xml".format(index + 1, k)))
 
 
 doc_dont_do_tags = ["p", "s", "note", "h1"]
@@ -118,7 +128,6 @@ class Doc:
             self._xml = xl.Xml(root=xl.Element("doc"))
             meta_e = self._xml.root.ekid("meta")
             self._xml.root.kids.append(xl.Element("body"))
-            self._xml.root.kids.append(xl.Element("notes"))
             self._xml.root.kids.append(xl.Element("ps"))
 
         self._meta = Metadata(meta_e)
@@ -150,8 +159,10 @@ class Doc:
         root.kids.append(notes)
         return new_xml
 
+    def write_for_machine(self, path):
+        #todo
 
-    def write(self, path):
+    def write_for_human(self, path):
         simple_xml = self._get_simple_xml()
         open(path, "w").write(simple_xml.to_str(do_pretty=True, dont_do_tags=doc_dont_do_tags))
 
