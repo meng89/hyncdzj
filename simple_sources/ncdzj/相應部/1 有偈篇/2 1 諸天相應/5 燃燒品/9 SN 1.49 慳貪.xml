@@ -1,9 +1,11 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔四九〕第九　慳貪
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>同本無此。</note>
+            </ewn>
         </head>
         <j p="天神">
             <s>此世有慳貪</s>
@@ -58,16 +60,11 @@
             <s>當生富貴家</s>
             <s>於此則易獲</s>
             <s>衣食遊享樂</s>
-            <s>未來他所蓄<a n="2"/></s>
+            <s>未來他所蓄<ewn><a/><note>生於他化自在天。</note></ewn></s>
             <s>自由樂享用</s>
             <s>此世有此果</s>
             <s>未來生天界</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">同本無此。</note>
-        <note n="2">生於他化自在天。</note>
-    </notes>
+    <ps></ps>
 </doc>

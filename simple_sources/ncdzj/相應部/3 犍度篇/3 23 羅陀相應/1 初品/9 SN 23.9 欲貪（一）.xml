@@ -1,9 +1,11 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔九〕第九　欲貪（一）
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>漢譯雜阿含經卷六（大正藏二．四〇a）。</note>
+            </ewn>
         </head>
         <p>〔爾時，世尊〕舍衛城……乃至……</p>
         <p>一面坐時，世尊言於具壽羅陀曰：</p>
@@ -13,9 +15,5 @@
         <p><ref cRef="PTS.S.3.194"/>八</p>
         <p>於識斷欲、貪、喜、愛，如是斷彼識者……使未來不生。」</p>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">漢譯雜阿含經卷六（大正藏二．四〇a）。</note>
-    </notes>
+    <ps></ps>
 </doc>

@@ -1,9 +1,11 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔八〇〕第十　光炎
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>同本無此。</note>
+            </ewn>
         </head>
         <j p="天神">
             <s>於世何光炎</s>
@@ -30,9 +32,5 @@
             <s>倚著之生物</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">同本無此。</note>
-    </notes>
+    <ps></ps>
 </doc>

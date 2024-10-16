@@ -1,9 +1,11 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔五〕第五　善說
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>雜阿含經卷四五．二一（大正藏二．三三二a）。</note>
+            </ewn>
         </head>
         <p>〔爾時，世尊〕住舍衛城祇樹給孤獨園……</p>
         <p>於此，世尊呼諸比丘：「諸比丘！」</p>
@@ -43,9 +45,5 @@
             <s>此實無上語</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">雜阿含經卷四五．二一（大正藏二．三三二a）。</note>
-    </notes>
+    <ps></ps>
 </doc>

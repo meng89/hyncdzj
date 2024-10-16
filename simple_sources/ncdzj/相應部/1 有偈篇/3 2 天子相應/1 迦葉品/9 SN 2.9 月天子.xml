@@ -1,9 +1,11 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔九〕第九　月天子
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>雜阿含經卷二二．八（大正藏二．一五五a）。</note>
+            </ewn>
         </head>
         <p>〔爾時，世尊〕住舍衛城……。</p>
         <p>其時，月天子被阿修羅王羅睺所捕。月天子乃憶念世尊，而唱此偈曰：</p>
@@ -37,9 +39,5 @@
             <s>不得生安樂</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">雜阿含經卷二二．八（大正藏二．一五五a）。</note>
-    </notes>
+    <ps></ps>
 </doc>

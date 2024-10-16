@@ -1,9 +1,11 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔三三〕第三　失
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>同上經。</note>
+            </ewn>
         </head>
         <p>「諸比丘！若有失於四念處者，乃正失於順苦盡之聖道。</p>
         <p><ref cRef="PTS.S.5.180"/>四</p>
@@ -12,9 +14,5 @@
         <p>諸比丘！若有失於此四念處者，乃正失於順苦盡之聖道。</p>
         <p>諸比丘！若有得於此四念處者，乃正得於順苦盡之聖道。」</p>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">同上經。</note>
-    </notes>
+    <ps></ps>
 </doc>

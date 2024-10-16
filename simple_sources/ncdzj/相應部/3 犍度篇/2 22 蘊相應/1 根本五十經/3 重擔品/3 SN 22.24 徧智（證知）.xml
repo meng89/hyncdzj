@@ -1,9 +1,11 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔二四〕第三　徧智
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>漢譯雜阿含經卷一（大正藏二．一a）。</note>
+            </ewn>
             （證知）
         </head>
         <p>〔爾時，世尊〕在舍衛城……乃至……</p>
@@ -16,9 +18,5 @@
         <p>若於受能證知……想……行……</p>
         <p>若於識能證知、徧知、離、斷識者，即能滅盡於苦。」</p>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">漢譯雜阿含經卷一（大正藏二．一a）。</note>
-    </notes>
+    <ps></ps>
 </doc>

@@ -1,15 +1,17 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔五二〕第二　依不老
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>雜阿含經卷四八．二五（大正藏二．三五五c）。</note>
+            </ewn>
         </head>
         <j p="天神">
             <s>何物不老善</s>
             <s>何者善基礎</s>
             <s>何者為人寶</s>
-            <s>何者盜不搬<a n="2"/></s>
+            <s>何者盜不搬<ewn><a/><note>底本之 hāriyan 讀為 ahāriyan。</note></ewn></s>
         </j>
         <p><ref cRef="PTS.S.1.37"/>二</p>
         <j p="世尊">
@@ -19,10 +21,5 @@
             <s>功德盜不搬</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">雜阿含經卷四八．二五（大正藏二．三五五c）。</note>
-        <note n="2">底本之 hāriyan 讀為 ahāriyan。</note>
-    </notes>
+    <ps></ps>
 </doc>

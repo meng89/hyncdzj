@@ -1,9 +1,11 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔九〕第九　低沙
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>雜阿含三八（大正藏二．二七七b）別雜一（大正藏二．二三五b）。</note>
+            </ewn>
         </head>
         <p>〔爾時，世尊〕住舍衛城。</p>
         <p><ref cRef="PTS.S.2.282"/>二</p>
@@ -22,9 +24,5 @@
             <s>低沙住梵行</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">雜阿含三八（大正藏二．二七七b）別雜一（大正藏二．二三五b）。</note>
-    </notes>
+    <ps></ps>
 </doc>

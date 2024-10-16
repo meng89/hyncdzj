@@ -1,9 +1,11 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔六〕不眠
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>雜阿含經卷三六．一一（大正藏二．二六二c）。</note>
+            </ewn>
         </head>
         <p>立於一面之天神，於世尊前，而唱偈曰：</p>
         <j>
@@ -13,17 +15,11 @@
             <s>依幾何得清</s>
         </j>
         <j p="世尊">
-            <s>他醒於五眠<a n="2"/></s>
-            <s>他眠於五醒<a n="3"/></s>
+            <s>他醒於五眠<ewn><a/><note>五是五蓋。</note></ewn></s>
+            <s>他眠於五醒<ewn><a/><note>五是五無漏根。</note></ewn></s>
             <s>染塵依於五</s>
             <s>依五而得清</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">雜阿含經卷三六．一一（大正藏二．二六二c）。</note>
-        <note n="2">五是五蓋。</note>
-        <note n="3">五是五無漏根。</note>
-    </notes>
+    <ps></ps>
 </doc>

@@ -1,16 +1,18 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔一五〕第五　樂
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>同本無此。</note>
+            </ewn>
         </head>
         <p>〔爾時，世尊〕住舍衛城祇樹給孤獨園……</p>
         <p>時，天帝釋來詣世尊處，詣已，禮敬世尊立於一面。</p>
         <p>立一面之天帝釋，以此白世尊曰：「世尊！何處有樂土？」</p>
         <p><ref cRef="PTS.S.1.233"/>四</p>
         <j p="世尊">
-            <s>園林幽美處<a n="2"/></s>
+            <s>園林幽美處<ewn><a/><note>cetya = cetiya = cittikataṭṭhena cetyaṁ veditabbo（為各種顏色所裝飾之美麗）。</note></ewn></s>
             <s>作美麗蓮池</s>
             <s>為人所樂者</s>
             <s>不值十六一</s>
@@ -20,10 +22,5 @@
             <s>此悉愛樂土</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">同本無此。</note>
-        <note n="2">cetya = cetiya = cittikataṭṭhena cetyaṁ veditabbo（為各種顏色所裝飾之美麗）。</note>
-    </notes>
+    <ps></ps>
 </doc>

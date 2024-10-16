@@ -1,9 +1,11 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔二〕第二　人
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>雜阿含經卷三八．四（大正藏二．二七六c）。</note>
+            </ewn>
         </head>
         <p>〔爾時，世尊〕住舍衛城……</p>
         <p>時，拘薩羅國之波斯匿王詣於世尊處。詣已，禮敬世尊坐於一面。</p>
@@ -17,9 +19,5 @@
             <s>如持倒竹實</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">雜阿含經卷三八．四（大正藏二．二七六c）。</note>
-    </notes>
+    <ps></ps>
 </doc>

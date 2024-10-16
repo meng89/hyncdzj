@@ -1,9 +1,11 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔二三〕第三　幻術
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>雜阿含經卷四〇．一六（大正藏二．二九六a）。</note>
+            </ewn>
         </head>
         <p>〔爾時，世尊〕住舍衛城……</p>
         <p>世尊，以此宣說：</p>
@@ -24,9 +26,5 @@
             <s>百年墮地獄」</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">雜阿含經卷四〇．一六（大正藏二．二九六a）。</note>
-    </notes>
+    <ps></ps>
 </doc>

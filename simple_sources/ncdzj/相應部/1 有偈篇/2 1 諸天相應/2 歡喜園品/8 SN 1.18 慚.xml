@@ -1,15 +1,17 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔一八〕慚
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>雜阿含經卷二二．三（大正藏二．一五四a）。</note>
+            </ewn>
         </head>
         <j p="天神">
             <s>誰於此世間</s>
             <s>有慚止惡者</s>
             <s>如鞭影駿馬</s>
-            <s>彼悟離非難<a n="2"/></s>
+            <s>彼悟離非難<ewn><a/><note>離非難而悟 nindaṁ appabodhati = garahaṁ apaharanto bujjhati。</note></ewn></s>
         </j>
         <j p="世尊">
             <s>有慚制止惡</s>
@@ -18,10 +20,5 @@
             <s>以平行不平</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">雜阿含經卷二二．三（大正藏二．一五四a）。</note>
-        <note n="2">離非難而悟 nindaṁ appabodhati = garahaṁ apaharanto bujjhati。</note>
-    </notes>
+    <ps></ps>
 </doc>

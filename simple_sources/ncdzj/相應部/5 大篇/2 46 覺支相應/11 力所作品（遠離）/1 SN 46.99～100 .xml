@@ -1,17 +1,17 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔九九～一〇〇〕第一～一二
-            <a n="1"/>
-            <a n="2"/>
+            <ewn>
+                <a/>
+                <note>應該有〔九九～一一〇〕。</note>
+            </ewn>
+            <ewn>
+                <a/>
+                <note>應該有〔九九【南傳】，～一一〇〕。</note>
+            </ewn>
         </head>
         <p>諸比丘！譬如作諸力所作之事業，皆依於地、立於地，如是作諸力所作之事業……乃至廣說……</p>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">應該有〔九九～一一〇〕。</note>
-        <note n="2">應該有〔九九【南傳】，～一一〇〕。</note>
-    </notes>
+    <ps></ps>
 </doc>

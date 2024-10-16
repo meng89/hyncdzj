@@ -1,9 +1,11 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔四六〕第六　天女
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>雜阿含經卷二二．一二（大正藏二．一五六a）。</note>
+            </ewn>
         </head>
         <j p="天神">
             <s>天女所侍者</s>
@@ -26,9 +28,5 @@
             <s>到達於涅槃</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">雜阿含經卷二二．一二（大正藏二．一五六a）。</note>
-    </notes>
+    <ps></ps>
 </doc>

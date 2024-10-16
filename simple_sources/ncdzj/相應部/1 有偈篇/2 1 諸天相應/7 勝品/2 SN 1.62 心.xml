@@ -1,9 +1,11 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔六二〕第二　心
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>雜阿含經卷三六．一八（大正藏二．二六四a）。</note>
+            </ewn>
         </head>
         <j p="天神">
             <s>世間依何導</s>
@@ -18,9 +20,5 @@
             <s>一切所從屬</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">雜阿含經卷三六．一八（大正藏二．二六四a）。</note>
-    </notes>
+    <ps></ps>
 </doc>

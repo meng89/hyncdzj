@@ -1,12 +1,14 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔八一〕第十一　無諍
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>同本無此。</note>
+            </ewn>
         </head>
         <j p="天神">
-            <s>此世誰無諍<a n="2"/></s>
+            <s>此世誰無諍<ewn><a/><note>無諍 araṇa = nikkilesa 無煩惱。</note></ewn></s>
             <s>誰生活不滅</s>
             <s>誰遍知欲望</s>
             <s>常為自由人</s>
@@ -17,7 +19,7 @@
             <s>所尊敬者誰</s>
         </j>
         <j p="世尊">
-            <s>沙門世無諍<a n="3"/></s>
+            <s>沙門世無諍<ewn><a/><note>沙門 samaṇā = khiṇasava. samaṇā 指無漏之沙門。</note></ewn></s>
             <s>沙門生不滅</s>
             <s>沙門知欲望</s>
             <s>常為自由人</s>
@@ -34,11 +36,5 @@
             <s>光炎及無諍</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">同本無此。</note>
-        <note n="2">無諍 araṇa = nikkilesa 無煩惱。</note>
-        <note n="3">沙門 samaṇā = khiṇasava. samaṇā 指無漏之沙門。</note>
-    </notes>
+    <ps></ps>
 </doc>

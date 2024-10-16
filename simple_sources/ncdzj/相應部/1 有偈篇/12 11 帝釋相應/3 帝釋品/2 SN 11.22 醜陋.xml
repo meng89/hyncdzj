@@ -1,9 +1,11 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔二二〕第二　醜陋
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>雜阿含經卷四〇．四（大正藏二．二九一a）。</note>
+            </ewn>
         </head>
         <p>〔爾時，世尊〕住舍衛城祇樹給孤獨園……</p>
         <p>於此，世尊宣說：</p>
@@ -27,9 +29,5 @@
             <s>常以抑自己」</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">雜阿含經卷四〇．四（大正藏二．二九一a）。</note>
-    </notes>
+    <ps></ps>
 </doc>

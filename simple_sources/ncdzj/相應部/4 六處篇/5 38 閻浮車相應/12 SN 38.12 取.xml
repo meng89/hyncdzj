@@ -1,5 +1,4 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             <ref cRef="PTS.S.4.258"/>
@@ -8,11 +7,7 @@
         <p>「友舍利弗！所謂：『取、取』者，友！何者為取耶？」</p>
         <p>「友！此等四者是取，即：欲取、見取、戒禁取、我語取是。友！此等者為四種取。」</p>
         <p>「友！有捨棄此等四取之道耶？有行道耶？」</p>
-        <p><a n="1"/>……</p>
+        <p><ewn><a/><note>上之三經。</note></ewn>……</p>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">上之三經。</note>
-    </notes>
+    <ps></ps>
 </doc>

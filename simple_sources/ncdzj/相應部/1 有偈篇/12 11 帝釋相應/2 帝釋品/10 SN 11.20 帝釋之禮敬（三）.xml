@@ -1,9 +1,11 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔二〇〕第十　帝釋之禮敬（三）
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>雜阿含經卷四〇．一一（大正藏二．二三九c）。</note>
+            </ewn>
         </head>
         <p>〔爾時，世尊〕住舍衛城祇樹給孤獨園……</p>
         <p>於此，世尊宣說：</p>
@@ -31,7 +33,7 @@
             <s>無瓶又無鍋</s>
             <s>所望物備他</s>
             <s>此以養育身</s>
-            <s>賢善語<a n="2"/><a n="3"/>正語</s>
+            <s>賢善語<ewn><a/><note>sumantitamantino 說示應諷誦之經、應行頭陀、應吞飲之甘露等善語。</note></ewn><ewn><a/><note>sumantitamantino 說示應諷誦之經、應行頭陀、應吞飲之甘露等善語。（CBETA 按：漢譯南傳大藏經此頁中缺相對應之註標[40]，今於此處加上[40]之註標。）</note></ewn>正語</s>
             <s>默然正遊方</s>
             <s>諸天修羅戰</s>
             <s>摩多利凡夫</s>
@@ -64,11 +66,5 @@
             <s>帝釋之禮敬</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">雜阿含經卷四〇．一一（大正藏二．二三九c）。</note>
-        <note n="2">sumantitamantino 說示應諷誦之經、應行頭陀、應吞飲之甘露等善語。</note>
-        <note n="3">sumantitamantino 說示應諷誦之經、應行頭陀、應吞飲之甘露等善語。（CBETA 按：漢譯南傳大藏經此頁中缺相對應之註標[40]，今於此處加上[40]之註標。）</note>
-    </notes>
+    <ps></ps>
 </doc>

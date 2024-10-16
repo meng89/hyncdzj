@@ -1,9 +1,11 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔一九〕第九　農夫
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>同本無此。</note>
+            </ewn>
         </head>
         <p>舍衛城因緣。爾時，世尊〔對諸比丘〕說涅槃法、教示、獎勵、令歡喜。彼等諸比丘，理解、思惟、注心、傾耳諦聽於法。</p>
         <p><ref cRef="PTS.S.1.115"/>二</p>
@@ -19,7 +21,7 @@
         <p>波旬！舌是汝有，味是汝有，……〔乃至〕……。</p>
         <p>波旬！意是汝有，法是汝有，意觸之識處是汝有。波旬！無意、無法，無意觸之識處，則非汝之行處。」</p>
         <j p="惡魔">
-            <s>此云我有者<a n="2"/></s>
+            <s>此云我有者<ewn><a/><note>yaṁ vadanti mamaṁ ti（以之謂我有）。te vadanti mamaṁ ti（彼等謂我有）。</note></ewn></s>
             <s>是云此有我</s>
             <s>若汝意於此</s>
             <s>沙門未脫我</s>
@@ -32,10 +34,5 @@
         </j>
         <p>時，惡魔波旬……乃至……隱形沒於其處。</p>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">同本無此。</note>
-        <note n="2">yaṁ vadanti mamaṁ ti（以之謂我有）。te vadanti mamaṁ ti（彼等謂我有）。</note>
-    </notes>
+    <ps></ps>
 </doc>

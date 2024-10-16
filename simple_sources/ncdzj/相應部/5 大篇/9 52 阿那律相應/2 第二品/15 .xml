@@ -1,18 +1,13 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head/>
         <p>此中攝頌曰：</p>
         <j>
             <s>千神變天耳</s>
-            <s>心處業<a n="1"/>與道</s>
+            <s>心處業<ewn><a/><note>括弧內相當於原文部分，不明瞭。</note></ewn>與道</s>
             <s>世間種勝解</s>
             <s>根靜慮三明</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">括弧內相當於原文部分，不明瞭。</note>
-    </notes>
+    <ps></ps>
 </doc>

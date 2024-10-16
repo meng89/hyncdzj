@@ -1,9 +1,11 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔五八〕第八　非道
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>雜阿含經卷三六．二八（大正藏二．二六六a）。</note>
+            </ewn>
         </head>
         <j p="天神">
             <s>何者謂非道</s>
@@ -20,9 +22,5 @@
             <s>為無水沐浴</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">雜阿含經卷三六．二八（大正藏二．二六六a）。</note>
-    </notes>
+    <ps></ps>
 </doc>

@@ -1,9 +1,11 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔六九〕第九　欲望
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>同本無此。</note>
+            </ewn>
         </head>
         <j p="天神">
             <s>世依何所縛</s>
@@ -18,9 +20,5 @@
             <s>以斷一切縛</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">同本無此。</note>
-    </notes>
+    <ps></ps>
 </doc>

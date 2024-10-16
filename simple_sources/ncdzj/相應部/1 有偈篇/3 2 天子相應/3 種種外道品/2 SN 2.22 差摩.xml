@@ -1,9 +1,11 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔二二〕第二　差摩
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>雜阿含經卷四八．一〇（大正藏二．三五〇c）。</note>
+            </ewn>
         </head>
         <p>立於一面之差摩天子，於世尊前，唱此偈曰：</p>
         <j>
@@ -35,9 +37,5 @@
             <s>如毀軸沈思</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">雜阿含經卷四八．一〇（大正藏二．三五〇c）。</note>
-    </notes>
+    <ps></ps>
 </doc>

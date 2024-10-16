@@ -1,10 +1,12 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             <ref cRef="PTS.S.1.38"/>
             〔五七〕第七　生因
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>雜阿含經卷三六．二六（大正藏二．二六五c）。</note>
+            </ewn>
             （三）
         </head>
         <j p="天神">
@@ -20,9 +22,5 @@
             <s>業為人依怙</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">雜阿含經卷三六．二六（大正藏二．二六五c）。</note>
-    </notes>
+    <ps></ps>
 </doc>

@@ -1,9 +1,11 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔一〇〕第十　叔迦羅
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>雜阿含經卷五〇．三（大正藏二．三六五a）。</note>
+            </ewn>
             （二）
         </head>
         <p><ref cRef="PTS.S.1.213"/>一</p>
@@ -17,9 +19,5 @@
             <s>彼得多功德</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">雜阿含經卷五〇．三（大正藏二．三六五a）。</note>
-    </notes>
+    <ps></ps>
 </doc>

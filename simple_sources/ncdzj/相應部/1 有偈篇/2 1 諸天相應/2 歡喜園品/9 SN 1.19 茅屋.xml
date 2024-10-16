@@ -1,10 +1,12 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             <ref cRef="PTS.S.1.8"/>
             〔一九〕茅屋
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>雜阿含經卷二二．九（大正藏二．一五五b）。</note>
+            </ewn>
         </head>
         <j p="天神">
             <s>卿有茅屋否</s>
@@ -37,9 +39,5 @@
             <s>善哉卿脫縛」</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">雜阿含經卷二二．九（大正藏二．一五五b）。</note>
-    </notes>
+    <ps></ps>
 </doc>

@@ -1,9 +1,11 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔四七〕第七　植林
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>雜阿含經卷三六．五（大正藏二．二六一a）。</note>
+            </ewn>
         </head>
         <j p="天神">
             <s>任何人功德</s>
@@ -22,9 +24,5 @@
             <s>是人行天界</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">雜阿含經卷三六．五（大正藏二．二六一a）。</note>
-    </notes>
+    <ps></ps>
 </doc>

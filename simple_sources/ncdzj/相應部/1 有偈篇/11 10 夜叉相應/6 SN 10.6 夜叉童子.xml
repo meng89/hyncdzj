@@ -1,9 +1,11 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔六〕第六　夜叉童子
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>雜阿含經卷四九．二八（大正藏二．三六二c）。</note>
+            </ewn>
         </head>
         <p>爾時，尊者阿那律住舍衛城祇樹給孤獨園。</p>
         <p>時，尊者阿那律，黎明即起，以誦法句。</p>
@@ -21,9 +23,5 @@
             <s>我等脫鬼胎</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">雜阿含經卷四九．二八（大正藏二．三六二c）。</note>
-    </notes>
+    <ps></ps>
 </doc>

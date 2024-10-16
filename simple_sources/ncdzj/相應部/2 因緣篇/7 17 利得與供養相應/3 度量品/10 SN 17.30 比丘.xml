@@ -1,9 +1,11 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔三〇〕第十　比丘
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>「比丘」，原文 bhikku 誤為 bhikkhu。</note>
+            </ewn>
         </head>
         <p>〔爾時，世尊〕住舍衛城……</p>
         <p><ref cRef="PTS.S.2.239"/>二</p>
@@ -22,9 +24,5 @@
             <s>皮膚紐比丘</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">「比丘」，原文 bhikku 誤為 bhikkhu。</note>
-    </notes>
+    <ps></ps>
 </doc>

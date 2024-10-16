@@ -1,5 +1,4 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             <ref cRef="PTS.S.2.285"/>
@@ -44,7 +43,5 @@
             <s>此為第二品</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes/>
+    <ps></ps>
 </doc>

@@ -1,15 +1,13 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔一〇一～一一〇〕第一～一二
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>本品之經數應該是一一，想是原本有誤。</note>
+            </ewn>
         </head>
         <p>諸比丘！有三種尋覓。以何為三耶？欲尋、有尋、梵行尋是……乃至廣說……</p>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">本品之經數應該是一一，想是原本有誤。</note>
-    </notes>
+    <ps></ps>
 </doc>

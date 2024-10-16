@@ -1,9 +1,11 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔三〕第三　輕蔑溫和者
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>雜阿含經卷四五．一九（大正藏二．三三一c）。</note>
+            </ewn>
         </head>
         <p>爾時，尊者婆耆沙與乃師尊者尼俱律陀劫波，共住於阿臘毘之阿伽羅婆奢提〔廟〕。</p>
         <p>其時，尊者婆耆沙以誇自己之頓才，輕蔑其他溫和比丘等。</p>
@@ -26,15 +28,9 @@
             <s>於世不固陋</s>
             <s><ref cRef="PTS.S.1.188"/>精進離蓋障</s>
             <s>清拂無餘慢</s>
-            <s>依智慧滅盡<a n="2"/></s>
-            <s>煩惱寂靜者<a n="3"/></s>
+            <s>依智慧滅盡<ewn><a/><note>vijjāyantakaro = vijjāya kilesa-antakaro。</note></ewn></s>
+            <s>煩惱寂靜者<ewn><a/><note>samitāvi = rāgâdinaṁ samitatāya samitāvi。</note></ewn></s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">雜阿含經卷四五．一九（大正藏二．三三一c）。</note>
-        <note n="2">vijjāyantakaro = vijjāya kilesa-antakaro。</note>
-        <note n="3">samitāvi = rāgâdinaṁ samitatāya samitāvi。</note>
-    </notes>
+    <ps></ps>
 </doc>

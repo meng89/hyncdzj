@@ -1,9 +1,11 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔六六〕第六　窘迫
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>同本無此。</note>
+            </ewn>
         </head>
         <j p="天神">
             <s>世何所窘迫</s>
@@ -18,9 +20,5 @@
             <s>依欲常灼燻</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">同本無此。</note>
-    </notes>
+    <ps></ps>
 </doc>

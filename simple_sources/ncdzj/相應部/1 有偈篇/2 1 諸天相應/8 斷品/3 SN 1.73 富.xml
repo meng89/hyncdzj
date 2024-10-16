@@ -1,9 +1,11 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔七三〕第三　富
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>雜阿含經卷三六．二二（大正藏二．二六四c）。</note>
+            </ewn>
         </head>
         <j p="天神">
             <s>人於此世間</s>
@@ -11,7 +13,7 @@
             <s>善修何種事</s>
             <s>能帶來安樂</s>
             <s>何物之果實</s>
-            <s>其味為最上<a n="2"/></s>
+            <s>其味為最上<ewn><a/><note>sādutaraṁ = madhurataraṁ。</note></ewn></s>
             <s>如何之生活</s>
             <s>為生活最勝</s>
         </j>
@@ -26,10 +28,5 @@
             <s>謂生活最勝</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">雜阿含經卷三六．二二（大正藏二．二六四c）。</note>
-        <note n="2">sādutaraṁ = madhurataraṁ。</note>
-    </notes>
+    <ps></ps>
 </doc>

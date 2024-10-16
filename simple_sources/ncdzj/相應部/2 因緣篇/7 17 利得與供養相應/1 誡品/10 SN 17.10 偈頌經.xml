@@ -1,9 +1,11 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔一〇〕第十　偈頌經
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>ltivuttaka 81 參考。</note>
+            </ewn>
         </head>
         <p>〔爾時，世尊〕住舍衛城……</p>
         <p>「諸比丘！利得、供養與名譽，甚為可怖……是障礙。</p>
@@ -32,9 +34,5 @@
             <s>豺與毘嵐風</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">ltivuttaka 81 參考。</note>
-    </notes>
+    <ps></ps>
 </doc>

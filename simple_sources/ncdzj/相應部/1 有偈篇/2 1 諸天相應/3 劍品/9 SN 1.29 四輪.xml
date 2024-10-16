@@ -1,32 +1,26 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             <ref cRef="PTS.S.1.16"/>
             〔二九〕第九　四輪
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>雜阿含經卷二二．一三（大正藏二．一五六a）。</note>
+            </ewn>
         </head>
         <j p="天神">
-            <s>四輪九門孔<a n="2"/><a n="3"/></s>
-            <s>污穢滿貪欲<a n="4"/></s>
+            <s>四輪九門孔<ewn><a/><note>四車輪者，即是四威儀。（註釋）</note></ewn><ewn><a/><note>九種門孔 navadvāra = nava vaṇamukha。</note></ewn></s>
+            <s>污穢滿貪欲<ewn><a/><note>污穢充滿 puṇṇaṁ = asuci-pūraṁ。</note></ewn></s>
             <s>乃是不淨性</s>
             <s>大雄從如何</s>
             <s>有此之出口</s>
         </j>
         <j p="世尊">
             <s>以斷惡欲貪</s>
-            <s>乃至繩與綱<a n="5"/></s>
+            <s>乃至繩與綱<ewn><a/><note>在底本有 nandiṁ 應讀作 naddhiṁ。</note></ewn></s>
             <s>拔除渴愛根</s>
             <s>如是有出口</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">雜阿含經卷二二．一三（大正藏二．一五六a）。</note>
-        <note n="2">四車輪者，即是四威儀。（註釋）</note>
-        <note n="3">九種門孔 navadvāra = nava vaṇamukha。</note>
-        <note n="4">污穢充滿 puṇṇaṁ = asuci-pūraṁ。</note>
-        <note n="5">在底本有 nandiṁ 應讀作 naddhiṁ。</note>
-    </notes>
+    <ps></ps>
 </doc>

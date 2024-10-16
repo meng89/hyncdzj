@@ -1,5 +1,4 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             <ref cRef="PTS.S.1.51"/>
@@ -52,7 +51,5 @@
             <s>月日等為十</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes/>
+    <ps></ps>
 </doc>

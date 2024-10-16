@@ -5,7 +5,7 @@
 import os
 
 
-import p5a_to_simple
+import load_from_p5a
 
 
 xmls = [

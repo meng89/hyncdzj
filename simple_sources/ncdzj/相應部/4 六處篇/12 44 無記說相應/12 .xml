@@ -1,5 +1,4 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head/>
         <p>無記說相應（終）</p>
@@ -8,7 +7,7 @@
             <s>讖摩長老尼</s>
             <s>及阿㝹羅陀</s>
             <s>舍利弗三經</s>
-            <s>至於拘絺羅<a n="1"/></s>
+            <s>至於拘絺羅<ewn><a/><note>此一行之意不明。PTS 本有 Sāripuṭṭo ti Koṭṭhiko 於暹羅本有 Sāriputtā ti Koṭṭhiko 暹羅本之意想是「拘絺羅呼舍利弗！」舍利弗——拘絺羅四經之中，是由拘絺羅呼舍利弗。</note></ewn></s>
             <s>目犍連婆蹉</s>
             <s>論議堂阿難</s>
             <s>詵陀之此等</s>
@@ -30,9 +29,5 @@
             <s>勝者語河長運</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">此一行之意不明。PTS 本有 Sāripuṭṭo ti Koṭṭhiko 於暹羅本有 Sāriputtā ti Koṭṭhiko 暹羅本之意想是「拘絺羅呼舍利弗！」舍利弗——拘絺羅四經之中，是由拘絺羅呼舍利弗。</note>
-    </notes>
+    <ps></ps>
 </doc>

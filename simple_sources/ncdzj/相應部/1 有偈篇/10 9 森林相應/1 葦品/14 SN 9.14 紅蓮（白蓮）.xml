@@ -1,9 +1,11 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔一四〕第十四　紅蓮（白蓮）
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>雜阿含經卷五〇．一四（大正藏二．三六九a）。</note>
+            </ewn>
         </head>
         <p>爾時，一比丘住拘薩羅國之茂林。</p>
         <p>時，此比丘食後收鉢，入於蓮池，以嗅紅蓮之香。</p>
@@ -22,7 +24,7 @@
             <s>是花香盜人</s>
             <s>以掘其根頭</s>
             <s>或餐其蓮莖</s>
-            <s>如是行暴<a n="2"/><a n="3"/>人</s>
+            <s>如是行暴<ewn><a/><note>在註中作 ākiṇṇa-kammanto 者，乃 aparisuddha-kammato 不淨業之意；如為 akahina-kammanto 者，kakkhala-kammamt。則作荒弛行業之意解。</note></ewn><ewn><a/><note>在註中作 ākiṇṇa-kammanto 者，乃 aparisuddha-kammato 不淨業之意；如為 akahina-kammanto 者，kakkhala-kammamt。則作荒弛行業之意解。（CBETA 按：漢譯南傳大藏經此頁中缺相對應之註標[28]，今於此處加上[28]之註標。）</note></ewn>人</s>
             <s>何故汝不云</s>
         </j>
         <p><ref cRef="PTS.S.1.205"/>六</p>
@@ -63,11 +65,5 @@
             <s>紅蓮等十四</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">雜阿含經卷五〇．一四（大正藏二．三六九a）。</note>
-        <note n="2">在註中作 ākiṇṇa-kammanto 者，乃 aparisuddha-kammato 不淨業之意；如為 akahina-kammanto 者，kakkhala-kammamt。則作荒弛行業之意解。</note>
-        <note n="3">在註中作 ākiṇṇa-kammanto 者，乃 aparisuddha-kammato 不淨業之意；如為 akahina-kammanto 者，kakkhala-kammamt。則作荒弛行業之意解。（CBETA 按：漢譯南傳大藏經此頁中缺相對應之註標[28]，今於此處加上[28]之註標。）</note>
-    </notes>
+    <ps></ps>
 </doc>

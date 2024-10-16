@@ -1,9 +1,11 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔二〇〕第十　緣
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>雜阿含一二（大正藏二．八四b）。</note>
+            </ewn>
         </head>
         <p>〔爾時，世尊〕住舍衛城。</p>
         <p>世尊曰：「諸比丘！我為汝等說緣起及緣生之法，汝等諦聽，當善思念，我則為說」。</p>
@@ -30,9 +32,5 @@
             <s>第十則為緣</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">雜阿含一二（大正藏二．八四b）。</note>
-    </notes>
+    <ps></ps>
 </doc>

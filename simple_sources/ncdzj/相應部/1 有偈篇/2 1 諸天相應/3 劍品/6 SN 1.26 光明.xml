@@ -1,9 +1,11 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔二六〕第六　光明
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>雜阿含經卷四九．一七（大正藏二．三六〇b）。</note>
+            </ewn>
         </head>
         <j p="天神">
             <s>世有幾何光</s>
@@ -22,9 +24,5 @@
             <s>此為無上光</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">雜阿含經卷四九．一七（大正藏二．三六〇b）。</note>
-    </notes>
+    <ps></ps>
 </doc>

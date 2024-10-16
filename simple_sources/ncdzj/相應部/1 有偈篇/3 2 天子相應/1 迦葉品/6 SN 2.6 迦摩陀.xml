@@ -1,9 +1,11 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔六〕第六　迦摩陀
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>雜阿含經卷四九．二〇（大正藏二．二六一a）。</note>
+            </ewn>
         </head>
         <p>立於一面之迦摩陀天子，以此白世尊曰：</p>
         <p>「世尊，是者難為。世尊，是甚難。」</p>
@@ -44,9 +46,5 @@
             <s>聖者乃樂行</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">雜阿含經卷四九．二〇（大正藏二．二六一a）。</note>
-    </notes>
+    <ps></ps>
 </doc>

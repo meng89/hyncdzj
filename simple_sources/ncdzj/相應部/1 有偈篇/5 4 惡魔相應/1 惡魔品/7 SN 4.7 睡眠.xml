@@ -1,9 +1,11 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔七〕第七　睡眠
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>雜阿含經卷三九．七（大正藏二．二八五a）。</note>
+            </ewn>
         </head>
         <p>爾時，世尊住王舍城竹林栗鼠養餌所。</p>
         <p>爾時，世尊，其當夜多作露地經行後，將曉，洗足入室。盤腿起思惟於正念、正心時，而作師子臥。</p>
@@ -11,7 +13,7 @@
         <j>
             <s>何故睡眠耶</s>
             <s>睡眠為何故</s>
-            <s>今何如眠死<a n="2"/></s>
+            <s>今何如眠死<ewn><a/><note>如死 dubbhayo 讀為 dubbhago = mato viya。</note></ewn></s>
             <s>空舍為眠乎</s>
             <s>日已高上昇</s>
             <s>何以睡眠乎</s>
@@ -19,17 +21,10 @@
         <j p="世尊">
             <s>破愛貪著網</s>
             <s>何處均無惑</s>
-            <s>一切有依盡<a n="3"/></s>
-            <s>覺者於睡眠<a n="4"/></s>
+            <s>一切有依盡<ewn><a/><note>盡一切有依 sabba-upadhinaṁ parikkhayā = sabbesaṁ khandha-kilesa-abhisaṅ khāra-kāma-guṇa-bhedānaṁ upadhinaṁ parikkhayā（蘊、煩惱行、欲德、一切依之盡）。</note></ewn></s>
+            <s>覺者於睡眠<ewn><a/><note>覺者，底本之 Budho 讀為 Buddho。</note></ewn></s>
             <s>惡魔汝何為</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">雜阿含經卷三九．七（大正藏二．二八五a）。</note>
-        <note n="2">如死 dubbhayo 讀為 dubbhago = mato viya。</note>
-        <note n="3">盡一切有依 sabba-upadhinaṁ parikkhayā = sabbesaṁ khandha-kilesa-abhisaṅ khāra-kāma-guṇa-bhedānaṁ upadhinaṁ parikkhayā（蘊、煩惱行、欲德、一切依之盡）。</note>
-        <note n="4">覺者，底本之 Budho 讀為 Buddho。</note>
-    </notes>
+    <ps></ps>
 </doc>

@@ -1,9 +1,11 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔三〇〕種種之外道師
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>雜阿含經卷四九．一五（大正藏二．三五九b）。</note>
+            </ewn>
         </head>
         <p>如是我聞。爾時世尊住王舍城竹林栗鼠養餌處。</p>
         <p><ref cRef="PTS.S.1.66"/>二</p>
@@ -11,7 +13,7 @@
         <p>立於一面之阿舍摩天子，關於富蘭那迦葉，於世尊前，唱此偈曰：</p>
         <j>
             <s>世間之割殺</s>
-            <s>以及害與奪<a n="2"/></s>
+            <s>以及害與奪<ewn><a/><note>亦害、亦奪（hatajānisu）hata = poṭhanesu jānisu = dhanajānisu。</note></ewn></s>
             <s>迦葉謂非惡</s>
             <s>不見自功德</s>
             <s>彼述實自信</s>
@@ -19,7 +21,7 @@
         </j>
         <p>時舍波利天子，關於末伽梨瞿舍羅，於世尊前，唱此偈曰：</p>
         <j>
-            <s>苦行與厭離<a n="3"/></s>
+            <s>苦行與厭離<ewn><a/><note>依於厭離 jigucchāya = pāpa-jigucchanena。</note></ewn></s>
             <s>以善自制伏</s>
             <s>與人語止爭</s>
             <s>離於有罪語</s>
@@ -29,9 +31,9 @@
         </j>
         <p>時，任迦天子，關於尼乾陀若提子，於世尊前，唱此偈曰：</p>
         <j>
-            <s>厭離巧比丘<a n="4"/></s>
-            <s>制御四種身<a n="5"/></s>
-            <s>開顯被見聞<a n="6"/></s>
+            <s>厭離巧比丘<ewn><a/><note>厭離者 jegucchi = tapena pāpa-jigucchako。</note></ewn></s>
+            <s>制御四種身<ewn><a/><note>四種之制御其身（cātuyāma-susaṁvuta）一、sabba-vāri-vārito hoti = vārita-sabba-udako, patikhitta-sabba-sitodako（不受用一切水）；二、sabba-vari-yutto = sabbena pāpa-vāranera-yutto（從於遠離一切惡）；三、sabba-vāri-dhuto = sabbena pāpa-vāraṇena dhuta-pāpa（以遠離一切惡為己任）；四、sabba-vāri-phuṭṭho = sabbena pāpa vāraṇena phuṭṭho（達於遠離一切惡）。</note></ewn></s>
+            <s>開顯被見聞<ewn><a/><note>diṭṭhaṁ sutañ ca ācikkhaṁ = diṭṭhaṁ diṭṭham me'ti, sutaṁ sutaṁ me'ti ācikkhanto, na nigūhanto（依我所見，依我所聞，開顯而不隱匿）。</note></ewn></s>
             <s>彼何無罪過</s>
         </j>
         <p>時，阿考吒迦天子，關於種種之外道師，於世尊前，唱此偈曰：</p>
@@ -47,8 +49,8 @@
         </j>
         <p>時，吠坦婆利天子，以偈答阿考吒迦天子曰：</p>
         <j>
-            <s>號吼卑野干<a n="7"/></s>
-            <s>畢竟是野干<a n="8"/></s>
+            <s>號吼卑野干<ewn><a/><note>底本之 sagāravenāpi 讀為 sahāravenapi。</note></ewn></s>
+            <s>畢竟是野干<ewn><a/><note>底本之 kutthako 讀為 kotthuko。</note></ewn></s>
             <s>不管於如何</s>
             <s>難等於獅子</s>
             <s>裸形而妄語</s>
@@ -60,10 +62,10 @@
         <p>時，惡魔波旬，隨從吠坦婆利天子而入，於世尊前，唱此偈曰：</p>
         <j>
             <s>苦行與厭離</s>
-            <s>守遠離生活<a n="9"/></s>
-            <s>物質入於心<a n="10"/></s>
+            <s>守遠離生活<ewn><a/><note>守遠離生活 pālayaṁ pavivekiyaṁ= pavivckaṁ pālayantā。</note></ewn></s>
+            <s>物質入於心<ewn><a/><note>注心於物質 rūpe niviṭṭhā = taṇhādiṭṭhihi rūpe patiṭṭhitā。</note></ewn></s>
             <s>以樂喜天界</s>
-            <s>不導人他界<a n="11"/></s>
+            <s>不導人他界<ewn><a/><note>眾人 mātiyā = macca。</note></ewn></s>
             <s>彼等正教誨</s>
         </j>
         <p>時，世尊知此惡魔波旬，以偈答惡魔波旬曰：</p>
@@ -101,19 +103,5 @@
             <s>此等共為十</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">雜阿含經卷四九．一五（大正藏二．三五九b）。</note>
-        <note n="2">亦害、亦奪（hatajānisu）hata = poṭhanesu jānisu = dhanajānisu。</note>
-        <note n="3">依於厭離 jigucchāya = pāpa-jigucchanena。</note>
-        <note n="4">厭離者 jegucchi = tapena pāpa-jigucchako。</note>
-        <note n="5">四種之制御其身（cātuyāma-susaṁvuta）一、sabba-vāri-vārito hoti = vārita-sabba-udako, patikhitta-sabba-sitodako（不受用一切水）；二、sabba-vari-yutto = sabbena pāpa-vāranera-yutto（從於遠離一切惡）；三、sabba-vāri-dhuto = sabbena pāpa-vāraṇena dhuta-pāpa（以遠離一切惡為己任）；四、sabba-vāri-phuṭṭho = sabbena pāpa vāraṇena phuṭṭho（達於遠離一切惡）。</note>
-        <note n="6">diṭṭhaṁ sutañ ca ācikkhaṁ = diṭṭhaṁ diṭṭham me'ti, sutaṁ sutaṁ me'ti ācikkhanto, na nigūhanto（依我所見，依我所聞，開顯而不隱匿）。</note>
-        <note n="7">底本之 sagāravenāpi 讀為 sahāravenapi。</note>
-        <note n="8">底本之 kutthako 讀為 kotthuko。</note>
-        <note n="9">守遠離生活 pālayaṁ pavivekiyaṁ= pavivckaṁ pālayantā。</note>
-        <note n="10">注心於物質 rūpe niviṭṭhā = taṇhādiṭṭhihi rūpe patiṭṭhitā。</note>
-        <note n="11">眾人 mātiyā = macca。</note>
-    </notes>
+    <ps></ps>
 </doc>

@@ -1,9 +1,8 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head/>
         <p>生穀廣說輪廣說（終）</p>
-        <p>攝頌曰<a n="1"/>：</p>
+        <p>攝頌曰<ewn><a/><note>此攝頌暹羅本沒有。</note></ewn>：</p>
         <j>
             <s>田與買賣使</s>
             <s>偽秤與虛偽</s>
@@ -24,9 +23,5 @@
         </j>
         <p>大篇相應（終）</p>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">此攝頌暹羅本沒有。</note>
-    </notes>
+    <ps></ps>
 </doc>

@@ -1,9 +1,11 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔八〕第八　低沙迦
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>雜阿含經卷四四．一六（大正藏二．三二三b）。</note>
+            </ewn>
         </head>
         <p>〔爾時，世尊〕住舍衛城……</p>
         <p>時，世尊行日住之獨坐。</p>
@@ -17,9 +19,5 @@
             <s>唯有為混亂</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">雜阿含經卷四四．一六（大正藏二．三二三b）。</note>
-    </notes>
+    <ps></ps>
 </doc>

@@ -1,9 +1,11 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔一三〕第三　闇陀迦頻陀
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>雜阿含經卷四四．一四（大正藏二．三二二c）。</note>
+            </ewn>
         </head>
         <p>爾時，世尊住摩揭陀國之闇陀頻陀。</p>
         <p>爾時，世尊於夜闇中坐於露地，天降雨。</p>
@@ -23,13 +25,13 @@
             <s>電光鳴天雷</s>
             <s>於夜闇比丘</s>
             <s>獨坐離恐怖</s>
-            <s>我眼實當見<a n="2"/></s>
-            <s>非是傳所聞<a n="3"/></s>
-            <s>在於一法教<a n="4"/></s>
-            <s>以脫千人死<a n="5"/></s>
+            <s>我眼實當見<ewn><a/><note>原文 jātu me diṭṭhaṁ 註釋為 ekaṁsena mayā diṭṭhaṁ。</note></ewn></s>
+            <s>非是傳所聞<ewn><a/><note>na itiha itithaṁ ti 並非如斯之言傳而來。</note></ewn></s>
+            <s>在於一法教<ewn><a/><note>原語 ekasmiṁ brahmācariyasmiṁ 在註解中解釋作 ekāya dhammadesanāya（作於一種教法）。</note></ewn></s>
+            <s>以脫千人死<ewn><a/><note>原語 maccuhāyinaṁ 註釋作 maraṇa pariccāgīnaṁ khīṇāsavānaṁ（脫死漏盡者）。</note></ewn></s>
             <s>有當五百多</s>
-            <s>於百之十倍<a n="6"/></s>
-            <s>於其十倍<a n="7"/>數</s>
+            <s>於百之十倍<ewn><a/><note>S. 6.2.2 (PTS  [1884] 1991: I 154</note></ewn></s>
+            <s>於其十倍<ewn><a/><note>S. 6.2.2 (PTS  [1884] 1991: I 154</note></ewn>數</s>
             <s>皆悉入預流</s>
             <s>超畜生趣者</s>
             <s>此外之諸人</s>
@@ -38,15 +40,5 @@
             <s>恐人云妄語</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">雜阿含經卷四四．一四（大正藏二．三二二c）。</note>
-        <note n="2">原文 jātu me diṭṭhaṁ 註釋為 ekaṁsena mayā diṭṭhaṁ。</note>
-        <note n="3">na itiha itithaṁ ti 並非如斯之言傳而來。</note>
-        <note n="4">原語 ekasmiṁ brahmācariyasmiṁ 在註解中解釋作 ekāya dhammadesanāya（作於一種教法）。</note>
-        <note n="5">原語 maccuhāyinaṁ 註釋作 maraṇa pariccāgīnaṁ khīṇāsavānaṁ（脫死漏盡者）。</note>
-        <note n="6">S. 6.2.2 (PTS  [1884] 1991: I 154</note>
-        <note n="7">S. 6.2.2 (PTS  [1884] 1991: I 154</note>
-    </notes>
+    <ps></ps>
 </doc>

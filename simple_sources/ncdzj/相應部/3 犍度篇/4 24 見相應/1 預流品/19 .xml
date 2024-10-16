@@ -1,8 +1,7 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head/>
-        <p>預流品十八記別<a n="1"/>（終）</p>
+        <p>預流品十八記別<ewn><a/><note>由暹羅本之讀法而譯之。</note></ewn>（終）</p>
         <p><ref cRef="PTS.S.3.217"/>於此攝頌曰：</p>
         <j>
             <s>風吹與我所</s>
@@ -18,9 +17,5 @@
             <s>非有亦非無</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">由暹羅本之讀法而譯之。</note>
-    </notes>
+    <ps></ps>
 </doc>

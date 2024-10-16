@@ -1,9 +1,11 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔五〕幾何斷
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>雜阿含經卷三六．一〇（大正藏二．二六二c）。</note>
+            </ewn>
         </head>
         <p>立於一面之天神，於世尊面前，而唱偈曰：</p>
         <j>
@@ -13,18 +15,11 @@
             <s>稱度瀑流僧</s>
         </j>
         <j p="世尊">
-            <s>五斷與五棄<a n="2"/><a n="3"/></s>
-            <s>上修五無漏<a n="4"/></s>
+            <s>五斷與五棄<ewn><a/><note>五是五蓋。</note></ewn><ewn><a/><note>五是五結。</note></ewn></s>
+            <s>上修五無漏<ewn><a/><note>五是五無漏根。</note></ewn></s>
             <s>超越五種結</s>
             <s>稱渡瀑流僧</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">雜阿含經卷三六．一〇（大正藏二．二六二c）。</note>
-        <note n="2">五是五蓋。</note>
-        <note n="3">五是五結。</note>
-        <note n="4">五是五無漏根。</note>
-    </notes>
+    <ps></ps>
 </doc>

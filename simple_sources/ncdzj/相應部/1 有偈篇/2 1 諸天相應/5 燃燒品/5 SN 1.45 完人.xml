@@ -1,10 +1,12 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             <ref cRef="PTS.S.1.33"/>
             〔四五〕第五　完人
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>同本無此。</note>
+            </ewn>
         </head>
         <j p="天神">
             <s>其名無有缺</s>
@@ -16,9 +18,5 @@
             <s>即得見大聖</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">同本無此。</note>
-    </notes>
+    <ps></ps>
 </doc>

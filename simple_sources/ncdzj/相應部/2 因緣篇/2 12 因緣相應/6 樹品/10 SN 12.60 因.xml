@@ -1,11 +1,16 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             <ref cRef="PTS.S.2.92"/>
             〔六〇〕第十　因
-            <a n="1"/>
-            <a n="2"/>
+            <ewn>
+                <a/>
+                <note>一～四 D. N. XV. 1（南傳藏長部經典二）之始同。</note>
+            </ewn>
+            <ewn>
+                <a/>
+                <note>一【南傳】，～四 D. N. XV. 1（南傳藏長部經典二）之始同。</note>
+            </ewn>
         </head>
         <p>〔爾時，世尊〕住拘樓國之都色劍磨瑟曇。</p>
         <p>爾時，尊者阿難，詣世尊座前，詣已，禮敬世尊，坐於一面。</p>
@@ -26,10 +31,5 @@
             <s>因及此等十</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">一～四 D. N. XV. 1（南傳藏長部經典二）之始同。</note>
-        <note n="2">一【南傳】，～四 D. N. XV. 1（南傳藏長部經典二）之始同。</note>
-    </notes>
+    <ps></ps>
 </doc>

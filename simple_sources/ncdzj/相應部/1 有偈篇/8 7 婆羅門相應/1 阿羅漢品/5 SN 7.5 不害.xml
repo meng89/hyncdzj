@@ -1,9 +1,11 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔五〕第五　不害
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>雜阿含經卷四二．一二（大正藏二．三〇七c）。</note>
+            </ewn>
         </head>
         <p>舍衛城因緣。</p>
         <p><ref cRef="PTS.S.1.165"/>二</p>
@@ -20,9 +22,5 @@
         <p>如是言已，不害婆羅墮婆闍婆羅門，以此白世尊曰：「瞿曇！是最勝者……乃至……」</p>
         <p>又此婆羅墮婆闍，成為一阿羅漢。</p>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">雜阿含經卷四二．一二（大正藏二．三〇七c）。</note>
-    </notes>
+    <ps></ps>
 </doc>

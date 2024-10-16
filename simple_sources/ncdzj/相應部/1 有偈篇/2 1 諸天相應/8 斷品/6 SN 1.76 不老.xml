@@ -1,10 +1,12 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             <ref cRef="PTS.S.1.43"/>
             〔七六〕第六　不老
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>雜阿含經卷三六．二八（大正藏二．二六六a）。</note>
+            </ewn>
         </head>
         <j p="天神">
             <s>何老何不老</s>
@@ -20,7 +22,7 @@
         </j>
         <j p="世尊">
             <s>色體乃衰老</s>
-            <s>人姓氏不老<a n="2"/></s>
+            <s>人姓氏不老<ewn><a/><note>如佛陀之姓、名。</note></ewn></s>
             <s>貪欲云非道</s>
             <s>慳貪障礙法</s>
             <s>青春盡日夜</s>
@@ -36,10 +38,5 @@
             <s>應離此一切</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">雜阿含經卷三六．二八（大正藏二．二六六a）。</note>
-        <note n="2">如佛陀之姓、名。</note>
-    </notes>
+    <ps></ps>
 </doc>

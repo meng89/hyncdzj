@@ -1,10 +1,15 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔六一〕第一　無聞（之一）
-            <a n="1"/>
-            <a n="2"/>
+            <ewn>
+                <a/>
+                <note>六一、六二<space quantity="1" unit="chars"/>雜阿含一二（大正藏二．八一c～八二a）。</note>
+            </ewn>
+            <ewn>
+                <a/>
+                <note>六一、六二<space quantity="1" unit="chars"/>雜阿含一二（大正藏二．八一c【南傳】，～八二a）。</note>
+            </ewn>
         </head>
         <p>如是我聞。爾時，世尊住舍衛城祇樹給孤獨園。</p>
         <p>〔爾時，世尊曰：〕「諸比丘！無聞之凡夫，於此四大所造身，生厭意，厭離而欲解脫。</p>
@@ -20,10 +25,5 @@
         <p>由無明之無餘，離貪、滅而有行滅，由行滅而有識滅……如是，此乃全苦蘊之滅。</p>
         <p>諸比丘！多聞之聖弟子，於色生厭意，於受亦生厭意，於想亦生厭意，於行亦生厭意，於識亦生厭意。生厭意故厭離，離貪故解脫。於解脫得生解脫之智，知生已盡，梵行已立，應作已作，更不再生。」</p>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">六一、六二<space quantity="1" unit="chars"/>雜阿含一二（大正藏二．八一c～八二a）。</note>
-        <note n="2">六一、六二<space quantity="1" unit="chars"/>雜阿含一二（大正藏二．八一c【南傳】，～八二a）。</note>
-    </notes>
+    <ps></ps>
 </doc>

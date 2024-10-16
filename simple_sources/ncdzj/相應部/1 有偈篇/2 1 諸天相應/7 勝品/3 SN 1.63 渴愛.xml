@@ -1,9 +1,11 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔六三〕第三　渴愛
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>同本無此。</note>
+            </ewn>
         </head>
         <j>
             <s>以何之一法</s>
@@ -16,9 +18,5 @@
             <s>一切所從屬</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">同本無此。</note>
-    </notes>
+    <ps></ps>
 </doc>

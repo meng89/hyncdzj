@@ -1,9 +1,11 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔二五〕第五　魔女
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>雜阿含經卷三九．一二（大正藏二．二八六b）。</note>
+            </ewn>
         </head>
         <p>時，渴愛、不快、貪欲之三魔女，來至惡魔波旬處，至已，以偈語惡魔波旬曰：</p>
         <j>
@@ -40,7 +42,7 @@
         <p>立一面之魔女渴愛以偈言世尊曰：</p>
         <j>
             <s>悲侵沈思林</s>
-            <s>求復得失富<a n="2"/></s>
+            <s>求復得失富<ewn><a/><note>失落 cittaṁ nu 讀為 vittaṁ nu。</note></ewn></s>
             <s>犯罪村人中</s>
             <s>何故不與交</s>
             <s>汝非我友人</s>
@@ -57,16 +59,16 @@
         <p>時，魔女不快以偈白世尊曰：</p>
         <j>
             <s>比丘住多修</s>
-            <s>以度五瀑流<a n="3"/></s>
-            <s>於此度第六<a n="4"/></s>
+            <s>以度五瀑流<ewn><a/><note>眼耳鼻舌身五門之煩惱瀑流。</note></ewn></s>
+            <s>於此度第六<ewn><a/><note>第六意門之煩惱瀑流。</note></ewn></s>
             <s>如何多禪思</s>
             <s>外界之欲想</s>
             <s>其人不能得</s>
         </j>
         <j p="世尊">
             <s>身安心解脫</s>
-            <s>以離作三業<a n="5"/></s>
-            <s>正念無貪著<a n="6"/></s>
+            <s>以離作三業<ewn><a/><note>遠離三業之為作 asaṅkhārāno = tayo kammâbhisaṅkhāre anabhisankharonto（不行於三業之行）。</note></ewn></s>
+            <s>正念無貪著<ewn><a/><note>不貪著 anoko = anālayo。</note></ewn></s>
             <s>了知法無尋</s>
             <s>禪思不憶怒</s>
             <s>亦不為懶惰</s>
@@ -81,11 +83,11 @@
         <p>時，魔女貪欲，於世尊處，以唱此寂靜偈曰：</p>
         <j>
             <s>彼斷除渴愛</s>
-            <s>以率群眾行<a n="7"/></s>
+            <s>以率群眾行<ewn><a/><note>底本之 gaṇa-saṅgha-vāri 讀為 gaṇa-saṅgha-cāri。</note></ewn></s>
             <s>眾多有情行</s>
             <s>此無貪欲者</s>
             <s>令眾斷魔掌</s>
-            <s><a n="8"/>導死王彼岸</s>
+            <s><ewn><a/><note>由魔王之手云云 acchejja = Maccurājassa hatthato acchinditvā。</note></ewn>導死王彼岸</s>
         </j>
         <j>
             <s>如來大雄者</s>
@@ -120,16 +122,5 @@
             <s>依佛大師說</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">雜阿含經卷三九．一二（大正藏二．二八六b）。</note>
-        <note n="2">失落 cittaṁ nu 讀為 vittaṁ nu。</note>
-        <note n="3">眼耳鼻舌身五門之煩惱瀑流。</note>
-        <note n="4">第六意門之煩惱瀑流。</note>
-        <note n="5">遠離三業之為作 asaṅkhārāno = tayo kammâbhisaṅkhāre anabhisankharonto（不行於三業之行）。</note>
-        <note n="6">不貪著 anoko = anālayo。</note>
-        <note n="7">底本之 gaṇa-saṅgha-vāri 讀為 gaṇa-saṅgha-cāri。</note>
-        <note n="8">由魔王之手云云 acchejja = Maccurājassa hatthato acchinditvā。</note>
-    </notes>
+    <ps></ps>
 </doc>

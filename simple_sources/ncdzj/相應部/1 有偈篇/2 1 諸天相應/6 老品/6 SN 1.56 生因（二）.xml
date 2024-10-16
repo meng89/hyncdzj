@@ -1,9 +1,11 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔五六〕第六　生因
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>雜阿含經卷三六．二五（大正藏二．二六五b）。</note>
+            </ewn>
             （二）
         </head>
         <j p="天神">
@@ -19,9 +21,5 @@
             <s>依苦不解脫</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">雜阿含經卷三六．二五（大正藏二．二六五b）。</note>
-    </notes>
+    <ps></ps>
 </doc>

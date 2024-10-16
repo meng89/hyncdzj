@@ -1,9 +1,11 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔一〇〕第十　壽命
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>雜阿含經卷三九．五（大正藏二．二八四c）。</note>
+            </ewn>
             （其二）
         </head>
         <p>〔爾時，世尊〕住王舍城……</p>
@@ -30,9 +32,5 @@
             <s>壽命又為二</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">雜阿含經卷三九．五（大正藏二．二八四c）。</note>
-    </notes>
+    <ps></ps>
 </doc>

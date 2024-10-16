@@ -1,9 +1,11 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔七九〕第九　食糧
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>雜阿含經卷四八．二六（大正藏二．三五六a）。</note>
+            </ewn>
         </head>
         <j p="天神">
             <s>何者包糧食</s>
@@ -22,9 +24,5 @@
             <s>凡人欲望縛</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">雜阿含經卷四八．二六（大正藏二．三五六a）。</note>
-    </notes>
+    <ps></ps>
 </doc>

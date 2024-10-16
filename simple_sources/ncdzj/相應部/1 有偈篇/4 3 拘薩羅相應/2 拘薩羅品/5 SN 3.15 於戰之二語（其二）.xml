@@ -1,9 +1,11 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔一五〕於戰之二語
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>雜阿含經卷四六．一六（大正藏二．三三八c）。</note>
+            </ewn>
             （其二）
         </head>
         <p><ref cRef="PTS.S.1.84"/>九</p>
@@ -23,7 +25,7 @@
             <s>他之被奪時</s>
             <s>彼亦為所奪</s>
             <s>愚者惡不實</s>
-            <s>雖思為當然<a n="2"/></s>
+            <s>雖思為當然<ewn><a/><note>當然之子 ṭhānaṁ = kāraṇaṁ。</note></ewn></s>
             <s>惡之成實時</s>
             <s>即受於苦惱</s>
             <s>若以殺他人</s>
@@ -38,10 +40,5 @@
             <s>奪人當被奪</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">雜阿含經卷四六．一六（大正藏二．三三八c）。</note>
-        <note n="2">當然之子 ṭhānaṁ = kāraṇaṁ。</note>
-    </notes>
+    <ps></ps>
 </doc>

@@ -1,9 +1,11 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔七四〕第二　集（一）
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>漢譯未詳。</note>
+            </ewn>
         </head>
         <p>〔爾時世尊〕在舍衛城……乃至……</p>
         <p>「諸比丘！無聞之凡夫，不能如實知色之集、滅、味、過患、出離。</p>
@@ -13,9 +15,5 @@
         <p>受……想……行……</p>
         <p>能如實知識之集、滅、味、過患、出離。」</p>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">漢譯未詳。</note>
-    </notes>
+    <ps></ps>
 </doc>

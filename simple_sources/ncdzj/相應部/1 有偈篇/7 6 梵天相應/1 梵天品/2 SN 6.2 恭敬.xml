@@ -1,9 +1,11 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔二〕第二　恭敬
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>雜阿含經卷四四．一一（大正藏二．三二一c）。</note>
+            </ewn>
         </head>
         <p>如是我聞。爾時，世尊住優留毘羅林，尼連禪河邊，阿闍波羅尼俱律陀樹下。時已成等正覺。</p>
         <p><ref cRef="PTS.S.1.139"/>二</p>
@@ -26,16 +28,10 @@
             <s>又未來亦住</s>
             <s>此諸佛法然</s>
             <s>故願自己利</s>
-            <s>以望偉大者<a n="2"/></s>
-            <s>憶念佛之教<a n="3"/></s>
+            <s>以望偉大者<ewn><a/><note>原文 mahattāṁ abhikaṅkhatā 註釋為：期望於大之狀態。</note></ewn></s>
+            <s>憶念佛之教<ewn><a/><note>原文 saraṁ buddhānasāsanaṁ 註釋為：憶念佛陀之教。</note></ewn></s>
             <s>不無敬正法</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">雜阿含經卷四四．一一（大正藏二．三二一c）。</note>
-        <note n="2">原文 mahattāṁ abhikaṅkhatā 註釋為：期望於大之狀態。</note>
-        <note n="3">原文 saraṁ buddhānasāsanaṁ 註釋為：憶念佛陀之教。</note>
-    </notes>
+    <ps></ps>
 </doc>

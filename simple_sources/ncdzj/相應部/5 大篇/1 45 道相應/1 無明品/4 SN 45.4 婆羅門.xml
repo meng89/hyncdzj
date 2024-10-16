@@ -1,9 +1,11 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔四〕第四　婆羅門
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>漢譯阿含經二八．二二（大正藏二．二〇〇c）。</note>
+            </ewn>
         </head>
         <p>舍衛城因緣。</p>
         <p>時，具壽阿難，清晨時分著下衣，持衣鉢，入舍衛城乞食。</p>
@@ -28,7 +30,7 @@
             <s>無欲為覆具</s>
             <s>無瞋害捨離</s>
             <s>如是為兵器</s>
-            <s>忍辱以為鎧<a n="2"/></s>
+            <s>忍辱以為鎧<ewn><a/><note>「鎧」，原典 dhammasannāha 以 vammasannāha 訂正之。</note></ewn></s>
             <s>以趣於安穩</s>
             <s>以此已具足</s>
             <s>為無上梵乘</s>
@@ -36,10 +38,5 @@
             <s>一向伏貪等</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">漢譯阿含經二八．二二（大正藏二．二〇〇c）。</note>
-        <note n="2">「鎧」，原典 dhammasannāha 以 vammasannāha 訂正之。</note>
-    </notes>
+    <ps></ps>
 </doc>

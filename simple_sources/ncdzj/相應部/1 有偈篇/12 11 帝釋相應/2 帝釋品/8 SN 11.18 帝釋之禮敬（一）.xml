@@ -1,9 +1,11 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔一八〕第八　帝釋之禮敬（一）
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>雜阿含經卷四〇．八（大正藏二．二三九a）。</note>
+            </ewn>
         </head>
         <p>〔爾時，世尊〕住舍衛城祇樹給孤獨園……</p>
         <p>於此世尊宣說：</p>
@@ -49,9 +51,5 @@
             <s>最先乘其車</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">雜阿含經卷四〇．八（大正藏二．二三九a）。</note>
-    </notes>
+    <ps></ps>
 </doc>

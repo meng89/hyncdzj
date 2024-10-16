@@ -1,9 +1,11 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔二五〕第五　無忿（無害）
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>雜阿含經卷四〇．四（大正藏二．二九一a）。</note>
+            </ewn>
         </head>
         <p>如是我聞。一時，世尊住舍衛城祇樹給孤獨園。</p>
         <p>於此世尊言諸比丘，並對諸比丘宣說。</p>
@@ -28,9 +30,5 @@
             <s>夜叉婆娑婆</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">雜阿含經卷四〇．四（大正藏二．二九一a）。</note>
-    </notes>
+    <ps></ps>
 </doc>

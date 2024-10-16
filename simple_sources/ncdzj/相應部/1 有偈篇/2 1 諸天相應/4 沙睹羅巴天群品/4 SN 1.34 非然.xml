@@ -1,9 +1,11 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔三四〕第四　非然
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>雜阿含經四八．二〇（大正藏二．三五四b）。</note>
+            </ewn>
         </head>
         <p>爾時，世尊，住舍衛城祇樹給孤獨園。</p>
         <p>爾時，甚多沙睹羅巴天神等，其勝光徧照祇園、於黎明往詣世尊住處。詣已禮敬世尊，立於一面，</p>
@@ -17,7 +19,7 @@
             <s>而無作歸來</s>
             <s>人人死魔領</s>
             <s>如是不歸來</s>
-            <s>禍從欲望生<a n="2"/><a n="3"/></s>
+            <s>禍從欲望生<ewn><a/><note>禍（agha）Pañcakkhandha dukkha 註釋為（五蘊之苦）。</note></ewn><ewn><a/><note>禍（agha）Pañcakkhandha dukkha 註釋為（五蘊之苦）。（CBETA 按：漢譯南傳大藏經此頁中缺相對應之註標[74]，今於此處加上[74]之註標。）</note></ewn></s>
             <s>苦惱從欲生</s>
             <s>以調伏欲望</s>
             <s>是則禍調伏</s>
@@ -26,7 +28,7 @@
             <s>世之諸對象</s>
             <s>乃非是愛欲</s>
             <s>於貪之思念</s>
-            <s>此人之愛欲<a n="4"/><a n="5"/></s>
+            <s>此人之愛欲<ewn><a/><note>思念之貪（san kapparāga = san kappita rāga）在此所舉非事之愛欲（vatthu kāma），乃煩惱之愛欲（kilesa kāma），故註有此語。</note></ewn><ewn><a/><note>思念之貪（san kapparāga = san kappita rāga）在此所舉非事之愛欲（vatthu kāma），乃煩惱之愛欲（kilesa kāma），故註有此語。（CBETA 按：漢譯南傳大藏經此頁中缺相對應之註標[75]，今於此處加上[75]之註標。）</note></ewn></s>
             <s>於世諸對象</s>
             <s>依舊猶留存</s>
             <s>於此之賢者</s>
@@ -34,7 +36,7 @@
             <s><ref cRef="PTS.S.1.23"/>離忿及捨慢</s>
             <s>超越一切縛</s>
             <s>不執著名色</s>
-            <s>斯人無何物<a n="6"/></s>
+            <s>斯人無何物<ewn><a/><note>無任何物（akiñcana）在此註釋為 rāga kiñcânadi virahitaṁ（遠離貪等煩惱）之意。</note></ewn></s>
             <s>亦無陷入苦</s>
             <s>除念不行慢</s>
             <s>於此斷名色</s>
@@ -46,13 +48,13 @@
             <s>及一切住處</s>
             <s>無須求其跡</s>
         </j>
-        <p>（尊者摩加拉奢如是問：<a n="7"/>）</p>
+        <p>（尊者摩加拉奢如是問：<ewn><a/><note>Mogharāja Bāvari 之弟子，與其他十五人俱奉師命見佛，北上遇佛而歸依佛。今於座上而請問此事。</note></ewn>）</p>
         <j>
             <s>此世及後世</s>
             <s>若天與人共</s>
             <s>不見解脫人</s>
             <s>以敬仰禮拜</s>
-            <s>拜無上利行<a n="8"/></s>
+            <s>拜無上利行<ewn><a/><note>利行人 行大眾利益之人。</note></ewn></s>
             <s>亦讚彼等否</s>
         </j>
         <p>（世尊呼摩加拉奢尊者，而予回答：）</p>
@@ -60,22 +62,10 @@
             <s>比丘若禮拜</s>
             <s>如是解脫人</s>
             <s>亦應讚彼等</s>
-            <s>若知法離疑<a n="9"/></s>
+            <s>若知法離疑<ewn><a/><note>法者<space quantity="1" unit="chars"/>指四諦之法。</note></ewn></s>
             <s>比丘彼等亦</s>
             <s>超越結縛人</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">雜阿含經四八．二〇（大正藏二．三五四b）。</note>
-        <note n="2">禍（agha）Pañcakkhandha dukkha 註釋為（五蘊之苦）。</note>
-        <note n="3">禍（agha）Pañcakkhandha dukkha 註釋為（五蘊之苦）。（CBETA 按：漢譯南傳大藏經此頁中缺相對應之註標[74]，今於此處加上[74]之註標。）</note>
-        <note n="4">思念之貪（san kapparāga = san kappita rāga）在此所舉非事之愛欲（vatthu kāma），乃煩惱之愛欲（kilesa kāma），故註有此語。</note>
-        <note n="5">思念之貪（san kapparāga = san kappita rāga）在此所舉非事之愛欲（vatthu kāma），乃煩惱之愛欲（kilesa kāma），故註有此語。（CBETA 按：漢譯南傳大藏經此頁中缺相對應之註標[75]，今於此處加上[75]之註標。）</note>
-        <note n="6">無任何物（akiñcana）在此註釋為 rāga kiñcânadi virahitaṁ（遠離貪等煩惱）之意。</note>
-        <note n="7">Mogharāja Bāvari 之弟子，與其他十五人俱奉師命見佛，北上遇佛而歸依佛。今於座上而請問此事。</note>
-        <note n="8">利行人 行大眾利益之人。</note>
-        <note n="9">法者<space quantity="1" unit="chars"/>指四諦之法。</note>
-    </notes>
+    <ps></ps>
 </doc>

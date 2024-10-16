@@ -1,10 +1,12 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             <ref cRef="PTS.S.5.401"/>
             〔四二〕第二　潤澤
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>參照前經。</note>
+            </ewn>
             （二）
         </head>
         <p>「諸比丘！福德潤澤、善潤澤、安樂食有四種。何為四種耶？</p>
@@ -25,9 +27,5 @@
             <s>如川流注入海</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">參照前經。</note>
-    </notes>
+    <ps></ps>
 </doc>

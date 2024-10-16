@@ -1,9 +1,11 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔六〕第六　蛇
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>雜阿含經卷三九．九（大正藏二．二八五b）。</note>
+            </ewn>
         </head>
         <p>如是我聞。爾時，世尊住王舍城竹林栗鼠養餌所。</p>
         <p>爾時，世尊，闇夜中坐於露地，雨絲霏霏下降。</p>
@@ -24,14 +26,9 @@
             <s>生者皆恐嚇</s>
             <s>縱向於胸位</s>
             <s>投擲利猛槍</s>
-            <s>諸佛不被護<a n="2"/></s>
+            <s>諸佛不被護<ewn><a/><note>依 upadhi = khandha-upadhi 五蘊即指此身體，佛謂恐怖而逃入洞穴，但猶不能保護此身。（註釋）</note></ewn></s>
         </j>
         <p>時，惡魔波旬：「世尊已知我，善逝已知我。」即形體沒其處。</p>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">雜阿含經卷三九．九（大正藏二．二八五b）。</note>
-        <note n="2">依 upadhi = khandha-upadhi 五蘊即指此身體，佛謂恐怖而逃入洞穴，但猶不能保護此身。（註釋）</note>
-    </notes>
+    <ps></ps>
 </doc>

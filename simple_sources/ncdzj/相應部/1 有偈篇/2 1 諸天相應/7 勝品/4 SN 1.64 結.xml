@@ -1,13 +1,15 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔六四〕第四　結
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>雜阿含經卷三六．一九（大正藏二．二六四b）。</note>
+            </ewn>
         </head>
         <j p="天神">
             <s>世間依何縛</s>
-            <s>世步是何物<a n="2"/></s>
+            <s>世步是何物<ewn><a/><note>vicāraṇa = caraṇāpāda。</note></ewn></s>
             <s>離卻何物者</s>
             <s>是名為涅槃</s>
         </j>
@@ -18,10 +20,5 @@
             <s>是名為涅槃</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">雜阿含經卷三六．一九（大正藏二．二六四b）。</note>
-        <note n="2">vicāraṇa = caraṇāpāda。</note>
-    </notes>
+    <ps></ps>
 </doc>

@@ -1,34 +1,36 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔二〕第二　不快
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>雜阿含經卷四五．一六（大正藏二．三三〇c）。</note>
+            </ewn>
         </head>
         <p>爾時……乃至……</p>
         <p>尊者婆耆沙與乃師尼俱律陀劫波，共住於阿臘毘之阿伽羅婆奢提耶。</p>
-        <p>其時，尊者尼俱律陀劫波，從乞食歸，食後而入室<a n="2"/>，至夕夜，或至翌日早<a n="3"/>皆不出戶門。</p>
+        <p>其時，尊者尼俱律陀劫波，從乞食歸，食後而入室<ewn><a/><note>如斯之人，到達 vihāragaruko 屋室。</note></ewn>，至夕夜，或至翌日早<ewn><a/><note>直至翌晨托鉢時，猶在室中。</note></ewn>皆不出戶門。</p>
         <p>其時尊者婆耆沙生不快，貪欲污其心。</p>
         <p>時婆耆沙生如是思念：「我心生不快，貪欲污我心。對我甚實悲痛。別人無從滅我心之不快而生愉悅，我須自滅我之不快，而令生愉悅。」</p>
         <p>時，尊者婆耆沙，自滅自己之不快，令生愉悅。其時唱此等偈曰：</p>
         <j>
             <s>思快不快者</s>
             <s>捨諸著家念</s>
-            <s>不欲住何處<a n="4"/></s>
-            <s>離欲之住處<a n="5"/></s>
+            <s>不欲住何處<ewn><a/><note>vanatha = kilesamahāvana（煩惱大林）。</note></ewn></s>
+            <s>離欲之住處<ewn><a/><note>底本之 anato 讀作 arati = taṇhārati rahito。</note></ewn></s>
             <s>無有欲之思</s>
             <s>此則是比丘</s>
             <s>地載空所覆</s>
             <s>世間諸一切</s>
             <s>悉是無常老</s>
-            <s>有智悟此住<a n="6"/></s>
+            <s>有智悟此住<ewn><a/><note>mutattā = viññāṇattabhāvā。</note></ewn></s>
             <s>人見聞觸思</s>
-            <s>皆悉依執著<a n="7"/></s>
+            <s>皆悉依執著<ewn><a/><note>依 upadhi = khandha-kilesa-abhisankhāra 諸蘊、煩惱行之諸依。</note></ewn></s>
             <s>除此依欲念</s>
             <s>無污無染者</s>
             <s><ref cRef="PTS.S.1.187"/>是云為牟尼</s>
             <s>凡常者易陷</s>
-            <s>六十之依著<a n="8"/></s>
+            <s>六十之依著<ewn><a/><note>底本之 saṭṭhitaritā 讀作 saṭṭhi nissitā。註釋為執著於六境之凡常不如法覺。其六境之一一各有十覺。</note></ewn></s>
             <s>不法之覺想</s>
             <s>此等不行往</s>
             <s>任何之部類</s>
@@ -38,22 +40,10 @@
             <s>長夜心寂靜</s>
             <s>無欺無欲念</s>
             <s>賢達寂靜道</s>
-            <s>牟尼依涅槃<a n="9"/></s>
+            <s>牟尼依涅槃<ewn><a/><note>paṭicca 在註釋中則解釋為 nibbānaṁ paṭicca。</note></ewn></s>
             <s>以滅除煩惱</s>
             <s>待般涅槃時</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">雜阿含經卷四五．一六（大正藏二．三三〇c）。</note>
-        <note n="2">如斯之人，到達 vihāragaruko 屋室。</note>
-        <note n="3">直至翌晨托鉢時，猶在室中。</note>
-        <note n="4">vanatha = kilesamahāvana（煩惱大林）。</note>
-        <note n="5">底本之 anato 讀作 arati = taṇhārati rahito。</note>
-        <note n="6">mutattā = viññāṇattabhāvā。</note>
-        <note n="7">依 upadhi = khandha-kilesa-abhisankhāra 諸蘊、煩惱行之諸依。</note>
-        <note n="8">底本之 saṭṭhitaritā 讀作 saṭṭhi nissitā。註釋為執著於六境之凡常不如法覺。其六境之一一各有十覺。</note>
-        <note n="9">paṭicca 在註釋中則解釋為 nibbānaṁ paṭicca。</note>
-    </notes>
+    <ps></ps>
 </doc>

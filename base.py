@@ -118,62 +118,61 @@ class Dir:
                 fun(os.path.join(path, "{} {}.xml".format(index + 1, k)))
 
 
-doc_dont_do_tags = ["p", "s", "note", "h1"]
+_doc_dont_do_tags = ["p", "s", "note", "h1"]
 class Doc:
     def __init__(self, path=None):
         if path:
-            self._xml = xl.parse(open(path).read())
-            meta_e = self._xml.root.find_kids("meta")[0]
-        else:
-            self._xml = xl.Xml(root=xl.Element("doc"))
-            meta_e = self._xml.root.ekid("meta")
-            self._xml.root.kids.append(xl.Element("body"))
-            self._xml.root.kids.append(xl.Element("ps"))
+            _xml = xl.parse(open(path).read())
+            doc = _xml.root
+            match doc.attrs["type"]:
+                case "for_human":
+                    self._xml = human_to_machine(_xml)
+                case "for_machine":
+                    self._xml = _xml
+                case _:
+                    raise Exception
 
-        self._meta = Metadata(meta_e)
+        else:
+            root = xl.Element("doc")
+            root.attrs["type"] = "for_machine"
+            self._xml = xl.Xml(root=root)
+            body = root.ekid("body")
+            body.self_closing = False
+            ps = root.ekid("ps")
+            ps.self_closing = False
 
     @property
     def body(self) -> xl.Element:
         return self._xml.root.find_kids("body")[0]
 
-    @property
-    def notes(self) -> xl.Element:
-        return self._xml.root.find_kids("notes")[0]
-
-    @property
-    def ps(self) -> xl.Element:
-        return self._xml.root.find_kids("ps")[0]
-
     def append_term(self, term):
         self.body.kids.append(term)
 
-    def _get_simple_xml(self):
-        new_xml = copy.copy(self._xml)
-        root = new_xml.root
+    def write_for_machine(self, path):
+        open(path, "w").write(self._xml.to_str(do_pretty=True, dont_do_tags=_doc_dont_do_tags))
+
+
+    def write_for_human(self, path):
+        simple_xml = copy.copy(self._xml)
+        root = simple_xml.root
         body = root.find_kids("body")[0]
-        new_body, notes = trans_ewn_to_simple(body)
+        new_body, notes = _split_note(body)
         body.kids[:] = new_body.kids
         index = root.kids.index(body)
         root.kids.pop(index)
         root.kids.insert(index, new_body)
         root.kids.append(notes)
-        return new_xml
+        open(path, "w").write(simple_xml.to_str(do_pretty=True, dont_do_tags=_doc_dont_do_tags))
 
-    def write_for_machine(self, path):
-        #todo
-
-    def write_for_human(self, path):
-        simple_xml = self._get_simple_xml()
-        open(path, "w").write(simple_xml.to_str(do_pretty=True, dont_do_tags=doc_dont_do_tags))
 
 # 原始转Python Object
-def trans_ewn_to_simple(body:xl.Element) -> tuple:
-    new_body, notes_kids, _ = trans_ewn_to_simple2(body, 1)
+def _split_note(body:xl.Element) -> tuple:
+    new_body, notes_kids, _ = _split_note2(body, 1)
     notes = xl.Element("notes", kids=notes_kids)
 
     return new_body, notes
 
-def trans_ewn_to_simple2(e:xl.Element, note_index:int) -> tuple:
+def _split_note2(e:xl.Element, note_index:int) -> tuple:
     if isinstance(e, xl.Element) and e.tag == "ewn":
         a = xl.Element("a")
         a.attrs["n"] = str(note_index)
@@ -190,7 +189,7 @@ def trans_ewn_to_simple2(e:xl.Element, note_index:int) -> tuple:
         notes = []
         new_e = xl.Element(e.tag, e.attrs)
         for kid in e.kids:
-            new_kid, new_notes, note_index = trans_ewn_to_simple2(kid, note_index)
+            new_kid, new_notes, note_index = _split_note2(kid, note_index)
             new_e.kids.append(new_kid)
             notes.extend(new_notes)
 
@@ -200,52 +199,47 @@ def trans_ewn_to_simple2(e:xl.Element, note_index:int) -> tuple:
         return e, [], note_index
 
 
-def hit_note(notes, num):
+def human_to_machine(xml):
+    _doc = xml.root
+    body = _doc.find_kids("body")[0]
+    notes = _doc.find_kids("notes")[0]
+    ps = _doc.find_kids("ps")[0]
+
+    new_body = _merge_note(body, notes)
+
+    new_root = xl.Element("doc")
+    new_xml = xl.Xml(new_root)
+    new_root.kids.append(new_body)
+    new_root.kids.append(ps)
+
+    return new_xml
+
+
+def _merge_note(e: xl.Element, notes):
+    new_e = xl.Element(e.tag, attrs=e.attrs)
+    for term in e.kids:
+        if isinstance(term, xl.Element):
+            if term.tag == "a" and "n" in term.attrs.keys():
+                ewn = xl.Element("ewn")
+                a = ewn.ekid("a")
+                a.kids.extend(term.kids)
+
+                note = _hit_note(notes, term.attrs["n"])
+                ewn.kids.append(note)
+            else:
+                new_e.kids.append(_merge_note(term, notes))
+
+        if isinstance(term, str):
+            new_e.kids.append(term)
+    return new_e
+
+def _hit_note(notes, num):
     for note in notes:
         if note.attrs["n"] == num:
             new_note = xl.Element("note")
             new_note.kids.extend(note.kids)
             return new_note
     raise Exception
-
-def trans_simple_to_ewn(body, notes):
-    [new_body] = trans_simple_to_ewn2(body, notes)
-    return new_body
-
-def trans_simple_to_ewn2(e, notes):
-    if isinstance(e, xl.Element) and e.tag == "a" and "n" in e.attrs.keys():
-        num = e.attrs["n"]
-
-        ewn = xl.Element("ewn")
-        a = ewn.ekid("a")
-        a.attrs["n"] = num
-
-        note = hit_note(notes, num)
-        ewn.kids.append(note)
-
-        return [ewn]
-
-    elif isinstance(e, xl.Element):
-        new_e = xl.Element(e.tag, e.attrs)
-        for kid in e.kids:
-            new_kids = trans_simple_to_ewn2(kid, notes)
-            new_e.kids.extend(new_kids)
-        return [new_e]
-    else:
-        return [e]
-
-class Piece(Doc):
-    def __init__(self, element:xl.Element=None):
-        super().__init__()
-        self._xml.root.tag = "piece"
-        if element:
-            self._xml = xl.Xml(root=element)
-
-    def get_element(self):
-        return self._xml.root
-
-    def write(self, *args, **kwargs):
-        raise AttributeError # 禁用父类write属性，防止误用
 
 
 ########################################################################################################################
@@ -280,3 +274,30 @@ def is_num_p(x):
 def print_tree(d: Dir, ident=0):
     for name, obj in d.list:
         print("{}{}".format(" " * ident, name))
+
+
+def merge_jing_in_one_doc(d: Dir):
+    new_list = []
+    for name, obj in d.list:
+        if isinstance(obj, Dir):
+            if re.match(r"[a-zA-Z]+ \d", name):
+                new_obj = Doc()
+                body = new_obj.body
+                merge_jing_in_one_doc2(body, obj)
+            else:
+                new_obj = merge_jing_in_one_doc(obj)
+        else:
+            new_obj = obj
+        new_list.append((name, new_obj))
+    d.list = new_list
+    return d
+
+
+def merge_jing_in_one_doc2(body, d: Dir):
+    for name, obj in d.list:
+        head2 = body.ekid("head2")
+        head2.kids.append(name)
+        if isinstance(obj, Dir):
+            merge_jing_in_one_doc(d)
+        else:
+            body.kids.extend(obj.body.kids)

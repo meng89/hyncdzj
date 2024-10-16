@@ -1,9 +1,11 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔四三〕第三　食
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>雜阿含經卷三六．七（大正藏二．二六一c）。</note>
+            </ewn>
         </head>
         <j p="天神">
             <s>不論天及人</s>
@@ -22,9 +24,5 @@
             <s>後世航渡頭</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">雜阿含經卷三六．七（大正藏二．二六一c）。</note>
-    </notes>
+    <ps></ps>
 </doc>

@@ -1,9 +1,11 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔八四〕第一　敗壞
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>paloka = bhijjana, breaking up, breaking in two, dissolution, decay 敗壞，崩壞，崩解，如八二經，參照一一六經一一節。</note>
+            </ewn>
         </head>
         <p>爾時，尊者阿難來詣世尊住處……</p>
         <p>坐於一面之阿難白世尊言：「大德！所稱『世間、世間者。』大德！於何之意義，以稱之為世間耶？」</p>
@@ -12,9 +14,5 @@
         <p>意是敗壞之法，法是敗壞之法，意識是敗壞之法，凡以意觸為緣所生之受，或樂、或苦、或非苦非樂，此亦敗壞之法。</p>
         <p>阿難！凡敗壞之法，於聖者之律，此稱之為世間。」</p>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">paloka = bhijjana, breaking up, breaking in two, dissolution, decay 敗壞，崩壞，崩解，如八二經，參照一一六經一一節。</note>
-    </notes>
+    <ps></ps>
 </doc>

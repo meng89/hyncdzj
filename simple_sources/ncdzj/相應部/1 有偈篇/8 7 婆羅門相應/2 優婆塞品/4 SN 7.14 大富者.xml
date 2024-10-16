@@ -1,9 +1,11 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔一四〕第四　大富者
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>雜阿含經卷四．九（大正藏二．二六b）。</note>
+            </ewn>
         </head>
         <p><ref cRef="PTS.S.1.176"/>一</p>
         <p>舍衛城因緣。</p>
@@ -43,9 +45,5 @@
         <p>世尊哀憐而納受。</p>
         <p>時，其大富婆羅門，以此白世尊曰：「尊者瞿曇！是最勝者……乃至……願尊者瞿曇從今日以後受我歸依為優婆塞。」</p>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">雜阿含經卷四．九（大正藏二．二六b）。</note>
-    </notes>
+    <ps></ps>
 </doc>

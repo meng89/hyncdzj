@@ -1,9 +1,11 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔七七〕第七　主
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>雜阿含經卷四八．二六（大正藏二．三五六a）。</note>
+            </ewn>
         </head>
         <j p="天神">
             <s>何為世間主</s>
@@ -27,9 +29,5 @@
             <s>賢者乃歡喜</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">雜阿含經卷四八．二六（大正藏二．三五六a）。</note>
-    </notes>
+    <ps></ps>
 </doc>

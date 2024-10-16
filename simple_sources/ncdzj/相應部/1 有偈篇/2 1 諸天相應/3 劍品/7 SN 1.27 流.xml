@@ -1,10 +1,15 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔二七〕第七　流
-            <a n="1"/>
-            <a n="2"/>
+            <ewn>
+                <a/>
+                <note>雜阿含經卷二二．二六（大正藏二．一六〇c）。</note>
+            </ewn>
+            <ewn>
+                <a/>
+                <note>流 sarā = saṁsāra-sarā 輪迴之流。</note>
+            </ewn>
         </head>
         <j p="天神">
             <s>流何處不流</s>
@@ -15,17 +20,11 @@
         <j p="世尊">
             <s>地水與火風</s>
             <s>四大之滅處</s>
-            <s>由此流不流<a n="3"/></s>
+            <s>由此流不流<ewn><a/><note>由此，其流乃不流 ato nivattanti = nibbāṇato na pavattanti。</note></ewn></s>
             <s>於此止渦流</s>
             <s>於此滅名色</s>
             <s>無有餘殘留</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">雜阿含經卷二二．二六（大正藏二．一六〇c）。</note>
-        <note n="2">流 sarā = saṁsāra-sarā 輪迴之流。</note>
-        <note n="3">由此，其流乃不流 ato nivattanti = nibbāṇato na pavattanti。</note>
-    </notes>
+    <ps></ps>
 </doc>

@@ -1,9 +1,11 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔一七〕第七　不放逸
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>雜阿含經卷四六．一八（大正藏二．三三九b）。</note>
+            </ewn>
             （其一）
         </head>
         <p>〔爾時，世尊〕在舍衛城……</p>
@@ -24,14 +26,9 @@
             <s>現法之益利</s>
             <s>乃至未來利</s>
             <s>若得此二利</s>
-            <s>依於得此義<a n="2"/></s>
+            <s>依於得此義<ewn><a/><note>得 abhisamayā = paṭilābhā。</note></ewn></s>
             <s>英雄謂賢者</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">雜阿含經卷四六．一八（大正藏二．三三九b）。</note>
-        <note n="2">得 abhisamayā = paṭilābhā。</note>
-    </notes>
+    <ps></ps>
 </doc>

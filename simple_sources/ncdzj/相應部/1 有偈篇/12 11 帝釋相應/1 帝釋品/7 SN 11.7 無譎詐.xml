@@ -1,37 +1,30 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔七〕第七　無譎詐
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>雜阿含經卷四〇．一八（大正藏二．二九六c）。</note>
+            </ewn>
         </head>
         <p>〔爾時，世尊〕住舍衛城……</p>
         <p>「諸比丘！遠昔天帝釋，獨居靜坐，而如是起心念：『我即使對敵，亦不譎詐。』</p>
         <p>諸比丘！時吠波質底阿修羅王知天帝釋心之所念，來到天帝釋處。</p>
         <p>諸比丘！天帝釋見吠波質底阿修羅王從遠而來。以此言吠波質底阿修羅王：『吠波質底站住！汝已被捕。』</p>
         <p>『友！勿捨以前汝心之所念。』</p>
-        <p>『吠波質底！我不譎詐，可得對汝明誓<a n="2"/>。』</p>
+        <p>『吠波質底！我不譎詐，可得對汝明誓<ewn><a/><note>sapassu = mayi adunbbhattāya sapathaṁ karohi（我誓不質詢譎詐）。</note></ewn>。』</p>
         <j p="吠波質底">
             <s>以言虛妄者</s>
-            <s>必定有惡報<a n="3"/></s>
+            <s>必定有惡報<ewn><a/><note>在註中作如瞿迦利比丘（Kokalika）。</note></ewn></s>
             <s>誹謗於聖者</s>
             <s>必定有惡報</s>
-            <s>於友不實者<a n="4"/></s>
+            <s>於友不實者<ewn><a/><note>如有關於 Mahākapi-jātaka 者。</note></ewn></s>
             <s>必定有惡報</s>
-            <s>不知恩惠者<a n="5"/></s>
+            <s>不知恩惠者<ewn><a/><note>如提婆達多。</note></ewn></s>
             <s>亦定有惡報</s>
-            <s>舍脂鉢底汝<a n="6"/></s>
+            <s>舍脂鉢底汝<ewn><a/><note>Sujampati Suja 之夫之意義，乃帝釋天之稱名。Sujā 乃波質底阿修羅王之妹。</note></ewn></s>
             <s>詐者有惡報」</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">雜阿含經卷四〇．一八（大正藏二．二九六c）。</note>
-        <note n="2">sapassu = mayi adunbbhattāya sapathaṁ karohi（我誓不質詢譎詐）。</note>
-        <note n="3">在註中作如瞿迦利比丘（Kokalika）。</note>
-        <note n="4">如有關於 Mahākapi-jātaka 者。</note>
-        <note n="5">如提婆達多。</note>
-        <note n="6">Sujampati Suja 之夫之意義，乃帝釋天之稱名。Sujā 乃波質底阿修羅王之妹。</note>
-    </notes>
+    <ps></ps>
 </doc>

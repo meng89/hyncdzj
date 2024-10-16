@@ -1,9 +1,11 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔一〕第一　遠離
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>雜阿含經卷五〇．九（大正藏二．三六八a）。</note>
+            </ewn>
         </head>
         <p>如是我聞。爾時，有比丘住拘薩羅國之茂林。</p>
         <p>其時，彼比丘，去往日住，至住家，起惡不善之思。</p>
@@ -15,8 +17,8 @@
             <s>對人與滅欲</s>
             <s>離貪欲心安</s>
             <s>除不快正念</s>
-            <s>我等讚善人<a n="2"/></s>
-            <s>地獄塵難除<a n="3"/><a n="4"/></s>
+            <s>我等讚善人<ewn><a/><note>底本之 sārayāmase 讀作 sarāyamāmase。我等記憶在心。在註中讀作 sādayāmase。</note></ewn></s>
+            <s>地獄塵難除<ewn><a/><note>原文 pātālarajo 在註中作 appatiṭṭhaṭṭhena pātāla-saṅkhato kilesa rajo（依無支持義，稱作地獄之煩惱垢）。</note></ewn><ewn><a/><note>原文 duruttamo 在錫蘭本作 duttaro 其意義則不甚明瞭。</note></ewn></s>
             <s>勿運渴愛塵</s>
             <s>如鳥浴沙泥</s>
             <s>挺身羽塵落</s>
@@ -26,12 +28,5 @@
         </j>
         <p>時，彼比丘受天神所警策而起驚惺。</p>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">雜阿含經卷五〇．九（大正藏二．三六八a）。</note>
-        <note n="2">底本之 sārayāmase 讀作 sarāyamāmase。我等記憶在心。在註中讀作 sādayāmase。</note>
-        <note n="3">原文 pātālarajo 在註中作 appatiṭṭhaṭṭhena pātāla-saṅkhato kilesa rajo（依無支持義，稱作地獄之煩惱垢）。</note>
-        <note n="4">原文 duruttamo 在錫蘭本作 duttaro 其意義則不甚明瞭。</note>
-    </notes>
+    <ps></ps>
 </doc>

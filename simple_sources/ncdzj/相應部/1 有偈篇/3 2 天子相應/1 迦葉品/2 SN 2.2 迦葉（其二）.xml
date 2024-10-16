@@ -1,9 +1,11 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔二〕第二　迦葉
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>雜阿含經卷四九．二五（大正藏二．三六一c）。</note>
+            </ewn>
             （其二）
         </head>
         <p>爾時，世尊住舍衛城……</p>
@@ -13,14 +15,9 @@
             <s>以得心解脫</s>
             <s>知世之興廢</s>
             <s>心善不執著</s>
-            <s>若望心得達<a n="2"/></s>
+            <s>若望心得達<ewn><a/><note>心之得達 hadayassânuppattiṁ = arahattaṁ。</note></ewn></s>
             <s>不能得其果</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">雜阿含經卷四九．二五（大正藏二．三六一c）。</note>
-        <note n="2">心之得達 hadayassânuppattiṁ = arahattaṁ。</note>
-    </notes>
+    <ps></ps>
 </doc>

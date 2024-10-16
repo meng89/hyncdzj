@@ -1,9 +1,11 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔一七〕難為（龜）
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>雜阿含經二二．二五（大正藏二．一六〇b）。</note>
+            </ewn>
         </head>
         <j p="天神">
             <s>無智沙門行</s>
@@ -20,14 +22,9 @@
             <s>藏頭尾手足</s>
             <s>比丘攝意念</s>
             <s>無著無害他</s>
-            <s>以離於煩惱<a n="2"/></s>
+            <s>以離於煩惱<ewn><a/><note>離煩惱 parinibbuto = kilesaparinibbānena parinibbuto。</note></ewn></s>
             <s>誰亦不得貶</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">雜阿含經二二．二五（大正藏二．一六〇b）。</note>
-        <note n="2">離煩惱 parinibbuto = kilesaparinibbānena parinibbuto。</note>
-    </notes>
+    <ps></ps>
 </doc>

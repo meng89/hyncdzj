@@ -1,9 +1,11 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔五五〕第五　生因
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>雜阿含經卷三六．二七（大正藏二．二六五a）。</note>
+            </ewn>
             （一）
         </head>
         <j p="天神">
@@ -19,9 +21,5 @@
             <s>苦惱人最畏</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">雜阿含經卷三六．二七（大正藏二．二六五a）。</note>
-    </notes>
+    <ps></ps>
 </doc>

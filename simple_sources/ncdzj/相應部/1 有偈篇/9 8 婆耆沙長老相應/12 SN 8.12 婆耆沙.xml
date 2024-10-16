@@ -1,9 +1,11 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔一二〕第十二　婆耆沙
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>雜阿含經卷四五．二〇（大正藏二．三三一c）。</note>
+            </ewn>
         </head>
         <p>爾時，世尊住舍衛城祇樹給孤獨園。</p>
         <p>其時，尊者婆耆沙，得阿羅漢果不久，耽味於解脫樂，其時，唱此偈曰：</p>
@@ -17,7 +19,7 @@
             <s>我聞如是法</s>
             <s>無家而出家</s>
             <s>實於聖者見</s>
-            <s>入其道之道<a n="2"/></s>
+            <s>入其道之道<ewn><a/><note>原文 niyāmagataddasā = niyāmagatā c'eva niyāmadasā ti ca（決定得入、決定得見）。</note></ewn></s>
             <s>比丘比丘尼</s>
             <s>利益成正覺</s>
             <s>我來於佛前</s>
@@ -42,10 +44,5 @@
             <s>總數為十二</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">雜阿含經卷四五．二〇（大正藏二．三三一c）。</note>
-        <note n="2">原文 niyāmagataddasā = niyāmagatā c'eva niyāmadasā ti ca（決定得入、決定得見）。</note>
-    </notes>
+    <ps></ps>
 </doc>

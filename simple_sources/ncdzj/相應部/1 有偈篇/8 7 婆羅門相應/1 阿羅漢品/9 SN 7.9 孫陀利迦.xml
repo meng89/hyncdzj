@@ -1,9 +1,11 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔九〕第九　孫陀利迦
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>雜阿含經卷四四．七（大正藏二．三二〇b）。</note>
+            </ewn>
         </head>
         <p>爾時，世尊住拘薩羅之孫陀利迦河邊。</p>
         <p>時，又有孫陀利迦婆羅墮婆闍婆羅門，於孫陀利迦河邊行火供，作拜火供犧。</p>
@@ -19,15 +21,15 @@
             <s>唯問其行為</s>
             <s>微木亦生火</s>
             <s>雖然生為卑</s>
-            <s>智慧有駿敏<a n="2"/></s>
+            <s>智慧有駿敏<ewn><a/><note>原語 ājāniyo 乃駿馬之義。今在註釋中解為 kāraṇa-akāraṇa-jānanako（作不作了知人）。</note></ewn></s>
             <s>止惡有慚愧</s>
             <s>是為聖者生</s>
             <s>依真所調順</s>
             <s>以具悉調順</s>
-            <s>到達於聖道<a n="3"/></s>
+            <s>到達於聖道<ewn><a/><note>vedantagu 原為達於吠陀之支分義，今為達於聖道之智義。</note></ewn></s>
             <s>成就梵行人</s>
             <s>帶來供犧牲</s>
-            <s>呼報出食事<a n="4"/></s>
+            <s>呼報出食事<ewn><a/><note>kālena = kālo bhante niṭṭhitaṁ bhattaṁ（尊者！告知飯菜已準備妥當）。</note></ewn></s>
             <s>是人值供養</s>
             <s>以給於供犧</s>
         </j>
@@ -70,11 +72,11 @@
             <s>依是不得淨</s>
             <s>婆羅門我止</s>
             <s>事火而內燃</s>
-            <s>依常火常靜<a n="5"/></s>
+            <s>依常火常靜<ewn><a/><note>依於常火，依一切智之火而燃燒。</note></ewn></s>
             <s>我是阿羅漢</s>
             <s>常行於梵行</s>
             <s>婆羅門汝慢</s>
-            <s>是名為重擔<a n="6"/></s>
+            <s>是名為重擔<ewn><a/><note>重擔（khāribhāro）穀物之數量，將之負肩背而一步一步行走時，其重量直如重壓大地。關於汝生慢心，於人眾起嫉垢而墮獄。</note></ewn></s>
             <s>忿煙妄語灰</s>
             <s>舌即是木酌</s>
             <s>心供犧火處</s>
@@ -86,10 +88,10 @@
             <s>常為善人讚</s>
             <s>聖者來此浴</s>
             <s>體清渡彼岸</s>
-            <s>真實與正法<a n="7"/><a n="8"/></s>
+            <s>真實與正法<ewn><a/><note>真 sacca = saccavādi 法 dhamma = diṭṭhi, saṅkappa, vayāma, sati, samādhi 自制 Saṁyāmo = kammanta, ājiva 於上述中涵括八正道。</note></ewn><ewn><a/><note>真 sacca = saccavādi 法 dhamma = diṭṭhi, saṅkappa, vayāma, sati, samādhi 自制 Saṁyāmo = kammanta, ājiva 於上述中涵括八正道。（CBETA 按：漢譯南傳大藏經此頁對應之註標[18]與章節校注內容不符，故今將此處修訂為[18]之註標。）</note></ewn></s>
             <s>自制是梵行</s>
             <s>婆羅門依此</s>
-            <s>中道得最勝<a n="9"/><a n="10"/></s>
+            <s>中道得最勝<ewn><a/><note>brahmapatti，讀為 brahmuppatti，seṭṭhi-uppatti（生最勝者）解之。</note></ewn><ewn><a/><note>brahmapatti，讀為 brahmuppatti，seṭṭhi-uppatti（生最勝者）解之。（CBETA 按：漢譯南傳大藏經此頁中缺相對應之註標[19]，今於此處加上[19]之註標。）</note></ewn></s>
             <s>直心者歸命</s>
             <s>我謂此等人</s>
             <s>為隨法行者</s>
@@ -98,18 +100,5 @@
         <p>如是言已，孫陀利迦婆羅墮婆闍婆羅門，以此白世尊曰：「世尊！是最勝者……乃至……」</p>
         <p>又，此婆羅墮婆闍婆羅門，成為一阿羅漢。</p>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">雜阿含經卷四四．七（大正藏二．三二〇b）。</note>
-        <note n="2">原語 ājāniyo 乃駿馬之義。今在註釋中解為 kāraṇa-akāraṇa-jānanako（作不作了知人）。</note>
-        <note n="3">vedantagu 原為達於吠陀之支分義，今為達於聖道之智義。</note>
-        <note n="4">kālena = kālo bhante niṭṭhitaṁ bhattaṁ（尊者！告知飯菜已準備妥當）。</note>
-        <note n="5">依於常火，依一切智之火而燃燒。</note>
-        <note n="6">重擔（khāribhāro）穀物之數量，將之負肩背而一步一步行走時，其重量直如重壓大地。關於汝生慢心，於人眾起嫉垢而墮獄。</note>
-        <note n="7">真 sacca = saccavādi 法 dhamma = diṭṭhi, saṅkappa, vayāma, sati, samādhi 自制 Saṁyāmo = kammanta, ājiva 於上述中涵括八正道。</note>
-        <note n="8">真 sacca = saccavādi 法 dhamma = diṭṭhi, saṅkappa, vayāma, sati, samādhi 自制 Saṁyāmo = kammanta, ājiva 於上述中涵括八正道。（CBETA 按：漢譯南傳大藏經此頁對應之註標[18]與章節校注內容不符，故今將此處修訂為[18]之註標。）</note>
-        <note n="9">brahmapatti，讀為 brahmuppatti，seṭṭhi-uppatti（生最勝者）解之。</note>
-        <note n="10">brahmapatti，讀為 brahmuppatti，seṭṭhi-uppatti（生最勝者）解之。（CBETA 按：漢譯南傳大藏經此頁中缺相對應之註標[19]，今於此處加上[19]之註標。）</note>
-    </notes>
+    <ps></ps>
 </doc>

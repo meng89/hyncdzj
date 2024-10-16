@@ -1,15 +1,13 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔四五〕第五　大寶
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>原本及暹羅本俱與前經完全一致，故不別出。</note>
+            </ewn>
             （二）
         </head>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">原本及暹羅本俱與前經完全一致，故不別出。</note>
-    </notes>
+    <ps></ps>
 </doc>

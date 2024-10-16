@@ -1,9 +1,11 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔一四〕剎帝利
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>雜阿含經卷三六．一五（大正藏二．二六三b）。</note>
+            </ewn>
         </head>
         <j p="天神">
             <s>剎利兩足尊</s>
@@ -18,9 +20,5 @@
             <s>孝順子最勝</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">雜阿含經卷三六．一五（大正藏二．二六三b）。</note>
-    </notes>
+    <ps></ps>
 </doc>

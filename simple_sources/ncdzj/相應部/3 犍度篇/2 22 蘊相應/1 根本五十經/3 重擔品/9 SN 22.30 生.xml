@@ -1,9 +1,11 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔三〇〕第九　生
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>漢譯雜阿含經卷三（大正藏二．二〇a）。</note>
+            </ewn>
         </head>
         <p>〔爾時，世尊〕在舍衛城……乃至……</p>
         <p><ref cRef="PTS.S.3.32"/>三</p>
@@ -14,9 +16,5 @@
         <p>若受……想……行……</p>
         <p>若識之滅、息、沒者，則苦滅、病息、老死沒。」</p>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">漢譯雜阿含經卷三（大正藏二．二〇a）。</note>
-    </notes>
+    <ps></ps>
 </doc>

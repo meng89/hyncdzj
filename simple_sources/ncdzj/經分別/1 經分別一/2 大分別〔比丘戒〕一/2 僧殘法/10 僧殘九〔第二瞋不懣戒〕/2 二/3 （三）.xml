@@ -1,5 +1,4 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             <ref cRef="PTS.Vin.3.169"/>
@@ -17,7 +16,5 @@
         <p>「阿闍梨似」者，見某阿闍梨弟子犯波羅夷法……語語僧殘。</p>
         <p><ref cRef="PTS.Vin.3.170"/>「房舍似」者，見住某房舍者犯波羅夷法……語語僧殘。</p>
     </body>
-    <notes/>
-    <ps/>
-    <notes/>
+    <ps></ps>
 </doc>

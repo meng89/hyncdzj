@@ -1,9 +1,11 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔五一〕第一　老
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>雜阿含經卷三六．二四（大正藏二．二六五b）。</note>
+            </ewn>
         </head>
         <j p="天神">
             <s>老時善何物</s>
@@ -18,9 +20,5 @@
             <s>功德盜不奪</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">雜阿含經卷三六．二四（大正藏二．二六五b）。</note>
-    </notes>
+    <ps></ps>
 </doc>

@@ -1,9 +1,11 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔九〕第九　叔迦羅
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>雜阿含經卷五〇．三（大正藏二．三六五a）。</note>
+            </ewn>
             （一）
         </head>
         <p>爾時，世尊住王舍城竹林栗鼠養餌所。</p>
@@ -18,16 +20,11 @@
             <s>比丘尼所說</s>
             <s>甘露之道足</s>
             <s>無混濁甘液</s>
-            <s>於此飲至再<a n="2"/></s>
+            <s>於此飲至再<ewn><a/><note>原文 appaṭivāṇīyaṁ 佛音解釋為：雖一直飲用，卻不覺得飽（Punappunaṁ bhūnjantana naruccati）。護法則提出不還果解之。《長老偈註》六十一頁。</note></ewn></s>
             <s>飲之不為飽</s>
             <s>思智慧人飲</s>
             <s>如渴旅人雨</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">雜阿含經卷五〇．三（大正藏二．三六五a）。</note>
-        <note n="2">原文 appaṭivāṇīyaṁ 佛音解釋為：雖一直飲用，卻不覺得飽（Punappunaṁ bhūnjantana naruccati）。護法則提出不還果解之。《長老偈註》六十一頁。</note>
-    </notes>
+    <ps></ps>
 </doc>

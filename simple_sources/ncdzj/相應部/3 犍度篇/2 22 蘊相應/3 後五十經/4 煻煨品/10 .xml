@@ -1,5 +1,4 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head/>
         <p>第四煻煨品（終）</p>
@@ -8,12 +7,8 @@
             <s>煻煨三無常</s>
             <s>三苦三無我</s>
             <s>乃至說此三</s>
-            <s>善男子苦三<a n="1"/></s>
+            <s>善男子苦三<ewn><a/><note>「三」，原本暹羅本俱為「二」。</note></ewn></s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">「三」，原本暹羅本俱為「二」。</note>
-    </notes>
+    <ps></ps>
 </doc>

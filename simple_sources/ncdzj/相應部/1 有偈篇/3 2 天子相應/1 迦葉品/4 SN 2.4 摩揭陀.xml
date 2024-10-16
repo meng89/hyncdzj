@@ -1,13 +1,15 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔四〕第四　摩揭陀
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>雜阿含經卷四九．一七（大正藏二．三六〇b）。</note>
+            </ewn>
         </head>
         <p>立於一面之摩揭陀天子，向世尊唱偈曰：</p>
         <j>
-            <s>世有幾多光<a n="2"/></s>
+            <s>世有幾多光<ewn><a/><note>同諸天相應〔二十六〕經之偈。</note></ewn></s>
             <s>徧照此世間</s>
             <s>我等問世尊</s>
             <s>如何得知此</s>
@@ -23,10 +25,5 @@
             <s>此為無上光</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">雜阿含經卷四九．一七（大正藏二．三六〇b）。</note>
-        <note n="2">同諸天相應〔二十六〕經之偈。</note>
-    </notes>
+    <ps></ps>
 </doc>

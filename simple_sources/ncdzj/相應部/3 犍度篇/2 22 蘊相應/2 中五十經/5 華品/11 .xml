@@ -1,5 +1,4 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head/>
         <p>（第五）華品（終）</p>
@@ -14,14 +13,10 @@
         <p>中五十經品之攝頌</p>
         <j>
             <s>封滯阿羅漢</s>
-            <s>所食長老名<a n="1"/></s>
+            <s>所食長老名<ewn><a/><note>原本 -sambhayaṁ 以暹羅本 -savhayaṁ 改之。</note></ewn></s>
             <s>以為華品名</s>
             <s>第二五十經</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">原本 -sambhayaṁ 以暹羅本 -savhayaṁ 改之。</note>
-    </notes>
+    <ps></ps>
 </doc>

@@ -1,9 +1,11 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔一四〕第四　貧人
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>雜阿含經卷四六．二（大正藏二．三三三c）。</note>
+            </ewn>
         </head>
         <p>爾時，世尊住舍衛城竹林栗鼠養餌所。</p>
         <p>其時，世尊言諸比丘：「諸比丘！」</p>
@@ -29,9 +31,5 @@
             <s>信戒法知見」</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">雜阿含經卷四六．二（大正藏二．三三三c）。</note>
-    </notes>
+    <ps></ps>
 </doc>

@@ -1,9 +1,11 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔一一〕第一　此等之七
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>雜阿含一七（大正藏二．一一六c）。</note>
+            </ewn>
         </head>
         <p>〔爾時，世尊〕住舍衛城。</p>
         <p><ref cRef="PTS.S.2.150"/>二</p>
@@ -21,9 +23,5 @@
         <p>比丘！非想非非想界者，此界依行有餘等至可達。</p>
         <p>比丘！想受滅界者，此界依滅盡等至可達。」</p>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">雜阿含一七（大正藏二．一一六c）。</note>
-    </notes>
+    <ps></ps>
 </doc>

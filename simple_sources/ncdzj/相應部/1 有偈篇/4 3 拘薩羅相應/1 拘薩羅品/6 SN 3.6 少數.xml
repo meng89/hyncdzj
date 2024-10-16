@@ -1,9 +1,11 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔六〕第六　少數
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>雜阿含經卷四六．九（大正藏二．三三六b）。</note>
+            </ewn>
         </head>
         <p>〔爾時，世尊〕住舍衛城……</p>
         <p>坐於一面之拘薩羅國波斯匿王，白世尊曰：「世尊！我獨坐靜觀，生如是思念：於此世得巨大之富而不迷醉、不溺、不耽於欲樂、不誤於諸人中者，甚少。於此世<ref cRef="PTS.S.1.74"/>得巨大之富而迷醉、溺、耽於欲樂、誤於諸人中者，甚多。」</p>
@@ -12,18 +14,11 @@
         <j>
             <s>富迷於欲樂</s>
             <s>貪欲以奪心</s>
-            <s>不覺於道外<a n="2"/></s>
-            <s>如鹿被縛蹄<a n="3"/></s>
-            <s>彼等後苦澀<a n="4"/></s>
+            <s>不覺於道外<ewn><a/><note>於道之外 atisāraṁ = atikkamaṁ。</note></ewn></s>
+            <s>如鹿被縛蹄<ewn><a/><note>係蹄 kūṭaṁ = pāsaṁ。</note></ewn></s>
+            <s>彼等後苦澀<ewn><a/><note>彼等之後 pacchāsaṁ = pacchā tcsaṁ。</note></ewn></s>
             <s>其果即是惡</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">雜阿含經卷四六．九（大正藏二．三三六b）。</note>
-        <note n="2">於道之外 atisāraṁ = atikkamaṁ。</note>
-        <note n="3">係蹄 kūṭaṁ = pāsaṁ。</note>
-        <note n="4">彼等之後 pacchāsaṁ = pacchā tcsaṁ。</note>
-    </notes>
+    <ps></ps>
 </doc>

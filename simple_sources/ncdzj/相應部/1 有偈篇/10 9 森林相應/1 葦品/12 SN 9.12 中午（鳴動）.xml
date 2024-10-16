@@ -1,9 +1,11 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔一二〕第十二　中午（鳴動）
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>雜阿含經卷五〇．一一（大正藏二．三六八b）。</note>
+            </ewn>
         </head>
         <p>爾時，比丘住拘薩羅國之茂林。</p>
         <p>時，住其林一天神，來到比丘之處。</p>
@@ -21,9 +23,5 @@
             <s>我滿其快樂</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">雜阿含經卷五〇．一一（大正藏二．三六八b）。</note>
-    </notes>
+    <ps></ps>
 </doc>

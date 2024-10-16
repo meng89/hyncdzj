@@ -1,10 +1,12 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             <ref cRef="PTS.S.1.5"/>
             〔一〇〕住森林
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>雜阿含經卷三六．三（大正藏二．二六〇c）。</note>
+            </ewn>
         </head>
         <p>立於一面之天神，於世尊面前，而唱偈曰：</p>
         <j>
@@ -33,9 +35,5 @@
             <s>依此有品名</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">雜阿含經卷三六．三（大正藏二．二六〇c）。</note>
-    </notes>
+    <ps></ps>
 </doc>

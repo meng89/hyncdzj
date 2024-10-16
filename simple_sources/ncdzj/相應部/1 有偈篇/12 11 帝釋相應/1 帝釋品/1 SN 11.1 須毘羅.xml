@@ -1,9 +1,11 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔一〕第一　須毘羅
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>雜阿含經卷四〇．一二（大正藏二．二九四a）。</note>
+            </ewn>
         </head>
         <p>如是我聞。爾時，世尊住舍衛城祇樹給孤獨園。</p>
         <p>世尊於此言諸比丘：「諸比丘！」彼等諸比丘奉答世尊：「唯然！世尊！」</p>
@@ -23,7 +25,7 @@
             <s>懶惰無勤勉</s>
             <s>不為所應為</s>
             <s>一切愛欲繁</s>
-            <s>示其最勝處<a n="2"/></s>
+            <s>示其最勝處<ewn><a/><note>taṁ me Sakka varaṁ disaṁ = Sakkadevasettha taṁ me varaṁ uttamaṁ ṭhānaṁ okasaṁ disaṁ ācikkha kathehi（為我說其最勝地點）。</note></ewn></s>
         </j>
         <j p="帝釋">
             <s>懶惰無勤勵</s>
@@ -46,10 +48,5 @@
         </j>
         <p>諸比丘！其實天帝釋，自生功德果報，以統理忉利天，應是勤勉精進之稱讚者。諸比丘！汝等於此，於此善說之法與律出家。未達者為達，未到者為到，未實現者為實現而勤勉、奮勵、精進者，汝等能顯耀此事。」</p>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">雜阿含經卷四〇．一二（大正藏二．二九四a）。</note>
-        <note n="2">taṁ me Sakka varaṁ disaṁ = Sakkadevasettha taṁ me varaṁ uttamaṁ ṭhānaṁ okasaṁ disaṁ ācikkha kathehi（為我說其最勝地點）。</note>
-    </notes>
+    <ps></ps>
 </doc>

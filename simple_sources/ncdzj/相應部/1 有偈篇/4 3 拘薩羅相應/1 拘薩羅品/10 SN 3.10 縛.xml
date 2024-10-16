@@ -1,9 +1,11 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔一〇〕第十　縛
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>雜阿含經卷四六．一四（大正藏二．三三八b）。</note>
+            </ewn>
         </head>
         <p>又，其時，拘薩羅國之波斯匿王，捕縛甚多人。有者以繩、有者以網、有者以鎖〔縛之〕。</p>
         <p><ref cRef="PTS.S.1.77"/>二</p>
@@ -31,9 +33,5 @@
             <s>末利供與縛</s>
         </j>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">雜阿含經卷四六．一四（大正藏二．三三八b）。</note>
-    </notes>
+    <ps></ps>
 </doc>

@@ -1,9 +1,11 @@
-<doc>
-    <meta/>
+<doc type="for_machine">
     <body>
         <head>
             〔四四〕第四　一根
-            <a n="1"/>
+            <ewn>
+                <a/>
+                <note>以歌頌渴愛者，同本無此。</note>
+            </ewn>
         </head>
         <j p="天神">
             <s>僅此有一根無明</s>
@@ -14,9 +16,5 @@
         <p>〔其本〕十二渦（十二處）、大海（不滿足）</p>
         <p>有地窖地獄聖者得超越。</p>
     </body>
-    <notes/>
-    <ps/>
-    <notes>
-        <note n="1">以歌頌渴愛者，同本無此。</note>
-    </notes>
+    <ps></ps>
 </doc>
