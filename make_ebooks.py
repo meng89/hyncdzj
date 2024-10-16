@@ -28,17 +28,6 @@ def load_book_from_dir(m):
     book = load_from_p5a.load_book_by_module(m)
     return book
 
-def load_sc_book_from_dir(m):
-    src = os.path.join(config.SIMPLE_DIR, m.info.name)
-    prefix = m.info.name + "_sc_"
-    sc_dir = tempfile.TemporaryDirectory(prefix=prefix)
-    book_name_sc = opencc.OpenCC("t2s.json").convert(m.info.name)
-    dst = os.path.join(sc_dir.name, book_name_sc)
-    os.makedirs(dst)
-    cover_to_sc(src, dst)
-    book = base.Dir(dst)
-    return book
-
 
 def cover_to_sc(src, dst):
     for file in os.listdir(src):
@@ -104,7 +93,7 @@ def write_epub_tree(d: base.Dir, epub, no_href_marks, parent_mark, doc_count, mo
             html = create_page(obj, lang)
             doc_count += 1
             doc_path = str(doc_count) + ".xhtml"
-            htmlstr = xl.Xml(root=html).to_str(do_pretty=True, dont_do_tags=["title", "p", "h1", "h2", "h3", "h4"])
+            htmlstr = xl.Xml(root=html).to_str(do_pretty=True, dont_do_tags=["title", "p", "h1", "h2", "h3", "h4", "a", "sen", "aside"])
 
             epub.userfiles[doc_path] = htmlstr
             epub.spine.append(doc_path)
@@ -133,22 +122,27 @@ def create_page(obj: base.Doc, lang):
     head = html.ekid("head")
     body = html.ekid("body")
 
-    notes = write_(obj.body, body)
+    notes = write_(obj.body, body, [])
 
-    for index, note in enumerate(notes):
-        body.ekid("aside", {"epub:type": "footnote", "id": "n" + str(index + 1)})
-
+    sec = xl.Element("section", {"epub:type": "footnotes", "role": "doc-endnotes"})
+    html.kids.append(sec)
+    #<section epub:type="endnotes" role="doc-endnotes">
+    for index, note_kids in enumerate(notes):
+        aside = sec.ekid("aside")
+        aside.attrs["epub:type"] = "footnote"
+        aside.attrs["id"] = "n" + str(index + 1)
+        aside.kids.extend(note_kids)
     return html
 
 
-def write_(obj_body, e):
-    notes = []
+def write_(obj_body, e, notes):
     for x in obj_body.kids:
         if isinstance(x, str):
             e.kids.append(x)
+
         elif isinstance(x, xl.Element):
             if x.tag == "ewn":
-                notes.append(x.kids[1])
+                notes.append(x.kids[1].kids)
                 count = str(len(notes))
                 a = e.ekid("a", {"epub:type": "noteref", "href" : "#n" + count})
                 a.kids.extend(x.kids[0].kids)
@@ -156,7 +150,9 @@ def write_(obj_body, e):
                     a.attrs["class"] = "notext"
                     a.kids.append(count)
             else:
-                notes.extend(write_(x, e))
+                _e = xl.Element(x.tag, x.attrs)
+                e.kids.append(_e)
+                notes = write_(x, _e, notes)
     return notes
 
 # 短小的合并之类操作应该修改dir对象来完成
@@ -206,7 +202,7 @@ def main():
 
         ################################################################################################################
 
-        book = load_sc_book_from_dir(m)
+        book = book.trans_2_sc()
         path = os.path.join(td.name, "元_{}_SC.epub".format(trans_sc(m.info.name)))
         write_epub(path, book, sn, "zh-Hans")
 

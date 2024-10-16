@@ -219,7 +219,6 @@ def _type2(name):
 def _get_xy_serials(d: base.Dir):
     serials = []
     for name, obj in d.list:
-        print(name)
         m = re.match(r"^(\d+) \S+相應$", name)
         if m:
             serials.append(int(m.group(1)))

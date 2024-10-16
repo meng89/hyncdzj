@@ -3,13 +3,22 @@ import copy
 import sys
 import dataclasses
 
-sys.path.append("/mnt/data/projects/xl")
+
 
 import re
 import os
 
+import opencc
+
+
+sys.path.append("/mnt/data/projects/xl")
 import xl
 import config
+
+
+def to_sc(s):
+    return opencc.OpenCC("t2s.json").convert(s)
+
 
 def piece_key():
     from uuid import uuid4
@@ -82,6 +91,13 @@ class Dir:
 
                 self.list.append((key, value))
 
+    def trans_2_sc(self):
+        new_d = Dir()
+        for name, obj in self.list:
+            new_name = to_sc(name)
+            new_obj = obj.trans_2_sc()
+            new_d.list.append((new_name, new_obj))
+        return new_d
 
     def append_piece_term(self, term):
         no_name_doc = None
@@ -119,8 +135,23 @@ class Dir:
 
 
 _doc_dont_do_tags = ["p", "s", "note", "h1"]
+
+def cover_element(old_e: xl.Element, cover_fun):
+    new_e = xl.Element(cover_fun(old_e.tag))
+    for key, value in old_e.attrs.items():
+        new_e.attrs[cover_fun(key)] = cover_fun(value)
+
+    for kid in old_e.kids:
+        if isinstance(kid, xl.Element):
+            new_kid = cover_element(kid, cover_fun)
+        else:
+            new_kid = cover_fun(kid)
+        new_e.kids.append(new_kid)
+    return new_e
+
+
 class Doc:
-    def __init__(self, path=None):
+    def __init__(self, path=None, xml=None):
         if path:
             _xml = xl.parse(open(path).read())
             doc = _xml.root
@@ -132,6 +163,9 @@ class Doc:
                 case _:
                     raise Exception
 
+        elif xml:
+            self._xml = xml
+
         else:
             root = xl.Element("doc")
             root.attrs["type"] = "for_machine"
@@ -140,6 +174,11 @@ class Doc:
             body.self_closing = False
             ps = root.ekid("ps")
             ps.self_closing = False
+
+    def trans_2_sc(self):
+        new_root = cover_element(self._xml.root, to_sc)
+        new_xml = xl.Xml(root = new_root)
+        return Doc(xml=new_xml)
 
     @property
     def body(self) -> xl.Element:

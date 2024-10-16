@@ -193,7 +193,7 @@ def note_fun(e):
             ewn = xl.Element("ewn")
             ewn.ekid("a")
             _note = ewn.ekid("note")
-            _note.kids.extend(e.kids)
+            _note.kids.extend(transform_elements(e.kids))
             return [ewn]
 
     else:
@@ -289,13 +289,13 @@ def lg_fun(e):
 
             sentences.append(sentence)
 
-        j = xl.Element("j")
+        ji = xl.Element("ji")
         if person:
-            j.attrs["p"] = person
+            ji.attrs["p"] = person
         for s in sentences:
-            j.kids.append(xl.Element("s", kids=s))
+            ji.kids.append(xl.Element("sen", kids=s))
 
-        return [j]
+        return [ji]
 
     else:
         return None
