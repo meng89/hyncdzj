@@ -230,7 +230,10 @@ def space_fun(e):
 #
 def ref_fun(e):
     if isinstance(e, xl.Element) and e.tag == "ref":
-        return [e]
+        ewn = xl.Element("ewn")
+        ewn.ekid("a")
+        ewn.ekid("note", kids=e.kids)
+        return [ewn]
     else:
         return None
 
@@ -289,11 +292,11 @@ def lg_fun(e):
 
             sentences.append(sentence)
 
-        ji = xl.Element("ji")
+        ji = xl.Element("div", {"class": "ji"})
         if person:
             ji.attrs["p"] = person
         for s in sentences:
-            ji.kids.append(xl.Element("sen", kids=s))
+            ji.kids.append(xl.Element("div", {"class": "sen"}, kids=s))
 
         return [ji]
 
@@ -579,7 +582,8 @@ def make_tree(div: xl.Element):
             obj.list.append((mulu, kid_obj))
     else:
         obj = base.Doc()
-        for kid in div.kids[1:]:
+        # obj.body.meta.head = div.kids[1]
+        for kid in div.kids[2:]:
             obj.body.kids.append(kid)
 
     return get_mulu_str(div), obj

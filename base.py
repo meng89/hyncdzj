@@ -4,7 +4,6 @@ import sys
 import dataclasses
 
 
-
 import re
 import os
 
@@ -31,6 +30,11 @@ dont_do_tags = ["dir", "h1", "s", "p"]
 # SN/_meta.xml
 # SN/大篇/2 觉知相应/转轮品/SN 46.41
 # SN/大篇/2 觉知相应/觉知总摄品/SN 46.51 食.xml
+
+
+class Meta:
+    def __init__(self, e):
+        self._e = e
 
 
 class Metadata:
@@ -334,7 +338,7 @@ def merge_jing_in_one_doc(d: Dir):
 
 def merge_jing_in_one_doc2(body, d: Dir):
     for name, obj in d.list:
-        head2 = body.ekid("head2")
+        head2 = body.ekid("h2")
         head2.kids.append(name)
         if isinstance(obj, Dir):
             merge_jing_in_one_doc(d)

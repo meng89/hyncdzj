@@ -90,7 +90,7 @@ def write_epub_tree(d: base.Dir, epub, no_href_marks, parent_mark, doc_count, mo
 
 
         if isinstance(obj, base.Doc):
-            html = create_page(obj, lang)
+            html = create_page(name, obj, lang)
             doc_count += 1
             doc_path = str(doc_count) + ".xhtml"
             htmlstr = xl.Xml(root=html).to_str(do_pretty=True, dont_do_tags=["title", "p", "h1", "h2", "h3", "h4", "a", "sen", "aside"])
@@ -109,7 +109,7 @@ def write_epub_tree(d: base.Dir, epub, no_href_marks, parent_mark, doc_count, mo
     return doc_count, no_href_marks
 
 
-def create_page(obj: base.Doc, lang):
+def create_page(name, obj: base.Doc, lang):
     html = xl.Element(
         "html",
         {
@@ -120,12 +120,13 @@ def create_page(obj: base.Doc, lang):
          }
     )
     head = html.ekid("head")
+    head.ekid("title", kids=[name or "-"])
     body = html.ekid("body")
 
     notes = write_(obj.body, body, [])
 
     sec = xl.Element("section", {"epub:type": "footnotes", "role": "doc-endnotes"})
-    html.kids.append(sec)
+    body.kids.append(sec)
     #<section epub:type="endnotes" role="doc-endnotes">
     for index, note_kids in enumerate(notes):
         aside = sec.ekid("aside")
@@ -135,8 +136,8 @@ def create_page(obj: base.Doc, lang):
     return html
 
 
-def write_(obj_body, e, notes):
-    for x in obj_body.kids:
+def write_(doc_body, e, notes):
+    for x in doc_body.kids:
         if isinstance(x, str):
             e.kids.append(x)
 
