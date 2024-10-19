@@ -47,19 +47,6 @@ def cover_to_sc(src, dst):
             cover_to_sc(path, dst_path)
 
 
-def write_pdf(book, book_name, module, lang):
-    pass #todo
-
-
-def write_tree_(d: base.Dir, level, f: io.TextIOWrapper, module):
-    for name, obj in d.list:
-        bookmark_name = name
-        if hasattr(module, "pdf_bookmark_name"):
-            bookmark_name = module.pdf_bookmark_name(name, obj, d)
-
-        f.write("\\title{{}}{{}}".format(name, " "))
-
-
 def create_identifier(s):
     return uuid.uuid5(uuid.NAMESPACE_URL, "https://github.com/meng89/ncdzj" + s)
 
@@ -78,19 +65,21 @@ def write_epub(path, book, module, lang):
     epub.meta.languages.append(lang)
     epub.meta.date = datetime.datetime.strftime(datetime.datetime.now(), "%Y-%m-%dT%H:%M:%SZ")
 
-    write_epub_tree(book, epub, [], epub.mark, 0, module, lang)
+    epub_notes = EpubNotes()
+    write_epub_tree(book, epub_notes, epub, [], epub.mark, 0, module, lang)
+    for name, xml_str in epub_notes.pages(lang):
+        epub.userfiles[name] = xml_str
+        epub.spine.append(name)
     epub.write(path)
 
 
-def write_epub_tree(d: base.Dir, epub, no_href_marks, parent_mark, doc_count, module, lang):
+def write_epub_tree(d: base.Dir, epub_notes, epub, no_href_marks, parent_mark, doc_count, module, lang):
     for name, obj in d.list:
         mark = epubpacker.Mark(name)
         parent_mark.kids.append(mark)
 
-
-
         if isinstance(obj, base.Doc):
-            html = create_page(name, obj, lang)
+            html = write_doc(name, obj, lang, epub_notes)
             doc_count += 1
             doc_path = str(doc_count) + ".xhtml"
             htmlstr = xl.Xml(root=html).to_str(do_pretty=True, dont_do_tags=["title", "p", "h1", "h2", "h3", "h4", "a", "sen", "aside"])
@@ -104,12 +93,79 @@ def write_epub_tree(d: base.Dir, epub, no_href_marks, parent_mark, doc_count, mo
 
         elif isinstance(obj, base.Dir):
             no_href_marks.append(mark)
-            doc_count, no_href_marks = write_epub_tree(obj, epub, no_href_marks, mark, doc_count, module, lang)
+            doc_count, no_href_marks = write_epub_tree(obj, epub_notes, epub, no_href_marks, mark, doc_count, module, lang)
 
     return doc_count, no_href_marks
 
 
-def create_page(name, obj: base.Doc, lang):
+def write_doc(name, obj: base.Doc, lang, epub_notes):
+    html = create_page(lang, name)
+    body = html.find_kids("body")[0]
+    write_(obj.body, body, epub_notes, 0)
+    return html
+
+
+def write_(doc_body, e, epub_notes, note_count):
+    note_count = note_count
+    for x in doc_body.kids:
+        if isinstance(x, str):
+            e.kids.append(x)
+
+        elif isinstance(x, xl.Element):
+            if x.tag == "ewn":
+                href = epub_notes.add_note(x.kids[1].kids)
+                note_count += 1
+                a = e.ekid("a", {"epub:type": "noteref", "href" : href})
+                a.kids.extend(x.kids[0].kids)
+                if not a.kids:
+                    a.attrs["class"] = "notext"
+                    a.kids.append(note_count)
+            else:
+                _e = xl.Element(x.tag, x.attrs)
+                e.kids.append(_e)
+                note_count = write_(x, _e, epub_notes, note_count)
+
+    return note_count
+
+def trans_machine_to_epub_es(es, epub_notes):
+    new_es = []
+    for e in es:
+        new_es.extend(trans_machine_to_epub_e(e, epub_notes))
+    return new_es
+
+def trans_machine_to_epub_e(e, epub_notes):
+    for fun in []:
+        result = fun(e, epub_notes)
+        if result is not None:
+            return result
+        else:
+            continue
+
+def fun_ewn(e: xl.Element, epub_notes, note_count):
+    if not isinstance(e, xl.Element) or e.tag != "ewn":
+        return None
+
+    href = epub_notes.add_note(e.kids[1].kids)
+    note_count += 1
+    a = e.ekid("a", {"epub:type": "noteref", "href" : href})
+    a.kids.extend(e.kids[0].kids)
+    if not a.kids:
+        a.attrs["class"] = "notext"
+        a.kids.append(note_count)
+    return [a], note_count
+
+def fun_j(e: xl.Element, note_count):
+    if not isinstance(e, xl.Element) or e.tag != "j":
+        return None
+
+    return div, note_count
+
+
+
+def fun_return_same(e):
+    return e
+
+def create_page(lang, title):
     html = xl.Element(
         "html",
         {
@@ -117,44 +173,55 @@ def create_page(name, obj: base.Doc, lang):
             "xmlns": "http://www.w3.org/1999/xhtml",
             "xml:lang": lang,
             "lang": lang
-         }
+        }
     )
     head = html.ekid("head")
-    head.ekid("title", kids=[name or "-"])
+    head.ekid("title", kids=[title or "-"])
     body = html.ekid("body")
-
-    notes = write_(obj.body, body, [])
-
-    sec = xl.Element("section", {"epub:type": "footnotes", "role": "doc-endnotes"})
-    body.kids.append(sec)
-    #<section epub:type="endnotes" role="doc-endnotes">
-    for index, note_kids in enumerate(notes):
-        aside = sec.ekid("aside")
-        aside.attrs["epub:type"] = "footnote"
-        aside.attrs["id"] = "n" + str(index + 1)
-        aside.kids.extend(note_kids)
     return html
 
 
-def write_(doc_body, e, notes):
-    for x in doc_body.kids:
-        if isinstance(x, str):
-            e.kids.append(x)
+class EpubNotes:
+    def __init__(self):
+        self._pages = []
 
-        elif isinstance(x, xl.Element):
-            if x.tag == "ewn":
-                notes.append(x.kids[1].kids)
-                count = str(len(notes))
-                a = e.ekid("a", {"epub:type": "noteref", "href" : "#n" + count})
-                a.kids.extend(x.kids[0].kids)
-                if not a.kids:
-                    a.attrs["class"] = "notext"
-                    a.kids.append(count)
-            else:
-                _e = xl.Element(x.tag, x.attrs)
-                e.kids.append(_e)
-                notes = write_(x, _e, notes)
-    return notes
+    def add_note(self, es):
+        match len(self._pages):
+            case 0:
+                page = []
+                self._pages.append(page)
+            case _:
+                page = self._pages[-1]
+
+        if len(page) == 100:
+            page = []
+            self._pages.append(page)
+
+        page_index = self._pages.index(page)
+        page.append(es)
+        note_index = page.index(es)
+
+        return "note_page{}.xhtml#note{}".format(page_index + 1, note_index + 1)
+
+    def pages(self, lang):
+        _pages = []
+        for page_index, page in enumerate(self._pages):
+            _page_html = create_page(lang, "Note {}".format(page_index + 1))
+            _body = _page_html.find_kids("body")[0]
+            _section = _body.ekid("section", {"epub:type": "endnotes", "role": "doc-endnotes"})
+            ol = _section.ekid("ol")
+            for note_index, note_es in enumerate(page):
+                li = ol.ekid("li", {"id": "note{}".format(note_index + 1)})
+                p = li.ekid("p")
+                p.kids.extend(note_es)
+            _pages.append(
+                (
+                    "note_page{}.xhtml".format(page_index + 1),
+                    _page_html.to_str(do_pretty=True, dont_do_tags=["title", "link", "script", "p"])
+                    )
+            )
+        return _pages
+
 
 # 短小的合并之类操作应该修改dir对象来完成
 
