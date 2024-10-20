@@ -58,7 +58,8 @@ def transform_elements(elements) -> list:
 
 
 def transform_element(element):
-    for fun in (unclear_fun, cbdiv_fun, cbmulu_fun, head_fun, string_fun, lg_fun, p_fun, note_fun, app_fun, space_fun, ref_fun, g_fun,
+    for fun in (unclear_fun, cbdiv_fun, cbmulu_fun, head_fun, string_fun,
+                lg_fun, p_fun, note_fun, app_fun, space_fun, ref_fun, g_fun,
                 label_fun, list_fun, item_fun):
         result = fun(element)
         if result is not None:
@@ -231,8 +232,9 @@ def space_fun(e):
 def ref_fun(e):
     if isinstance(e, xl.Element) and e.tag == "ref":
         ewn = xl.Element("ewn")
-        ewn.ekid("a")
-        ewn.ekid("note", kids=e.kids)
+        a = ewn.ekid("a")
+        a.self_closing=False
+        ewn.ekid("note", kids=[e.attrs["cRef"]])
         return [ewn]
     else:
         return None
@@ -292,11 +294,11 @@ def lg_fun(e):
 
             sentences.append(sentence)
 
-        ji = xl.Element("div", {"class": "ji"})
+        ji = xl.Element("j")
         if person:
-            ji.attrs["p"] = person
+            ji.kids.append(xl.Element("p", kids=[person]))
         for s in sentences:
-            ji.kids.append(xl.Element("div", {"class": "sen"}, kids=s))
+            ji.kids.append(xl.Element("s", kids=s))
 
         return [ji]
 

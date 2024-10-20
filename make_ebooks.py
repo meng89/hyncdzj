@@ -17,6 +17,7 @@ import base
 
 import xl
 import load_from_p5a
+from load_from_p5a import note_fun
 
 
 def trans_sc(s: str) -> str:
@@ -73,6 +74,22 @@ def write_epub(path, book, module, lang):
     epub.write(path)
 
 
+def create_page(lang, title):
+    html = xl.Element(
+        "html",
+        {
+            "xmlns:epub": "http://www.idpf.org/2007/ops",
+            "xmlns": "http://www.w3.org/1999/xhtml",
+            "xml:lang": lang,
+            "lang": lang
+        }
+    )
+    head = html.ekid("head")
+    head.ekid("title", kids=[title or "-"])
+    body = html.ekid("body")
+    return html
+
+
 def write_epub_tree(d: base.Dir, epub_notes, epub, no_href_marks, parent_mark, doc_count, module, lang):
     for name, obj in d.list:
         mark = epubpacker.Mark(name)
@@ -101,45 +118,28 @@ def write_epub_tree(d: base.Dir, epub_notes, epub, no_href_marks, parent_mark, d
 def write_doc(name, obj: base.Doc, lang, epub_notes):
     html = create_page(lang, name)
     body = html.find_kids("body")[0]
-    write_(obj.body, body, epub_notes, 0)
+    epub_es, note_count = trans_machine_to_epub_es(obj.body.kids, epub_notes, 0)
+    body.kids.extend(epub_es)
     return html
 
-
-def write_(doc_body, e, epub_notes, note_count):
+def trans_machine_to_epub_es(es, epub_notes, note_count):
     note_count = note_count
-    for x in doc_body.kids:
-        if isinstance(x, str):
-            e.kids.append(x)
-
-        elif isinstance(x, xl.Element):
-            if x.tag == "ewn":
-                href = epub_notes.add_note(x.kids[1].kids)
-                note_count += 1
-                a = e.ekid("a", {"epub:type": "noteref", "href" : href})
-                a.kids.extend(x.kids[0].kids)
-                if not a.kids:
-                    a.attrs["class"] = "notext"
-                    a.kids.append(note_count)
-            else:
-                _e = xl.Element(x.tag, x.attrs)
-                e.kids.append(_e)
-                note_count = write_(x, _e, epub_notes, note_count)
-
-    return note_count
-
-def trans_machine_to_epub_es(es, epub_notes):
     new_es = []
     for e in es:
-        new_es.extend(trans_machine_to_epub_e(e, epub_notes))
-    return new_es
+        _es, note_count = trans_machine_to_epub_e(e, epub_notes, note_count)
+        new_es.extend(_es)
+    return new_es, note_count
 
-def trans_machine_to_epub_e(e, epub_notes):
-    for fun in []:
-        result = fun(e, epub_notes)
+def trans_machine_to_epub_e(e, epub_notes, note_count):
+    for fun in [fun_ewn, fun_j, fun_everything]:
+        result = fun(e, epub_notes, note_count)
         if result is not None:
             return result
         else:
             continue
+
+    raise Exception
+
 
 def fun_ewn(e: xl.Element, epub_notes, note_count):
     if not isinstance(e, xl.Element) or e.tag != "ewn":
@@ -151,34 +151,34 @@ def fun_ewn(e: xl.Element, epub_notes, note_count):
     a.kids.extend(e.kids[0].kids)
     if not a.kids:
         a.attrs["class"] = "notext"
-        a.kids.append(note_count)
+        a.kids.append(str(note_count))
     return [a], note_count
 
-def fun_j(e: xl.Element, note_count):
+
+def fun_j(e: xl.Element, epub_notes, note_count):
     if not isinstance(e, xl.Element) or e.tag != "j":
         return None
 
-    return div, note_count
+    div_j = xl.Element("div", {"class": "ji"})
+    for term in e.kids:
+        if term.tag == "p":
+            div_j.ekid("div", {"class": "person"}, kids=term.kids)
+        elif term.tag == "s":
+            div_s = div_j.ekid("div", {"class": "sentence"})
+            es, note_count = trans_machine_to_epub_es(term.kids, epub_notes, note_count)
+            div_s.kids.extend(es)
+    return [div_j], note_count
 
 
-
-def fun_return_same(e):
-    return e
-
-def create_page(lang, title):
-    html = xl.Element(
-        "html",
-        {
-            "xmlns:epub": "http://www.idpf.org/2007/ops",
-            "xmlns": "http://www.w3.org/1999/xhtml",
-            "xml:lang": lang,
-            "lang": lang
-        }
-    )
-    head = html.ekid("head")
-    head.ekid("title", kids=[title or "-"])
-    body = html.ekid("body")
-    return html
+def fun_everything(e, epub_notes, note_count):
+    note_count = note_count
+    if isinstance(e, xl.Element):
+        new_e = xl.Element(e.tag, e.attrs)
+        new_es, note_count = trans_machine_to_epub_es(e.kids, epub_notes, note_count)
+        new_e.kids.extend(new_es)
+        return [new_e], note_count
+    else:
+        return [e], note_count
 
 
 class EpubNotes:
@@ -266,16 +266,17 @@ def main():
         check_epub(path)
 
         path = path.replace(".epub", ".pdf")
-        write_pdf(path, book, m, "zh-Hant")
+        #write_pdf(path, book, m, "zh-Hant")
 
         ################################################################################################################
 
         book = book.trans_2_sc()
         path = os.path.join(td.name, "元_{}_SC.epub".format(trans_sc(m.info.name)))
         write_epub(path, book, sn, "zh-Hans")
+        check_epub(path)
 
         path = path.replace(".epub", ".pdf")
-        write_pdf(path, book, m, "zh-Hans")
+        #write_pdf(path, book, m, "zh-Hans")
 
     input("Any key to exit:")
 
