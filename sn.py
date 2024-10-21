@@ -3,15 +3,9 @@ import re
 import cn2an
 
 import base
-import xl
+from load_public import ld_get
 
 info = base.Info(6, "相應部", ("通妙", "雲庵"), "SN")
-
-
-def ld_get(list_dict, key):
-    for k, v in list_dict:
-        if k == key:
-            return v
 
 
 # 原始 p5a 转换成的 simple, 调用此函数处理一下

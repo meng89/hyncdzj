@@ -131,7 +131,7 @@ def trans_machine_to_epub_es(es, epub_notes, note_count):
     return new_es, note_count
 
 def trans_machine_to_epub_e(e, epub_notes, note_count):
-    for fun in [fun_ewn, fun_j, fun_everything]:
+    for fun in [fun_ewn, fun_j, fun_list, fun_everything]:
         result = fun(e, epub_notes, note_count)
         if result is not None:
             return result
@@ -168,6 +168,19 @@ def fun_j(e: xl.Element, epub_notes, note_count):
             es, note_count = trans_machine_to_epub_es(term.kids, epub_notes, note_count)
             div_s.kids.extend(es)
     return [div_j], note_count
+
+def fun_list(e: xl.Element, epub_notes, note_count):
+    if not isinstance(e, xl.Element) or e.tag != "list":
+        return None
+
+    div_list = xl.Element("div", {"class": "list"})
+    for term in e.kids:
+        assert term.tag == "item"
+        div_item = div_list.ekid("div", {"class": "item"})
+        es, note_count = trans_machine_to_epub_es(term.kids, epub_notes, note_count)
+        div_item.kids.extend(es)
+    return [div_list], note_count
+
 
 
 def fun_everything(e, epub_notes, note_count):
@@ -255,7 +268,7 @@ def main():
     # zh-Hant: 传统中文
     td = tempfile.TemporaryDirectory(prefix="ncdzj_")
     import sn, sv
-    for m in (sn, sv):
+    for m in (sv,):
 
         book = load_book_from_dir(m)
         if hasattr(m, "change2"):
