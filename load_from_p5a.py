@@ -604,7 +604,7 @@ def get_head_kids(div):
 
 ########################################################################################################################
 
-def change_book_name(d: base.Dir, change_name_fun):
+def change_book_name_by_given_fun(d: base.Dir, change_name_fun):
     new_list = []
     for name, obj in d.list:
         if name in ("", None):
@@ -613,7 +613,7 @@ def change_book_name(d: base.Dir, change_name_fun):
 
         new_name = change_name_fun(name)
         if isinstance(obj, base.Dir):
-            change_book_name(obj, change_name_fun)
+            change_book_name_by_given_fun(obj, change_name_fun)
         new_list.append((new_name, obj))
 
     d.list = new_list
@@ -649,6 +649,75 @@ def remove_single_root(d: base.Dir):
         name, single = d.list[0]
         d.list = single.list
     return d
+
+########################################################################################################################
+
+def merge_jing_if_name_is_abbr(d: base.Dir):
+    new_list = []
+    for name, obj in d.list:
+        if isinstance(obj, base.Dir):
+            if re.match(r"[a-zA-Z]+ \d", name):
+                new_obj = merge(obj)
+            else:
+                new_obj = merge_jing_if_name_is_abbr(obj)
+        else:
+            new_obj = obj
+        new_list.append((name, new_obj))
+    d.list = new_list
+    return d
+
+########################################################################################################################
+def merge_jing_in_one_doc_by_no_number_name(d: base.Dir):
+    if is_all_number_name(d) is True:
+        return merge(d)
+
+    new_list = []
+    for name, obj in d.list:
+        if isinstance(obj, base.Dir):
+            new_obj = merge_jing_in_one_doc_by_no_number_name(obj)
+            new_list.append((name, new_obj))
+        else:
+            new_list.append((name, obj))
+    d.list = new_list
+    return d
+
+def is_all_number_name(d: base.Dir):
+    result_list = []
+    for name, obj in d.list:
+        if name in ("", None):
+            continue
+        m = re.match(r"^（?[一二三四五六七八九十〇]+）?$", name)
+        if m:
+            result_list.append(True)
+        else:
+            result_list.append(False)
+
+        if isinstance(obj, base.Dir):
+            result_list.append(is_all_number_name(obj))
+
+    if False in result_list:
+        return False
+    else:
+        return True
+
+
+def merge(d, doc=None, level=0):
+    doc = doc or base.Doc()
+
+    for name, obj in d.list:
+        h = xl.Element("h{}".format(level + 2))
+        h.kids.append(name or "-")
+        doc.body.kids.append(h)
+        if isinstance(obj, base.Doc):
+            doc.body.kids.extend(obj.body.kids)
+        elif isinstance(obj, base.Dir):
+            merge(obj, doc, level + 1)
+        else:
+            raise Exception
+
+    return doc
+
+########################################################################################################################
 
 def load_book_by_module(m: types.ModuleType) -> base.Dir:
     xmls = p5a.get_xmls_by_serial(m.info.serial)
@@ -686,13 +755,13 @@ def load_book_by_module(m: types.ModuleType) -> base.Dir:
         book = m.change(book)
 
     if hasattr(m, "change_name_fun"):
-        book = change_book_name(book, m.change_name_fun)
+        book = change_book_name_by_given_fun(book, m.change_name_fun)
 
     book = merge_same_name(book)
 
     book = remove_single_root(book)
 
-    book = base.merge_jing_in_one_doc(book)
+    book = merge_jing_if_name_is_abbr(book)
+    book = merge_jing_in_one_doc_by_no_number_name(book)
 
-    # book = merge_jing_in_one_doc2(book)
     return book
