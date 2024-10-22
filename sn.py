@@ -3,7 +3,7 @@ import re
 import cn2an
 
 import base
-from load_public import ld_get
+
 
 info = base.Info(6, "相應部", ("通妙", "雲庵"), "SN")
 

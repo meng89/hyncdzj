@@ -86,7 +86,7 @@ def create_page(lang, title):
     )
     head = html.ekid("head")
     head.ekid("title", kids=[title or "-"])
-    body = html.ekid("body")
+    html.ekid("body")
     return html
 
 
@@ -267,7 +267,7 @@ def main():
     # zh-Hans: 简体中文
     # zh-Hant: 传统中文
     td = tempfile.TemporaryDirectory(prefix="ncdzj_")
-    import sn, sv
+    import sv
     for m in (sv,):
 
         book = load_book_from_dir(m)
@@ -285,7 +285,7 @@ def main():
 
         book = book.trans_2_sc()
         path = os.path.join(td.name, "元_{}_SC.epub".format(trans_sc(m.info.name)))
-        write_epub(path, book, sn, "zh-Hans")
+        write_epub(path, book, m, "zh-Hans")
         check_epub(path)
 
         path = path.replace(".epub", ".pdf")

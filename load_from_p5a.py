@@ -604,6 +604,52 @@ def get_head_kids(div):
 
 ########################################################################################################################
 
+def change_book_name(d: base.Dir, change_name_fun):
+    new_list = []
+    for name, obj in d.list:
+        if name in ("", None):
+            new_list.append((name, obj))
+            continue
+
+        new_name = change_name_fun(name)
+        if isinstance(obj, base.Dir):
+            change_book_name(obj, change_name_fun)
+        new_list.append((new_name, obj))
+
+    d.list = new_list
+    return d
+
+
+def ld_get(list_dict, key):
+    for k, v in list_dict:
+        if k == key:
+            return v
+
+
+def merge_same_name(d: base.Dir):
+    new_list = []
+    for name, obj in d.list:
+        print(name)
+        if name in ("", None):
+            new_list.append((name, obj))
+            continue
+
+        v = ld_get(new_list, name)
+        if isinstance(v, base.Dir) and isinstance(obj, base.Dir):
+            v.list.extend(obj.list)
+            merge_same_name(v)
+        else:
+            new_list.append((name, obj))
+    d.list = new_list
+    return d
+
+
+def remove_single_root(d: base.Dir):
+    if len(d.list) == 1:
+        name, single = d.list[0]
+        d.list = single.list
+    return d
+
 def load_book_by_module(m: types.ModuleType) -> base.Dir:
     xmls = p5a.get_xmls_by_serial(m.info.serial)
 
@@ -639,5 +685,14 @@ def load_book_by_module(m: types.ModuleType) -> base.Dir:
     if hasattr(m, "change"):
         book = m.change(book)
 
+    if hasattr(m, "change_name_fun"):
+        book = change_book_name(book, m.change_name_fun)
+
+    book = merge_same_name(book)
+
+    book = remove_single_root(book)
+
     book = base.merge_jing_in_one_doc(book)
+
+    # book = merge_jing_in_one_doc2(book)
     return book
