@@ -96,7 +96,7 @@ def write_epub_tree(d: base.Dir, epub_notes, epub, no_href_marks, parent_mark, d
         parent_mark.kids.append(mark)
 
         if isinstance(obj, base.Doc):
-            html = write_doc(name, obj, lang, epub_notes)
+            html = write_doc(name, obj, lang, epub_notes, parent_mark)
             doc_count += 1
             doc_path = str(doc_count) + ".xhtml"
             htmlstr = xl.Xml(root=html).to_str(do_pretty=True, dont_do_tags=["title", "p", "h1", "h2", "h3", "h4", "a", "sen", "aside"])
@@ -115,12 +115,22 @@ def write_epub_tree(d: base.Dir, epub_notes, epub, no_href_marks, parent_mark, d
     return doc_count, no_href_marks
 
 
-def write_doc(name, obj: base.Doc, lang, epub_notes):
+def write_doc(name, doc: base.Doc, lang, epub_notes, parent_mark):
     html = create_page(lang, name)
     body = html.find_kids("body")[0]
-    epub_es, note_count = trans_machine_to_epub_es(obj.body.kids, epub_notes, 0)
-    body.kids.extend(epub_es)
+    epub_es, note_count = trans_machine_to_epub_es(doc.body.kids, epub_notes, 0)
+    for epub_e in epub_es:
+
+        body.kids.append(epub_e)
     return html
+
+
+def make_mark_from_es(es, index):
+    while index != len(es):
+        if isinstance(e, xl.Element):
+
+
+
 
 def trans_machine_to_epub_es(es, epub_notes, note_count):
     note_count = note_count
@@ -267,8 +277,8 @@ def main():
     # zh-Hans: 简体中文
     # zh-Hant: 传统中文
     td = tempfile.TemporaryDirectory(prefix="ncdzj_")
-    import sv
-    for m in (sv,):
+    import sn, sv
+    for m in (sv, sn):
 
         book = load_book_from_dir(m)
         if hasattr(m, "change2"):

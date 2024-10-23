@@ -629,7 +629,6 @@ def ld_get(list_dict, key):
 def merge_same_name(d: base.Dir):
     new_list = []
     for name, obj in d.list:
-        print(name)
         if name in ("", None):
             new_list.append((name, obj))
             continue
