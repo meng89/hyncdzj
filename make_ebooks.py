@@ -90,7 +90,7 @@ def create_page(lang, title):
     return html
 
 
-def write_epub_tree(d: base.Dir, epub_notes, epub, no_href_marks, parent_mark, doc_count, module, lang):
+def write_epub_tree(d: base.Dir, epub_notes, epub, no_href_marks, parent_mark, doc_count, module, lang, h_level=1):
     for name, obj in d.list:
         mark = epubpacker.Mark(name)
         parent_mark.kids.append(mark)
@@ -127,7 +127,10 @@ def write_doc(name, doc: base.Doc, lang, epub_notes, parent_mark):
 
 def make_mark_from_es(es, index):
     while index != len(es):
+        e = es[index]
+        index += 1
         if isinstance(e, xl.Element):
+            if re.match(r"^h(\d)$", e.tag)
 
 
 
