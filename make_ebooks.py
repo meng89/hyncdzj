@@ -125,16 +125,6 @@ def write_doc(name, doc: base.Doc, lang, epub_notes, parent_mark):
     return html
 
 
-def make_mark_from_es(es, index):
-    while index != len(es):
-        e = es[index]
-        index += 1
-        if isinstance(e, xl.Element):
-            if re.match(r"^h(\d)$", e.tag)
-
-
-
-
 def trans_machine_to_epub_es(es, epub_notes, note_count):
     note_count = note_count
     new_es = []
@@ -142,6 +132,7 @@ def trans_machine_to_epub_es(es, epub_notes, note_count):
         _es, note_count = trans_machine_to_epub_e(e, epub_notes, note_count)
         new_es.extend(_es)
     return new_es, note_count
+
 
 def trans_machine_to_epub_e(e, epub_notes, note_count):
     for fun in [fun_ewn, fun_j, fun_list, fun_everything]:
