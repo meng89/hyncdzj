@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-import io
 import os
 import tempfile
 import subprocess
@@ -17,7 +16,6 @@ import base
 
 import xl
 import load_from_p5a
-from load_from_p5a import note_fun
 
 
 def trans_sc(s: str) -> str:
@@ -67,7 +65,7 @@ def write_epub(path, book, module, lang):
     epub.meta.date = datetime.datetime.strftime(datetime.datetime.now(), "%Y-%m-%dT%H:%M:%SZ")
 
     epub_notes = EpubNotes()
-    write_epub_tree(book, epub_notes, epub, [], epub.mark, 0, module, lang)
+    write_epub_tree(book, epub_notes, epub, [], epub.mark, 0, 0, module, lang)
     for name, xml_str in epub_notes.pages(lang):
         epub.userfiles[name] = xml_str
         epub.spine.append(name)
@@ -90,16 +88,17 @@ def create_page(lang, title):
     return html
 
 
-def write_epub_tree(d: base.Dir, epub_notes, epub, no_href_marks, parent_mark, doc_count, module, lang, h_level=1):
+def write_epub_tree(d: base.Dir, epub_notes, epub, no_href_marks, parent_mark, mark_level, doc_count, module, lang):
     for name, obj in d.list:
         mark = epubpacker.Mark(name)
         parent_mark.kids.append(mark)
 
         if isinstance(obj, base.Doc):
-            html = write_doc(name, obj, lang, epub_notes, parent_mark)
             doc_count += 1
             doc_path = str(doc_count) + ".xhtml"
-            htmlstr = xl.Xml(root=html).to_str(do_pretty=True, dont_do_tags=["title", "p", "h1", "h2", "h3", "h4", "a", "sen", "aside"])
+            html = write_doc(name, obj, lang, doc_path, epub_notes, mark, mark_level)
+            htmlstr = xl.Xml(root=html).to_str(do_pretty=True, dont_do_tags=["title", "p", "h1", "h2", "h3", "h4", "h4", "h5", "h6",
+                                                                             "a", "sen", "aside"])
 
             epub.userfiles[doc_path] = htmlstr
             epub.spine.append(doc_path)
@@ -110,19 +109,52 @@ def write_epub_tree(d: base.Dir, epub_notes, epub, no_href_marks, parent_mark, d
 
         elif isinstance(obj, base.Dir):
             no_href_marks.append(mark)
-            doc_count, no_href_marks = write_epub_tree(obj, epub_notes, epub, no_href_marks, mark, doc_count, module, lang)
+            doc_count, no_href_marks = write_epub_tree(obj, epub_notes, epub, no_href_marks, mark, mark_level + 1, doc_count, module, lang)
 
     return doc_count, no_href_marks
 
 
-def write_doc(name, doc: base.Doc, lang, epub_notes, parent_mark):
+def write_doc(name, doc: base.Doc, lang, doc_path, epub_notes, parent_mark, mark_level):
     html = create_page(lang, name)
     body = html.find_kids("body")[0]
-    epub_es, note_count = trans_machine_to_epub_es(doc.body.kids, epub_notes, 0)
-    for epub_e in epub_es:
-
-        body.kids.append(epub_e)
+    es, note_count = trans_machine_to_epub_es(doc.body.kids, epub_notes, 0)
+    epub_es = _make_doc_marks(es, doc_path, parent_mark, mark_level, 0)
+    body.kids.extend(epub_es)
     return html
+
+def _make_doc_marks(es, doc_path, parent_mark, mark_level, doc_mark_count):
+    new_es = []
+    marks = {}
+    for e in es:
+        if not isinstance(e, xl.Element) or e.tag not in ("h1", "h2", "h3", "h4", "h5", "h6",    "h7", "h8", "h9"):
+            new_es.append(e)
+            continue
+
+        m = re.match(r"^h(\d)$", e.tag)
+        assert m
+        new_h_level = int(m.group(1)) + mark_level
+        new_h = xl.Element("h{}".format(new_h_level), e.attrs, e.kids)
+        new_es.append(new_h)
+        id_ = _make_doc_mark_id(doc_mark_count)
+        doc_mark_count += 1
+        new_h.attrs["id"] = id_
+        mark = epubpacker.Mark(new_h.kids[0], "{}#{}".format(doc_path, id_))
+        marks[new_h_level] = mark
+
+        parent_level = new_h_level - 1
+
+        if parent_level in marks.keys():
+            _parent_mark = marks[parent_level]
+        else:
+            _parent_mark = parent_mark
+
+        _parent_mark.kids.append(mark)
+
+    return new_es
+
+
+def _make_doc_mark_id(doc_mark_count):
+    return "id_sub_mark_{}".format(doc_mark_count)
 
 
 def trans_machine_to_epub_es(es, epub_notes, note_count):
@@ -145,7 +177,7 @@ def trans_machine_to_epub_e(e, epub_notes, note_count):
     raise Exception
 
 
-def fun_ewn(e: xl.Element, epub_notes, note_count):
+def fun_ewn(e: xl.Element, epub_notes, note_count, ):
     if not isinstance(e, xl.Element) or e.tag != "ewn":
         return None
 
@@ -243,8 +275,10 @@ class EpubNotes:
 # 短小的合并之类操作应该修改dir对象来完成
 
 def check_epub(epub_path):
-    stdout_file = open("{}_{}".format(epub_path, "stdout"), "w")
-    stderr_file = open("{}_{}".format(epub_path, "stderr"), "w")
+    stdout_file_path = "{}_{}".format(epub_path, "stdout")
+    stdout_file = open(stdout_file_path, "w")
+    stderr_file_path = "{}_{}".format(epub_path, "stderr")
+    stderr_file = open(stderr_file_path, "w")
 
     def _run():
         nonlocal check_result
@@ -259,6 +293,11 @@ def check_epub(epub_path):
         else:
             return True
 
+    if os.path.getsize(stdout_file_path) == 0:
+        os.remove(stdout_file_path)
+    if os.path.getsize(stderr_file_path) == 0:
+        os.remove(stderr_file_path)
+
     check_result = _run()
     if check_result:
         print("Passed")
@@ -271,8 +310,10 @@ def main():
     # zh-Hans: 简体中文
     # zh-Hant: 传统中文
     td = tempfile.TemporaryDirectory(prefix="ncdzj_")
-    import sn, sv
-    for m in (sv, sn):
+    import sv, kd, pv
+    import sn
+    for m in (sv, kd, pv,   sn):
+    #for m in (pv,):
 
         book = load_book_from_dir(m)
         if hasattr(m, "change2"):
@@ -287,10 +328,10 @@ def main():
 
         ################################################################################################################
 
-        book = book.trans_2_sc()
-        path = os.path.join(td.name, "元_{}_SC.epub".format(trans_sc(m.info.name)))
-        write_epub(path, book, m, "zh-Hans")
-        check_epub(path)
+        #book = book.trans_2_sc()
+        #path = os.path.join(td.name, "元_{}_SC.epub".format(trans_sc(m.info.name)))
+        #write_epub(path, book, m, "zh-Hans")
+        #check_epub(path)
 
         path = path.replace(".epub", ".pdf")
         #write_pdf(path, book, m, "zh-Hans")

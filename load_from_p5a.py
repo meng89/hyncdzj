@@ -668,6 +668,9 @@ def merge_jing_if_name_is_abbr(d: base.Dir):
 ########################################################################################################################
 def merge_jing_in_one_doc_by_no_number_name(d: base.Dir):
     if is_all_number_name(d) is True:
+        #names = []
+        #for name, _ in d.list:
+        #    names.append(name)
         return merge(d)
 
     new_list = []
@@ -683,7 +686,7 @@ def merge_jing_in_one_doc_by_no_number_name(d: base.Dir):
 def is_all_number_name(d: base.Dir):
     result_list = []
     for name, obj in d.list:
-        if name in ("", None):
+        if name in ("", None, "攝頌"):
             continue
         m = re.match(r"^（?[一二三四五六七八九十〇]+）?$", name)
         if m:
