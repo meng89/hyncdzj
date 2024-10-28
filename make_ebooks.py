@@ -288,21 +288,23 @@ def check_epub(epub_path):
         print("检查", os.path.split(epub_path)[1], ": ", end="", flush=True)
         p = subprocess.Popen(compile_cmd, cwd=cwd, shell=True, stdout=stdout_file, stderr=stderr_file)
         p.communicate()
+
         if p.returncode != 0:
             return False
         else:
             return True
-
-    if os.path.getsize(stdout_file_path) == 0:
-        os.remove(stdout_file_path)
-    if os.path.getsize(stderr_file_path) == 0:
-        os.remove(stderr_file_path)
 
     check_result = _run()
     if check_result:
         print("Passed")
     else:
         print("Failed")
+
+    if os.path.getsize(stdout_file_path) == 0:
+        os.remove(stdout_file_path)
+    if os.path.getsize(stderr_file_path) == 0:
+        os.remove(stderr_file_path)
+
     return check_result
 
 
@@ -311,9 +313,9 @@ def main():
     # zh-Hant: 传统中文
     td = tempfile.TemporaryDirectory(prefix="ncdzj_")
     import sv, kd, pv
-    import sn
-    for m in (sv, kd, pv,   sn):
-    #for m in (pv,):
+    import sn, dn, mn, an
+    #for m in (sv, kd, pv,   sn, dn, mn, an, kn):
+    for m in (an,):
 
         book = load_book_from_dir(m)
         if hasattr(m, "change2"):

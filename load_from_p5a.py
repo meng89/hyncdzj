@@ -74,7 +74,7 @@ def unclear_fun(e):
         return None
     assert e.kids == []
     assert e.attrs == {}
-    return [e]
+    return ["unclear"]
 
 def list_fun(e):
     if not (isinstance(e, xl.Element) and e.tag == "list"):
@@ -324,6 +324,8 @@ g_map = {
     "#CB00551": "窻",
     "#CB04775": "櫈",
     "#CB22010": "癩",
+    "#CB32759": "暹",
+
 }
 
 
