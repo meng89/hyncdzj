@@ -3,12 +3,8 @@ import re
 
 import cn2an
 
-import xl
-
-
 import base
 info = base.Info(5, "中部", ("通妙",), "MN")
-
 
 
 def change_name_fun(name):
