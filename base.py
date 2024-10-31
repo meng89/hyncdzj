@@ -289,7 +289,7 @@ def _hit_note(notes, num):
 
 @dataclasses.dataclass
 class Info:
-    serial: int
+    serial: int or None
     name: str
     authors: tuple[str, ...]
     abbr: str
