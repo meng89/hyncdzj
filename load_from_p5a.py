@@ -58,7 +58,7 @@ def transform_elements(elements) -> list:
 
 
 def transform_element(element):
-    for fun in (unclear_fun, cbdiv_fun, cbmulu_fun, head_fun, string_fun,
+    for fun in (table_fun, unclear_fun, cbdiv_fun, cbmulu_fun, head_fun, string_fun,
                 lg_fun, p_fun, note_fun, app_fun, space_fun, ref_fun, g_fun,
                 label_fun, list_fun, item_fun):
         result = fun(element)
@@ -68,6 +68,12 @@ def transform_element(element):
             continue
 
     raise Exception("Cannot handle this element:", element.to_str())
+
+def table_fun(e):
+    if not (isinstance(e, xl.Element) and e.tag == "table"):
+        return None
+
+    return [e]
 
 def unclear_fun(e):
     if not (isinstance(e, xl.Element) and e.tag == "unclear"):
@@ -325,6 +331,7 @@ g_map = {
     "#CB04775": "櫈",
     "#CB22010": "癩",
     "#CB32759": "暹",
+    "#CB32762": "[波/牛]", # note 里
 
 }
 

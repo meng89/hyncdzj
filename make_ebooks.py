@@ -313,11 +313,13 @@ def main():
     # zh-Hant: 传统中文
     td = tempfile.TemporaryDirectory(prefix="ncdzj_")
     import sv, kd, pv
-    import sn, dn, mn, an
+    import sn, dn, mn, an, kn
     #for m in (sv, kd, pv,   sn, dn, mn, an, kn):
-    for m in (an,):
-
-        book = load_book_from_dir(m)
+    for m in (kn,):
+        if hasattr(m, "get_book"):
+            book = m.get_book()
+        else:
+            book = load_book_from_dir(m)
         if hasattr(m, "change2"):
             book = m.change2(book)
 
