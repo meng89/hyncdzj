@@ -73,7 +73,14 @@ def table_fun(e):
     if not (isinstance(e, xl.Element) and e.tag == "table"):
         return None
 
-    return [e]
+    table = xl.Element("table")
+    for row in e.kids:
+        tr = table.ekid("tr")
+        for cell in row.kids:
+            td = tr.ekid("td")
+            td.kids.extend(transform_elements(cell.kids))
+
+    return [table]
 
 def unclear_fun(e):
     if not (isinstance(e, xl.Element) and e.tag == "unclear"):
@@ -332,6 +339,9 @@ g_map = {
     "#CB22010": "癩",
     "#CB32759": "暹",
     "#CB32762": "[波/牛]", # note 里
+    "#CB32765": "[木*閂]",
+    "#CB17697": "𫺭", # 忄怠
+    "#CB32766": "𭼈", # 疒白
 
 }
 

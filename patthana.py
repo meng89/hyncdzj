@@ -4,4 +4,4 @@ import base
 
 # Paṭṭhāna
 
-info = (29, "發趣論", ("郭哲彰", ), "Patthana")
+info = base.Info(29, "發趣論", ("郭哲彰", ), "Patthana")

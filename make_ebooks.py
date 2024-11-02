@@ -261,12 +261,13 @@ class EpubNotes:
             ol = _section.ekid("ol")
             for note_index, note_es in enumerate(page):
                 li = ol.ekid("li", {"id": "note{}".format(note_index + 1)})
-                p = li.ekid("p")
-                p.kids.extend(note_es)
+                #p = li.ekid("p")
+                #p.kids.extend(note_es)
+                li.kids.extend(note_es)
             _pages.append(
                 (
                     "note_page{}.xhtml".format(page_index + 1),
-                    _page_html.to_str(do_pretty=True, dont_do_tags=["title", "link", "script", "p"])
+                    _page_html.to_str(do_pretty=True, dont_do_tags=["title", "link", "script", "p", "li"])
                     )
             )
         return _pages
@@ -314,8 +315,11 @@ def main():
     td = tempfile.TemporaryDirectory(prefix="ncdzj_")
     import sv, kd, pv
     import sn, dn, mn, an, kn
-    #for m in (sv, kd, pv,   sn, dn, mn, an, kn):
-    for m in (kn,):
+    import ds, vb, dt, pp,  ya,  patthana, kv
+    #for m in (sv, kd, pv,
+    #          sn, dn, mn, an, kn,
+    #          ds, vb, dt, pp, ya, patthana, kv):
+    for m in (ds, vb, dt, pp, ya, patthana, kv ):
         if hasattr(m, "get_book"):
             book = m.get_book()
         else:
