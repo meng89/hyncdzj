@@ -251,7 +251,7 @@ def ref_fun(e):
             exit()
 
         return []
-        
+
         ewn = xl.Element("ewn")
         a = ewn.ekid("a")
         a.self_closing=False
