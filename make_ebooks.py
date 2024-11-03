@@ -316,10 +316,10 @@ def main():
     import sv, kd, pv
     import sn, dn, mn, an, kn
     import ds, vb, dt, pp,  ya,  patthana, kv
-    #for m in (sv, kd, pv,
-    #          sn, dn, mn, an, kn,
-    #          ds, vb, dt, pp, ya, patthana, kv):
-    for m in (ds, vb, dt, pp, ya, patthana, kv ):
+    for m in (sv, kd, pv,
+              sn, dn, mn, an, kn,
+              ds, vb, dt, pp, ya, patthana, kv):
+    #for m in (ds, vb, dt, pp, ya, patthana, kv ):
         if hasattr(m, "get_book"):
             book = m.get_book()
         else:

@@ -244,6 +244,14 @@ def space_fun(e):
 #
 def ref_fun(e):
     if isinstance(e, xl.Element) and e.tag == "ref":
+        try:
+            assert len(e.kids) == 0 and "cRef" in e.attrs.keys() and e.attrs["cRef"].lower().startswith("pts")
+        except AssertionError:
+            print(e.to_str())
+            exit()
+
+        return []
+        
         ewn = xl.Element("ewn")
         a = ewn.ekid("a")
         a.self_closing=False
