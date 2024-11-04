@@ -1,7 +1,6 @@
 requests[socks]
 opencc
 cn2an
-reportlab
 
 html2image
 

@@ -18,13 +18,10 @@ import kn_cp as cp
 import kn_nid1 as nid1
 import kn_nid2 as nid2
 
-import kn_mil as mil
-
-_ms = (khp, dhp, ud, iti, sn, vv, pv, thag, thig, ap, jat, ps, bv, cp, nid1, nid2,
-       mil,)
+_ms = (khp, dhp, ud, iti, sn, vv, pv, thag, thig, ap, jat, ps, bv, cp, nid1, nid2)
 author_set = set()
 for _m in _ms:
-    author_set.update(_m.info.authors)
+    author_set.update(_m.info.translators)
 
 info = base.Info(None, "小部", tuple(author_set), "KN")
 

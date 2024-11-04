@@ -189,29 +189,37 @@ def string_fun(e):
 
 # <note n="0062a1201" resp="CBETA" type="add" note_key="N13.0062a12.03">國【CB】，王【南傳】</note>
 
+# <note place="inline">（〔以下〕所省略處是兩者皆「然」）。</note>
+
 def note_fun(e):
     if isinstance(e, xl.Element) and e.tag == "note":
-        if len(e.kids) == 0:
-            return []
-
-        elif len(e.kids) == 1 and isinstance(e.kids[0], xl.Element) and e.kids[0].tag == "space":
-            return []
-
-        elif isinstance(e.kids[0], str) and "【CB】" in e.kids[0] and "【南傳】" in e.kids[0]:
-            return []
-
-        elif "add" in e.attrs.keys():
-            return []
-
+        if "place" in e.attrs.keys() and e.attrs["place"] == "inline":
+            return transform_elements(e.kids)
         else:
-            ewn = xl.Element("ewn")
-            ewn.ekid("a")
-            _note = ewn.ekid("note")
-            _note.kids.extend(transform_elements(e.kids))
-            return [ewn]
+            if len(e.kids) == 0:
+                return []
+
+            elif len(e.kids) == 1 and isinstance(e.kids[0], xl.Element) and e.kids[0].tag == "space":
+                return []
+
+            elif isinstance(e.kids[0], str) and "【CB】" in e.kids[0] and "【南傳】" in e.kids[0]:
+                return []
+
+            elif "add" in e.attrs.keys():
+                return []
+
+            else:
+                ewn = xl.Element("ewn")
+                ewn.ekid("a")
+                _note = ewn.ekid("note")
+                _note.kids.extend(transform_elements(e.kids))
+                return [ewn]
 
     else:
         return None
+
+
+
 
 # 〔一六〕睡
 # <note n="0009a1201" resp="CBETA" type="add">眠【CB】，眼【南傳】</note>
@@ -350,6 +358,12 @@ g_map = {
     "#CB32765": "[木*閂]",
     "#CB17697": "𫺭", # 忄怠
     "#CB32766": "𭼈", # 疒白
+    "#CB07799": "凞",
+    "#CB02722": "屣", #𭕫：尸徒， 同【屣】
+    "#CB00584": "颰", #CBETA: [颱-台+犮]
+    "#CB21812": "梶",
+    "#CB32768": "[虫*局]",
+
 
 }
 
@@ -449,7 +463,8 @@ def create_missing_head_by_mulu(div:xl.Element):
     insert_list = []
     for index, kid in enumerate(div.kids):
         if is_mulu(kid):
-            if not (index + 1 <= len(div.kids) and is_head(div.kids[index + 1])):
+            #if not (index + 1 <= len(div.kids) and is_head(div.kids[index + 1])):
+            if not (index + 1 < len(div.kids) and is_head(div.kids[index + 1])):
                 head = xl.Element("head", kids=kid.kids)
                 insert_list.append((kid, head))
         elif is_div(kid):

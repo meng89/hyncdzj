@@ -291,8 +291,12 @@ def _hit_note(notes, num):
 class Info:
     serial: int or None
     name: str
-    authors: tuple[str, ...]
+    translators: tuple[str, ...]
     abbr: str
+    authors: tuple[tuple, ...] = None
+
+#class Info2:
+#    def __init__(self, serial: int or None, name: str, translators: tuple[str, ...], abbr: str, authors: tuple[tuple, ...]):
 
 
 def is_pts_ref(x):

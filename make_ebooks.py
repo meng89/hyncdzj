@@ -51,6 +51,8 @@ def create_identifier(s):
 
 
 def write_epub(path, book, module, lang):
+    _dir = os.path.split(path)[0]
+    os.makedirs(_dir, exist_ok=True)
     epub = epubpacker.Epub()
     identifier_string = "元亨寺南傳大藏經" + module.info.name + lang
     title = "南傳大藏經·" + module.info.name
@@ -60,7 +62,7 @@ def write_epub(path, book, module, lang):
 
     epub.meta.identifier = identifier_string
     epub.meta.titles = [title]
-    epub.meta.creators = module.info.authors
+    epub.meta.creators = module.info.translators
     epub.meta.languages.append(lang)
     epub.meta.date = datetime.datetime.strftime(datetime.datetime.now(), "%Y-%m-%dT%H:%M:%SZ")
 
@@ -314,36 +316,37 @@ def main():
     # zh-Hant: 传统中文
     td = tempfile.TemporaryDirectory(prefix="ncdzj_")
     import sv, kd, pv
+    lv = ("律藏", (sv, kd, pv))
+
     import sn, dn, mn, an, kn
-    import ds, vb, dt, pp,  ya,  patthana, kv
-    import dipavamsa
-    for m in (sv, kd, pv,
-              sn, dn, mn, an, kn,
-              ds, vb, dt, pp, ya, patthana, kv):
-    #for m in (ds, vb, dt, pp, ya, patthana, kv ):
-        if hasattr(m, "get_book"):
-            book = m.get_book()
-        else:
-            book = load_book_from_dir(m)
-        if hasattr(m, "change2"):
-            book = m.change2(book)
+    jing = ("經藏", (dn, mn, sn, an, kn))
 
-        path = os.path.join(td.name, "元_{}_TC.epub".format(m.info.name))
-        write_epub(path, book, m, "zh-Hant")
-        check_epub(path)
+    import ds, vb, dt, pp, ya, patthana, kv
+    lun = ("論藏", (ds, vb, dt, pp, ya, patthana, kv))
 
-        path = path.replace(".epub", ".pdf")
-        #write_pdf(path, book, m, "zh-Hant")
+    import mil, dipavamsa, mahavamsa, culavamsa, visuddhimagga, samantapasadika, abhidhammatthasangaha, dhammalipi
+    zangwai = ("藏外", (mil, dipavamsa, mahavamsa, culavamsa, visuddhimagga, samantapasadika, abhidhammatthasangaha, dhammalipi))
 
-        ################################################################################################################
+    for category, ms in (lv, jing, lun, zangwai):
+        for m in ms:
+            if hasattr(m, "get_book"):
+                book = m.get_book()
+            else:
+                book = load_book_from_dir(m)
+            if hasattr(m, "change2"):
+                book = m.change2(book)
 
-        #book = book.trans_2_sc()
-        #path = os.path.join(td.name, "元_{}_SC.epub".format(trans_sc(m.info.name)))
-        #write_epub(path, book, m, "zh-Hans")
-        #check_epub(path)
+            path = os.path.join(td.name, "漢譯南傳大藏經", category, "元_{}_繁.epub".format(m.info.name))
+            write_epub(path, book, m, "zh-Hant")
+            check_epub(path)
 
-        path = path.replace(".epub", ".pdf")
-        #write_pdf(path, book, m, "zh-Hans")
+            ################################################################################################################
+
+            book = book.trans_2_sc()
+            path = os.path.join(td.name, "汉译南传大藏经", trans_sc(category), trans_sc("元_{}_简.epub".format(m.info.name)))
+            write_epub(path, book, m, "zh-Hans")
+            check_epub(path)
+
 
     input("Any key to exit:")
 
