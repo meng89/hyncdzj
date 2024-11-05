@@ -321,6 +321,3 @@ def is_num_p(x):
 def print_tree(d: Dir, ident=0):
     for name, obj in d.list:
         print("{}{}".format(" " * ident, name))
-
-
-

@@ -9,7 +9,8 @@ import load_from_p5a
 
 
 def write_to_disk(modules: [types.ModuleType, ...] = None):
-    import sn, sv
+    from book_module import sn
+    from book_module import sv
     modules = modules or [sn, sv]
 
     for m in modules:

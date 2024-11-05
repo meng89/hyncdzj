@@ -5,7 +5,6 @@ import subprocess
 import uuid
 import datetime
 import re
-
 import opencc
 
 import config
@@ -17,6 +16,7 @@ import base
 import xl
 import load_from_p5a
 
+import book_module
 
 def trans_sc(s: str) -> str:
     c = opencc.OpenCC("t2s.json")
@@ -50,15 +50,13 @@ def create_identifier(s):
     return uuid.uuid5(uuid.NAMESPACE_URL, "https://github.com/meng89/ncdzj" + s)
 
 
-def write_epub(path, book, module, lang):
+def write_epub(path, book, module, title, lang):
     _dir = os.path.split(path)[0]
     os.makedirs(_dir, exist_ok=True)
     epub = epubpacker.Epub()
     identifier_string = "元亨寺南傳大藏經" + module.info.name + lang
-    title = "南傳大藏經·" + module.info.name
     if lang == "zh-Hans":
         identifier_string = trans_sc(identifier_string)
-        title = trans_sc(title)
 
     epub.meta.identifier = identifier_string
     epub.meta.titles = [title]
@@ -315,19 +313,9 @@ def main():
     # zh-Hans: 简体中文
     # zh-Hant: 传统中文
     td = tempfile.TemporaryDirectory(prefix="ncdzj_")
-    import sv, kd, pv
-    lv = ("律藏", (sv, kd, pv))
 
-    import sn, dn, mn, an, kn
-    jing = ("經藏", (dn, mn, sn, an, kn))
-
-    import ds, vb, dt, pp, ya, patthana, kv
-    lun = ("論藏", (ds, vb, dt, pp, ya, patthana, kv))
-
-    import mil, dipavamsa, mahavamsa, culavamsa, visuddhimagga, samantapasadika, abhidhammatthasangaha, dhammalipi
-    zangwai = ("藏外", (mil, dipavamsa, mahavamsa, culavamsa, visuddhimagga, samantapasadika, abhidhammatthasangaha, dhammalipi))
-
-    for category, ms in (lv, jing, lun, zangwai):
+    for category, ms in book_module.categories:
+        a = None
         for m in ms:
             if hasattr(m, "get_book"):
                 book = m.get_book()
@@ -336,19 +324,22 @@ def main():
             if hasattr(m, "change2"):
                 book = m.change2(book)
 
+            title = "漢譯南傳大藏經·{}·{}".format(category, m.info.name)
+
             path = os.path.join(td.name, "漢譯南傳大藏經", category, "元_{}_繁.epub".format(m.info.name))
-            write_epub(path, book, m, "zh-Hant")
+            write_epub(path, book, m, title, "zh-Hant")
             check_epub(path)
 
             ################################################################################################################
 
             book = book.trans_2_sc()
+            title = trans_sc(title)
             path = os.path.join(td.name, "汉译南传大藏经", trans_sc(category), trans_sc("元_{}_简.epub".format(m.info.name)))
-            write_epub(path, book, m, "zh-Hans")
+            write_epub(path, book, m, title, "zh-Hans")
             check_epub(path)
 
 
-    input("Any key to exit:")
+    input("Press any key to exit:")
 
 
 if __name__ == '__main__':
