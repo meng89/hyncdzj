@@ -69,6 +69,13 @@ def write_epub(path, book, module, title, lang):
     for name, xml_str in epub_notes.pages(lang):
         epub.userfiles[name] = xml_str
         epub.spine.append(name)
+
+    shuoming_filename = "电子书制作说明.xhtml"
+    shuoming_path = os.path.join(config.PROJECT_ROOT, shuoming_filename)
+    epub.userfiles[shuoming_filename] = open(shuoming_path).read()
+    epub.mark.kids.append(epubpacker.Mark("电子书制作说明", shuoming_filename))
+    epub.spine.append(shuoming_filename)
+
     epub.write(path)
 
 
